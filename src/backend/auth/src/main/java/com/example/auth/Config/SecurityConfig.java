@@ -117,7 +117,7 @@ public class SecurityConfig {
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .addFilter(corsconfig.corsFilter())
+               // .addFilter(corsconfig.corsFilter())
                 .authorizeRequests().anyRequest().permitAll()
                 .and()
                 .oauth2Login()
