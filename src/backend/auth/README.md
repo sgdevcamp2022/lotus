@@ -1,0 +1,1 @@
+src/main/resources/application.properties의 mysql부분을 고쳐야 실행이 될 것입니다.
