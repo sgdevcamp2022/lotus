@@ -33,6 +33,8 @@ public class UserDto {
 
     private String auth;
 
+    private String profile_image;
+
     public static UserDto from(User user) {
         if (user == null) {
             return null;
@@ -45,6 +47,7 @@ public class UserDto {
                           .map(authority -> AuthorityDto.builder().authorityName(authority.getAuthorityName()).build())
                           .collect(Collectors.toSet()))*/
                 .auth(user.getAuth())
+                .profile_image(user.getProfile_image())
                 .build();
     }
 }

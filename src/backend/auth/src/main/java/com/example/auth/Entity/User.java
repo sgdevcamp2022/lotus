@@ -34,6 +34,9 @@ public class User {
     @Column(name = "auth", length = 50)
     private String auth;
 
+    @Column(name="profile_image", length=100)
+    private String profile_image;
+
 //    @ManyToMany
 //    @JoinTable(
 //            name = "user_authority",

@@ -45,6 +45,7 @@ public class UserService {
                 .username(userDto.getUsername())
                 .password(passwordEncoder.encode(userDto.getPassword()))
                 .nickname(userDto.getNickname())
+                .profile_image(userDto.getProfile_image())
                 .auth("ROLE_USER")
                 .activated(true)
                 .build();
