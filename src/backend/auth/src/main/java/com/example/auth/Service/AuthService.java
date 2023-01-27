@@ -43,7 +43,7 @@ public class AuthService {
 
     public TokenInfo login(LoginDto loginDto) {
         UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(loginDto.getUsername(),
+                new UsernamePasswordAuthenticationToken(loginDto.getEmail(),
                         loginDto.getPassword());
 
         Authentication authentication = authenticationManagerBuilder.getObject()
@@ -53,11 +53,11 @@ public class AuthService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         TokenInfo jwt = tokenProvider.createToken(authentication);
-        RefreshToken refreshTokenInRedis = findRefreshToken(loginDto.getUsername());
+        RefreshToken refreshTokenInRedis = findRefreshToken(loginDto.getEmail());
 
         if (Objects.isNull(refreshTokenInRedis)) {    //redis에 refreshtoken 없으면 최초로그인
             RefreshToken redisRefreshToken = new RefreshToken(jwt.getRefreshToken(),
-                    loginDto.getUsername());
+                    loginDto.getEmail());
             redisRepository.save(redisRefreshToken);
         } else {   //있으면 최초로그인x
             jwt.setRefreshToken(null);

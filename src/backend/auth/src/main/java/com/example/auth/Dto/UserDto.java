@@ -19,7 +19,7 @@ public class UserDto {
 
     @NotNull
     @Size(min = 3, max = 50)
-    private String username;
+    private String email;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Size(min = 3, max = 100)
@@ -41,7 +41,7 @@ public class UserDto {
         }
 
         return UserDto.builder()
-                .username(user.getUsername())
+                .email(user.getEmail())
                 .nickname(user.getNickname())
                 /*  .authorityDtoSet(user.getAuthorities().stream()
                           .map(authority -> AuthorityDto.builder().authorityName(authority.getAuthorityName()).build())

@@ -1,12 +1,14 @@
 package com.example.auth.Oauth2;
 
 import java.io.IOException;
+import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -20,7 +22,14 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
     public void onAuthenticationSuccess(HttpServletRequest httpServletRequest,
             HttpServletResponse httpServletResponse, Authentication authentication)
             throws IOException, ServletException {
-        log.info("성공!");
+
+
+        OAuth2User oAuth2User=(OAuth2User)authentication.getPrincipal();
+        Map<String, Object> attributes = oAuth2User.getAttributes();
+
+
+
+
         String[] path = httpServletRequest.getRequestURI().split("/");
         Provider provider = Provider.valueOf(path[path.length - 1].toUpperCase());
         String oauthId = authentication.getName();
