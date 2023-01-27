@@ -4,6 +4,7 @@ import com.example.auth.Vo.TokenInfo;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -47,25 +48,19 @@ public class TokenProvider implements InitializingBean {
     }
 
     public TokenInfo createToken(Authentication authentication) {
-       /* String authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(","));
+        String accessToken = createAccessToken(authentication);
+        String refreshToken = createRefreshToken();
+        String username = authentication.getName();
 
-        long now = (new Date()).getTime();
-        Date accessValidity = new Date(now + this.accessTokenValidityInMilliseconds);
-        Date refreshValidity = new Date(now + this.refreshTokenValidityInMilliseconds);
+        return TokenInfo.builder()
+                .grantType("Bearer")
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .username(username)
+                .build();
 
-        String accessToken=Jwts.builder()
-                .setSubject(authentication.getName())
-                .claim(AUTHORITIES_KEY, authorities)
-                .signWith(key, SignatureAlgorithm.HS512)
-                .setExpiration(accessValidity)
-                .compact();
-
-        String refreshToken=Jwts.builder()
-                .setExpiration(refreshValidity)
-                .signWith(key, SignatureAlgorithm.HS512)
-                .compact();*/
+    }
+    public TokenInfo createToken(Authentication authentication, Long userId) {
         String accessToken = createAccessToken(authentication);
         String refreshToken = createRefreshToken();
         String username = authentication.getName();
@@ -87,8 +82,10 @@ public class TokenProvider implements InitializingBean {
         long now = (new Date()).getTime();
         Date accessValidity = new Date(now + this.accessTokenValidityInMilliseconds);
 
+        System.out.println("authentication.getPrincipal() = " + authentication.getPrincipal());
         String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())
+                .claim("id","아이디")
                 .claim(AUTHORITIES_KEY, authorities)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .setExpiration(accessValidity)

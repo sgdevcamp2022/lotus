@@ -3,6 +3,7 @@ package com.example.auth.Service;
 import com.example.auth.Dto.UserDto;
 
 import com.example.auth.Entity.User;
+import com.example.auth.Oauth2.OAuth2Attributes;
 import com.example.auth.Oauth2.Provider;
 import com.example.auth.Repository.UserRepository;
 import com.example.auth.Security.TokenProvider;
@@ -56,6 +57,8 @@ public class UserService {
 
         return UserDto.from(userRepository.save(user));
     }
+
+
 
 
     public Optional<User> getUserByUsername(String email) {

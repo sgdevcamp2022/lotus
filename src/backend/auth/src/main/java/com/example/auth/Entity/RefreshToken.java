@@ -23,6 +23,8 @@ public class RefreshToken {
 
     private String refreshToken;
 
+    private String provider;
+
 
     public RefreshToken(String refreshToken, String username) {
         this.username = username;
