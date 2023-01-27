@@ -4,6 +4,7 @@ import com.example.auth.Entity.User;
 import com.example.auth.Repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collections;
+import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +39,8 @@ public class CustomOAuth2AuthService implements OAuth2UserService<OAuth2UserRequ
         OAuth2Attributes attributes = OAuth2Attributes.of(registrationId, userNameAttributeName,
                 oAuth2User.getAttributes());
 
+
+
         log.info("hey"+attributes.getAttributes());
         log.info("hey"+attributes.getNameAttributeKey());
         log.info("hey"+attributes.getNickname());
@@ -52,9 +55,13 @@ public class CustomOAuth2AuthService implements OAuth2UserService<OAuth2UserRequ
     }
 
     private User saveOrUpdate(OAuth2Attributes attributes){
-        User user=userRepository.findOneByEmail(attributes.getEmail())
+//        User user=userRepository.findOneByEmail(attributes.getEmail())
+//                .map(u -> u.update(attributes.getPicture(), attributes.getNickname()))
+//                .orElse(attributes.toEntity());
+        User user=userRepository.findOneByEmailAndProvider(attributes.getEmail(),attributes.getProvider().toString())
                 .map(u -> u.update(attributes.getPicture(), attributes.getNickname()))
                 .orElse(attributes.toEntity());
+
 
         return userRepository.save(user);
     }
