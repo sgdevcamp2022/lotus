@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container">
+    <div class="row pt-4 my-3">
+        <div class="col-md-12">
+            <h3>커뮤니티 게시판</h3>
+        </div>
+    </div>
+    <div class="row my-3">
+        <table class="table table-hover table-bordered">
+            <thead>
+                <th>No</th>
+                <th>TITLE</th>
+                <th>AUTHOR</th>
+                <th>CONTENT</th>
+                <th>PUBLISHED_DATE</th>
+                <th>MANAGEMENT</th>
+            </thead>
+            <tbody>
+                {% for post in board_list %}
+                <tr>
+                    <td>{{ forloop.revcounter }}</td>
+                    <td><a href="{% url 'post:detail' post.id %}">{{ post.title }}</a></td>
+                    <td>{{ post.author }}</td>
+                    <td>{{ post.content|truncatewords:5 }}</td>
+                    <td>{{ post.published_date|date:"Y-m-d" }}</td>
+                    <td>
+                        <a href="{% url 'post:edit' post.id %}" class="btn btn-outline-info btn-sm">수정</a>
+                        <a href="{% url 'post:delete' post.id %}" onclick="if(!confirm('정말 삭제하시겠습니까?')){return false;}" class="btn btn-outline-danger btn-sm">삭제</a>
+                    </td>
+                    
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div style="padding: 2px 20px; float:right;">
+        <a href="{% url 'post:regist' %}" class="btn btn-primary">REGISTER</a>
+    </div>
+</div>
+
+{% endblock %}

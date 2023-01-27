@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container">
+    <div class="row pt-4 my-3">
+        <div class="col-md-12">
+            <h3>글 세부 내용</h3>
+        </div>
+    </div>
+    <div class="row my-3">
+        <table class="table table-bordered">
+            <tr>
+                <td>[글 제목] : {{ board_list.title }}</td>
+            </tr>
+            <tr>
+                <td>
+                    <p>[글 내용]</p>
+                    {{ board_list.content|linebreaks }}
+                    <p><small style="color:silver;text-align:right;">[{{ board_list.published_date|date:"Y-m-d H:i:s" }}]</small></p>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div style="padding: 2px 20px; float:right;">
+        <a href="{% url 'post:index' %}" class="btn btn-primary">글 목록</a>
+    </div>
+</div>
+
+{% endblock %}
