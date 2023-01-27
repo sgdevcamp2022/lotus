@@ -3,6 +3,7 @@ package com.example.auth.Service;
 import com.example.auth.Dto.UserDto;
 
 import com.example.auth.Entity.User;
+import com.example.auth.Oauth2.Provider;
 import com.example.auth.Repository.UserRepository;
 import com.example.auth.Security.TokenProvider;
 import com.example.auth.Util.SecurityUtil;
@@ -48,6 +49,7 @@ public class UserService {
                 .profile_image(userDto.getProfile_image())
                 .auth("ROLE_USER")
                 .activated(true)
+                .provider(Provider.LOCAL.toString())
                 .build();
 
         System.out.println(user.getPassword());

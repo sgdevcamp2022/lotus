@@ -22,7 +22,7 @@ public class User {
     @Column(name = "email", length = 50, unique = true, nullable = false)
     private String email;
 
-    @Column(name = "password", length = 100, nullable = false)
+    @Column(name = "password", length = 100)
     private String password;
 
     @Column(name = "nickname", length = 50)
@@ -37,10 +37,18 @@ public class User {
     @Column(name="profile_image", length=100)
     private String profile_image;
 
+    @Column(name="provider", length=10)
+    private String provider;
+
 //    @ManyToMany
 //    @JoinTable(
 //            name = "user_authority",
 //            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "user_id")},
 //            inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")})
 //    private Set<Authority> authorities;
+    public User update(String profile_image, String nickname){
+        this.profile_image=profile_image;
+        this.nickname=nickname;
+        return this;
+    }
 }

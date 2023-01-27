@@ -1,5 +1,7 @@
 package com.example.auth.Oauth2;
 
+import com.example.auth.Entity.User;
+import com.example.auth.Repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
@@ -15,9 +17,13 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 @Slf4j
-@RequiredArgsConstructor
 @Service
 public class CustomOAuth2AuthService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
+    private final UserRepository userRepository;
+
+    public CustomOAuth2AuthService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @SneakyThrows
     @Override
@@ -39,9 +45,17 @@ public class CustomOAuth2AuthService implements OAuth2UserService<OAuth2UserRequ
         log.info("hey"+attributes.getPicture());
         log.info("hey"+attributes.getProvider());
 
-
+        saveOrUpdate(attributes);
 
         return new DefaultOAuth2User(Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
                 attributes.getAttributes(), attributes.getNameAttributeKey());
+    }
+
+    private User saveOrUpdate(OAuth2Attributes attributes){
+        User user=userRepository.findOneByEmail(attributes.getEmail())
+                .map(u -> u.update(attributes.getPicture(), attributes.getNickname()))
+                .orElse(attributes.toEntity());
+
+        return userRepository.save(user);
     }
 }
