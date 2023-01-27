@@ -1,2 +1,8 @@
-#jetbrain series exception
-/.idea
+# IntelliJ project files
+.idea
+.idea/*.xml
+*.iml
+out
+gen
+build
+rebel.xml
