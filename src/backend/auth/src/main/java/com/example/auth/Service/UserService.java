@@ -67,6 +67,12 @@ public class UserService {
         return oneByUsername;
     }
 
+    public Optional<User> getUserByUserId(Long userId) {
+
+        Optional<User> oneByUserId = userRepository.findOneByUserId(userId);
+        return oneByUserId;
+    }
+
     @Transactional(readOnly = true)
     public UserDto getUserWithAuthorities(String email) {
         return UserDto.from(userRepository.findOneWithAuthoritiesByEmail(email).orElse(null));

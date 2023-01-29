@@ -19,15 +19,15 @@ public class RefreshToken {
     @Id
     private String id;
     @Indexed
-    private String username;
+    private String email;
 
     private String refreshToken;
 
     private String provider;
 
 
-    public RefreshToken(String refreshToken, String username) {
-        this.username = username;
+    public RefreshToken(String refreshToken, String email) {
+        this.email = email;
         this.refreshToken = refreshToken;
     }
 }

@@ -81,8 +81,8 @@ public class AuthController {
     @GetMapping("/my")
     public Optional<User> getUserFromJwt(@RequestHeader String authorization) {
         String accessToken = authorization.substring(7);
-        String username = authService.getUsernameFromAccessToken(accessToken);
-        Optional<User> userByUsername = userService.getUserByUsername(username);
+        String userId = tokenProvider.getUserIdFromAccessToken(accessToken);
+        Optional<User> userByUsername = userService.getUserByUserId(Long.parseLong(userId));
         return userByUsername;
     }
 

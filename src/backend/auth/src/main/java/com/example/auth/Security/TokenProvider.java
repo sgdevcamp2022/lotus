@@ -4,11 +4,15 @@ import com.example.auth.Vo.TokenInfo;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import java.util.Base64;
+import java.util.Map;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.json.BasicJsonParser;
+import org.springframework.boot.json.JsonParser;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -61,7 +65,7 @@ public class TokenProvider implements InitializingBean {
 
     }
     public TokenInfo createToken(Authentication authentication, Long userId) {
-        String accessToken = createAccessToken(authentication);
+        String accessToken = createAccessToken(authentication, userId);
         String refreshToken = createRefreshToken();
         String username = authentication.getName();
 
@@ -79,13 +83,34 @@ public class TokenProvider implements InitializingBean {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
+        
         long now = (new Date()).getTime();
         Date accessValidity = new Date(now + this.accessTokenValidityInMilliseconds);
 
         System.out.println("authentication.getPrincipal() = " + authentication.getPrincipal());
         String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())
-                .claim("id","아이디")
+                .claim(AUTHORITIES_KEY, authorities)
+                .signWith(key, SignatureAlgorithm.HS512)
+                .setExpiration(accessValidity)
+                .compact();
+
+        return accessToken;
+    }
+
+    public String createAccessToken(Authentication authentication, Long userId) {
+        String authorities = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+
+
+        long now = (new Date()).getTime();
+        Date accessValidity = new Date(now + this.accessTokenValidityInMilliseconds);
+
+        System.out.println("authentication.getPrincipal() = " + authentication.getPrincipal());
+        String accessToken = Jwts.builder()
+                .setSubject(authentication.getName())
+                .claim("id",userId)
                 .claim(AUTHORITIES_KEY, authorities)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .setExpiration(accessValidity)
@@ -140,5 +165,15 @@ public class TokenProvider implements InitializingBean {
             logger.info("JWT 토큰이 잘못되었습니다.");
         }
         return false;
+    }
+
+    public String getUserIdFromAccessToken(String accessToken) {
+        String payloadJWT = accessToken.split("\\.")[1];
+        Base64.Decoder decoder = Base64.getUrlDecoder();
+
+        String payload = new String(decoder.decode(payloadJWT));
+        JsonParser jsonParser = new BasicJsonParser();
+        Map<String, Object> jsonArray = jsonParser.parseMap(payload);
+        return jsonArray.get("id").toString();
     }
 }

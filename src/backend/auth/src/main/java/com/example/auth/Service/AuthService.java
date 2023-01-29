@@ -57,7 +57,7 @@ public class AuthService {
         Optional<User> oneByEmail = userRepository.findOneByEmail(loginDto.getEmail());
         Long userId = oneByEmail.get().getUserId();
 
-        TokenInfo jwt = tokenProvider.createToken(authentication,userId);
+        TokenInfo jwt = tokenProvider.createToken(authentication, userId);
         RefreshToken refreshTokenInRedis = findRefreshToken(loginDto.getEmail());
 
         if (Objects.isNull(refreshTokenInRedis)) {    //redis에 refreshtoken 없으면 최초로그인
@@ -72,8 +72,8 @@ public class AuthService {
     }
 
 
-    public RefreshToken findRefreshToken(String username) {
-        return redisRepository.findRefreshTokenByUsername(username);
+    public RefreshToken findRefreshToken(String email) {
+        return redisRepository.findRefreshTokenByEmail(email);
     }
 
     public boolean validateRefreshToken(RefreshToken refreshTokenInRedis,
@@ -99,8 +99,8 @@ public class AuthService {
     }
 
     public DefaultResponse reissueRefreshToken(String refreshTokenInHeaders) {
-        String username = SecurityUtil.getCurrentUsername().get();
-        RefreshToken refreshTokenInRedis = findRefreshToken(username);
+        String email = SecurityUtil.getCurrentUsername().get();
+        RefreshToken refreshTokenInRedis = findRefreshToken(email);
 
         if (Objects.isNull(refreshTokenInRedis)) {    //refreshtoken이 만료됐을때 로그인 요청
             return new DefaultResponse(StatusCode.RE_LOGIN, ResponseMessage.LOGIN_AGAIN, null);
@@ -136,13 +136,4 @@ public class AuthService {
 
     }
 
-    public String getUsernameFromAccessToken(String accessToken) {
-        String payloadJWT = accessToken.split("\\.")[1];
-        Base64.Decoder decoder = Base64.getUrlDecoder();
-
-        String payload = new String(decoder.decode(payloadJWT));
-        JsonParser jsonParser = new BasicJsonParser();
-        Map<String, Object> jsonArray = jsonParser.parseMap(payload);
-        return jsonArray.get("sub").toString();
-    }
 }
