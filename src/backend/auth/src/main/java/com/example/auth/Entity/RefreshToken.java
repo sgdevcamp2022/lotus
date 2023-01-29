@@ -21,13 +21,21 @@ public class RefreshToken {
     @Indexed
     private String email;
 
+    @Indexed
+    private Long userId;
+
     private String refreshToken;
 
     private String provider;
 
 
-    public RefreshToken(String refreshToken, String email) {
-        this.email = email;
+//    public RefreshToken(String refreshToken, String email) {
+//        this.email = email;
+//        this.refreshToken = refreshToken;
+//    }
+
+    public RefreshToken(String refreshToken, Long userId) {
+        this.userId=userId;
         this.refreshToken = refreshToken;
     }
 }

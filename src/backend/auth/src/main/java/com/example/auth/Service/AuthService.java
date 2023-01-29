@@ -54,6 +54,7 @@ public class AuthService {
 
         Authentication authentication = authenticationManagerBuilder.getObject()
                 .authenticate(authenticationToken);
+
         Optional<User> oneByEmail = userRepository.findOneByEmail(loginDto.getEmail());
         Long userId = oneByEmail.get().getUserId();
 
@@ -62,7 +63,7 @@ public class AuthService {
 
         if (Objects.isNull(refreshTokenInRedis)) {    //redis에 refreshtoken 없으면 최초로그인
             RefreshToken redisRefreshToken = new RefreshToken(jwt.getRefreshToken(),
-                    loginDto.getEmail());
+                    userId);
             redisRepository.save(redisRefreshToken);
         } else {   //있으면 최초로그인x
             jwt.setRefreshToken(null);

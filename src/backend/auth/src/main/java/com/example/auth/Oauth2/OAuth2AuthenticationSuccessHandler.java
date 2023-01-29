@@ -84,21 +84,17 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        userRepository.findOneByEmailAndProvider(email,provider);
-            System.out.println("email = " + email);
-            System.out.println("provider.toString() = " + provider);
+
 
             Optional<User> oneByEmail = userRepository.findOneByEmailAndProvider(email,provider);
-            System.out.println("oneByEmail = " + oneByEmail);
             Long userId = oneByEmail.get().getUserId();
-            System.out.println("userId = " + userId);
 
         TokenInfo jwt = tokenProvider.createToken(authentication,userId);
         RefreshToken refreshTokenInRedis = findRefreshToken(email);
 
         if (Objects.isNull(refreshTokenInRedis)) {    //redis에 refreshtoken 없으면 최초로그인
             RefreshToken redisRefreshToken = new RefreshToken(jwt.getRefreshToken(),
-                    email);
+                    userId);
             redisRepository.save(redisRefreshToken);
         } else {   //있으면 최초로그인x
             jwt.setRefreshToken(null);
