@@ -59,7 +59,7 @@ public class AuthService {
         Long userId = oneByEmail.get().getUserId();
 
         TokenInfo jwt = tokenProvider.createToken(authentication, userId);
-        RefreshToken refreshTokenInRedis = findRefreshToken(loginDto.getEmail());
+        RefreshToken refreshTokenInRedis = findRefreshToken(userId);
 
         if (Objects.isNull(refreshTokenInRedis)) {    //redis에 refreshtoken 없으면 최초로그인
             RefreshToken redisRefreshToken = new RefreshToken(jwt.getRefreshToken(),
@@ -73,54 +73,54 @@ public class AuthService {
     }
 
 
-    public RefreshToken findRefreshToken(String email) {
-        return redisRepository.findRefreshTokenByEmail(email);
+    public RefreshToken findRefreshToken(Long userId) {
+        return redisRepository.findRefreshTokenByUserId(userId);
     }
 
-    public boolean validateRefreshToken(RefreshToken refreshTokenInRedis,
-            String refreshTokenInHeaders) {
-        System.out.println("refreshTokenInRedis = " + refreshTokenInRedis);
-        System.out.println("refreshTokenInHeaders = " + refreshTokenInHeaders);
+//    public boolean validateRefreshToken(RefreshToken refreshTokenInRedis,
+//            String refreshTokenInHeaders) {
+//        System.out.println("refreshTokenInRedis = " + refreshTokenInRedis);
+//        System.out.println("refreshTokenInHeaders = " + refreshTokenInHeaders);
+//
+//        if (Objects.isNull(refreshTokenInRedis)) {    //refreshtoken이 만료됐을때 로그인 요청
+//            return false;
+//        } else {   //refreshtoken이 존재할때
+//            System.out.println("refreshTokenInRedis.getRefreshToken() = "
+//                    + refreshTokenInRedis.getRefreshToken());
+//            if (!refreshTokenInRedis.getRefreshToken().equals(refreshTokenInHeaders)) {
+//                System.out.println("토큰의 유저 정보가 일치하지 않습니다.");
+//                return false;
+//            } else {
+//                return true;
+//            }
+//
+//        }
+//
+//
+//    }
 
-        if (Objects.isNull(refreshTokenInRedis)) {    //refreshtoken이 만료됐을때 로그인 요청
-            return false;
-        } else {   //refreshtoken이 존재할때
-            System.out.println("refreshTokenInRedis.getRefreshToken() = "
-                    + refreshTokenInRedis.getRefreshToken());
-            if (!refreshTokenInRedis.getRefreshToken().equals(refreshTokenInHeaders)) {
-                System.out.println("토큰의 유저 정보가 일치하지 않습니다.");
-                return false;
-            } else {
-                return true;
-            }
-
-        }
-
-
-    }
-
-    public DefaultResponse reissueRefreshToken(String refreshTokenInHeaders) {
-        String email = SecurityUtil.getCurrentUsername().get();
-        RefreshToken refreshTokenInRedis = findRefreshToken(email);
-
-        if (Objects.isNull(refreshTokenInRedis)) {    //refreshtoken이 만료됐을때 로그인 요청
-            return new DefaultResponse(StatusCode.RE_LOGIN, ResponseMessage.LOGIN_AGAIN, null);
-        } else {   //refreshtoken이 존재할때
-            System.out.println("refreshTokenInRedis.getRefreshToken() = "
-                    + refreshTokenInRedis.getRefreshToken());
-            if (!refreshTokenInRedis.getRefreshToken()
-                    .equals(refreshTokenInHeaders)) {   //토큰 정보가 일치하지 않을때
-                System.out.println("토큰의 유저 정보가 일치하지 않습니다.");
-                return new DefaultResponse(StatusCode.TOKEN_INVALID, ResponseMessage.TOKEN_INVALID,
-                        null);
-            } else {
-                final Authentication authentication = SecurityContextHolder.getContext()
-                        .getAuthentication();
-                String accessToken = tokenProvider.createAccessToken(authentication);
-                return new DefaultResponse(StatusCode.OK, ResponseMessage.TOKEN_REISSUE,
-                        accessToken);
-            }
-        }
+//    public DefaultResponse reissueRefreshToken(String refreshTokenInHeaders) {
+//        String email = SecurityUtil.getCurrentUsername().get();
+//        RefreshToken refreshTokenInRedis = findRefreshToken(email);
+//
+//        if (Objects.isNull(refreshTokenInRedis)) {    //refreshtoken이 만료됐을때 로그인 요청
+//            return new DefaultResponse(StatusCode.RE_LOGIN, ResponseMessage.LOGIN_AGAIN, null);
+//        } else {   //refreshtoken이 존재할때
+//            System.out.println("refreshTokenInRedis.getRefreshToken() = "
+//                    + refreshTokenInRedis.getRefreshToken());
+//            if (!refreshTokenInRedis.getRefreshToken()
+//                    .equals(refreshTokenInHeaders)) {   //토큰 정보가 일치하지 않을때
+//                System.out.println("토큰의 유저 정보가 일치하지 않습니다.");
+//                return new DefaultResponse(StatusCode.TOKEN_INVALID, ResponseMessage.TOKEN_INVALID,
+//                        null);
+//            } else {
+//                final Authentication authentication = SecurityContextHolder.getContext()
+//                        .getAuthentication();
+//                String accessToken = tokenProvider.createAccessToken(authentication);
+//                return new DefaultResponse(StatusCode.OK, ResponseMessage.TOKEN_REISSUE,
+//                        accessToken);
+//            }
+//        }
 
      /*   System.out.println("refreshTokenInRedis" + refreshTokenInRedis);
         System.out.println("refreshTokenInHeaders = " + refreshTokenInHeaders);
@@ -133,8 +133,8 @@ public class AuthService {
         else{
             System.out.println("refresh token이 유효하지 않습니다");
             return null;
-        }*/
+        }
 
-    }
+    }*/
 
 }

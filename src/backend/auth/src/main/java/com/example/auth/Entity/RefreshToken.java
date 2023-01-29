@@ -18,15 +18,13 @@ public class RefreshToken {
 
     @Id
     private String id;
-    @Indexed
-    private String email;
 
     @Indexed
     private Long userId;
 
     private String refreshToken;
 
-    private String provider;
+
 
 
 //    public RefreshToken(String refreshToken, String email) {

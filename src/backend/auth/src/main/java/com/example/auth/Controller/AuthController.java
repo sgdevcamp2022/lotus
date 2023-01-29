@@ -62,14 +62,14 @@ public class AuthController {
 
     }
 
-    @PostMapping("/reissue")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<DefaultResponse> reissueAccessToken(@RequestHeader HttpHeaders headers) {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        DefaultResponse response = authService.reissueRefreshToken(
-                headers.getFirst("refreshtoken"));
-        return new ResponseEntity<>(response, httpHeaders, HttpStatus.OK);
-    }
+//    @PostMapping("/reissue")
+//    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+//    public ResponseEntity<DefaultResponse> reissueAccessToken(@RequestHeader HttpHeaders headers) {
+//        HttpHeaders httpHeaders = new HttpHeaders();
+//        DefaultResponse response = authService.reissueRefreshToken(
+//                headers.getFirst("refreshtoken"));
+//        return new ResponseEntity<>(response, httpHeaders, HttpStatus.OK);
+//    }
 
 
     @PostMapping("/validate")

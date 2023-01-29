@@ -9,5 +9,6 @@ import java.util.Optional;
 public interface RedisRepository extends CrudRepository<RefreshToken, String> {
 
     RefreshToken findRefreshTokenByEmail(String email);
+    RefreshToken findRefreshTokenByUserId(Long userId);
     RefreshToken findRefreshTokenByEmailAndProvider(String email, String provider);
 }
