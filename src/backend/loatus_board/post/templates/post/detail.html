@@ -24,6 +24,30 @@
     <div style="padding: 2px 20px; float:right;">
         <a href="{% url 'post:index' %}" class="btn btn-primary">글 목록</a>
     </div>
+    댓글 
+    <br>
+    {% for comment in comments %}
+    {{comment.text}} - {{comment.created_at}} by {{comment.user}}
+    <br>
+    {% endfor %}
+
+    <br><br>
+    <div style="width:200px; height:150px; border:1px solid black; float:left;">
+        닉네임 
+        <form method="POST">
+            {% csrf_token %}
+            <input name="user_name" type="text" style="width:200px;height:150px;font-size:12px;">    
+    </div>
+    <div style="width:600px; height:150px; border:1px solid black; float:left;">
+        댓글 내용
+        <form method="POST">
+            {% csrf_token %}
+            <input name="body" type="text" value="" style="width:600px;height:150px;font-size:12px;">
+            <input class="btn btn-primary" type="submit" value="저장">
+        </form>    
+    </div>
+
+    
 </div>
 
 {% endblock %}
