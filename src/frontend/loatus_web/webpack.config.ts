@@ -79,6 +79,12 @@ const config: Configuration = {
         port: 3090,
         devMiddleware: { publicPath: '/dist/' },
         static: { directory: path.resolve(__dirname) },
+        proxy: {
+            '/oauth2.0/': {
+                target: 'https://nid.naver.com',
+                changeOrigin: true,
+            },
+        }
     },
 };
 
