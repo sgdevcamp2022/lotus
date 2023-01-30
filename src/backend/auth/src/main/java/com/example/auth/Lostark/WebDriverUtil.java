@@ -41,19 +41,24 @@ public class WebDriverUtil {
     public void useDriver(String url) {
         driver.get(url);
         driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);  // 페이지 불러오는 여유시간.
-        log.info("++++++++++++++++++++++===================+++++++++++++ selenium : " + driver.getTitle());
-        System.out.println("driver = " + driver);
-        System.out.println("driver.getClass() = " + driver.getClass());
-        List<WebElement> elements=driver.findElements(By.cssSelector("div.section-body"));
-        int a=1;
-        for(WebElement element: elements){
-            a++;
-            System.out.println("element = " + element);
-            System.out.println("element.getText() = " + element.getText());
-           // List<WebElement> allChildElements=element.findElements(By.xpath("*"));
-          //  System.out.println(allChildElements.size());
-            System.out.println("a="+a);
-        }
+        String xpath="//*[@id=\"navContent\"]/div/div[2]/section[1]/div[2]/p";
+        WebElement element = driver.findElement(By.xpath(xpath));
+        System.out.println("element.getText() = " + element.getText());
+        System.out.println("element = " + element);
+
+//        log.info("++++++++++++++++++++++===================+++++++++++++ selenium : " + driver.getTitle());
+//        System.out.println("driver = " + driver);
+//        System.out.println("driver.getClass() = " + driver.getClass());
+//        List<WebElement> elements=driver.findElements(By);
+//        int a=1;
+//        for(WebElement element: elements){
+//            a++;
+//            System.out.println("element = " + element);
+//            System.out.println("element.getText() = " + element.getText());
+//           // List<WebElement> allChildElements=element.findElements(By.xpath("*"));
+//          //  System.out.println(allChildElements.size());
+//            System.out.println("a="+a);
+//        }
 
       //  WebElement searchLabel = driver.findElement(By.id("label-text"));
      //   log.info("++++++++++++++++++++++===================+++++++++++++ searchLabel : " + searchLabel.getText());

@@ -3,6 +3,7 @@ package com.example.auth.Controller;
 import com.example.auth.Dto.LoginDto;
 import com.example.auth.Entity.User;
 import com.example.auth.Lostark.Crawling;
+import com.example.auth.Lostark.WebDriverUtil;
 import com.example.auth.Repository.UserRepository;
 import com.example.auth.Security.JwtFilter;
 import com.example.auth.Service.UserService;
@@ -39,6 +40,7 @@ public class AuthController {
     private final AuthService authService;
     private final UserService userService;
     private final Crawling crawling;
+
 
 
     public AuthController(TokenProvider tokenProvider,
@@ -96,6 +98,12 @@ public class AuthController {
         List<String> process = crawling.process();
         System.out.println("process = " + process);
         return process;
+    }
+
+    @GetMapping("/lostark")
+    public void lostark(){
+        WebDriverUtil webDriverUtil=new WebDriverUtil();
+        webDriverUtil.useDriver("https://timeline.onstove.com/83742733");
     }
 
 }
