@@ -4,9 +4,7 @@ import axios from 'axios';
 import { Button, Header, Horizon, Hr, Input, Page, PageHead, Root, SignIn } from '@pages/Login/styles';
 import { Link, Navigate } from 'react-router-dom';
 import { IToken, IUser } from '@typings/db';
-import usePropSWR from '@hooks/usePropSWR';
 import useSWR from 'swr';
-import Signup from '@pages/Signup';
 
 const Login = () => {
   const [email, onChangeEmail, setEmail] = useInput('');
