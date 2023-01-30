@@ -41,8 +41,8 @@ const Login = () => {
         .post(
           `/auth/login`,
           {
-            email: { email },
-            password: { password },
+            email,
+            password,
           },
           {
             withCredentials: true,

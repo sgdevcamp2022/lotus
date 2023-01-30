@@ -33,11 +33,9 @@ const Signup = () => {
       }
       axios
         .post('http://localhost:8080/api/signup', {
-          auth: '',
-          email: { email },
-          nickname: { nickname },
-          password: { password },
-          profile_image: '',
+          email,
+          nickname,
+          password,
         })
         .then((response) => {
           console.log(response.data);
