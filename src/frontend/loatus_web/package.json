@@ -39,6 +39,7 @@
     "@types/webpack": "^5.28.0",
     "@types/webpack-dev-server": "^4.7.2",
     "babel-loader": "^9.1.2",
+    "css-loader": "^6.7.3",
     "eslint": "^8.32.0",
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-prettier": "^4.2.1",

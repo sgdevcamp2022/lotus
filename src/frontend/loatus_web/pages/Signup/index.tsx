@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FormEvent, useCallback, useState } from 'react';
+import React, { FormEvent, useCallback, useState } from 'react';
 import { Button, Header, Horizon, Hr, Input, Page, PageHead, Root, SignIn } from '@pages/Login/styles';
 import { Link, Navigate } from 'react-router-dom';
 import useInput from '@hooks/useInput';
@@ -7,6 +7,7 @@ import { useCookies } from 'react-cookie';
 import useSWR from 'swr';
 import { IUser } from '@typings/db';
 import fetcher from '@utils/fetcher';
+import { toast, ToastContainer } from 'react-toastify';
 
 const Signup = () => {
   const [cookie] = useCookies(['accessToken']);
@@ -15,6 +16,7 @@ const Signup = () => {
   const [passwordCheck, , setPasswordCheck] = useInput('');
   const [nickname, onChangeNickname, setNickname] = useInput('');
   const [mismatchError, setMismatchError] = useState(false);
+  const [signupError, setSignupError] = useState(false);
   const {
     data: userData,
     error,
@@ -54,9 +56,17 @@ const Signup = () => {
           setPasswordCheck('');
           setNickname('');
           mutate();
+          toast.success(response.data, {
+            position: 'top-right',
+          });
+          setSignupError(false);
         })
         .catch((error) => {
           console.dir(error);
+          toast.error('이미 존재하는 이메일입니다.', {
+            position: 'top-right',
+          });
+          setSignupError(true);
         });
     },
     [email, password, passwordCheck, nickname],
@@ -95,7 +105,8 @@ const Signup = () => {
               <Input required type="text" value={nickname} onChange={onChangeNickname} />
             </label>
             <Button type="submit">회원가입</Button>
-            {password && !mismatchError && '비밀번호가 다릅니다'}
+            {password && !mismatchError && '비밀번호가 다릅니다!'}
+            {signupError && !nickname && '닉네임을 채워주세요!'}
           </form>
           <Horizon>
             <Hr />
@@ -108,6 +119,7 @@ const Signup = () => {
           <Link to="/login">로그인하러 가기</Link>
         </SignIn>
       </Page>
+      <ToastContainer />
     </Root>
   );
 };

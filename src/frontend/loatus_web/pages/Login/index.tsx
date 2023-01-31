@@ -7,6 +7,8 @@ import { IToken, IUser } from '@typings/db';
 import useSWR from 'swr';
 import { useCookies } from 'react-cookie';
 import fetcher from '@utils/fetcher';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
   const [cookie, setCookie] = useCookies(['accessToken']);
@@ -45,6 +47,14 @@ const Login = () => {
           setEmail('');
         })
         .catch((error) => {
+          toast.error(
+            error.response.status === 504 ? '네트워크가 연결되지 않았습니다!' : '아이디나 비밀번호를 확인해 주세요!',
+            {
+              position: 'top-right',
+            },
+          );
+
+          //TODO: debug 삭제
           console.dir(error);
         })
         .finally(() => setPassword(''));
@@ -104,6 +114,7 @@ const Login = () => {
           </form>
         </SignIn>
       </Page>
+      <ToastContainer />
     </Root>
   );
 };
