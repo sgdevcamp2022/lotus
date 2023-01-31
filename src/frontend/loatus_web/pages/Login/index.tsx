@@ -1,38 +1,18 @@
 import React, { useCallback, useState } from 'react';
 import useInput from '@hooks/useInput';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { Button, Header, Horizon, Hr, Input, Page, PageHead, Root, SignIn } from '@pages/Login/styles';
 import { Link, Navigate } from 'react-router-dom';
 import { IToken, IUser } from '@typings/db';
 import useSWR from 'swr';
+import { useCookies } from 'react-cookie';
+import fetcher from '@utils/fetcher';
 
 const Login = () => {
+  const [cookie, setCookie] = useCookies(['accessToken']);
   const [email, onChangeEmail, setEmail] = useInput('');
-  const [token, setToken] = useState<IToken>({
-    accessToken: '',
-    grantType: '',
-    refreshToken: '',
-    username: '',
-  });
   const [password, onChangePassword, setPassword] = useInput('');
-  const fetcher = (url: string) =>
-    axios
-      .get(url, {
-        withCredentials: true,
-        headers: {
-          Authorization: 'Bearer ' + token.accessToken,
-        },
-      })
-      .then((response) => response.data);
-  const {
-    data: userData,
-    error,
-    mutate,
-  } = useSWR<IUser | undefined | null>('/auth/my', fetcher, {
-    onErrorRetry: (error) => {
-      if (error.status === 504) return;
-    },
-  });
+  const { data: userData, error, mutate } = useSWR<IUser | undefined | null>(cookie && '/auth/my', fetcher);
 
   const onSubmitLogin = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
@@ -48,8 +28,8 @@ const Login = () => {
             withCredentials: true,
           },
         )
-        .then((response) => {
-          setToken((prev) => response?.data);
+        .then((response: AxiosResponse<IToken>) => {
+          setCookie('accessToken', response?.data.accessToken, { path: '/' });
           mutate();
           setEmail('');
         })
