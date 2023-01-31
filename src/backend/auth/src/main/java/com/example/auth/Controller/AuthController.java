@@ -12,6 +12,7 @@ import com.example.auth.Vo.TokenInfo;
 import com.example.auth.Security.TokenProvider;
 import com.example.auth.Service.AuthService;
 import com.example.auth.Util.SecurityUtil;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -110,15 +111,15 @@ public class AuthController {
 
 
     @GetMapping("/lostark")
-    public void getLostark(@Valid @RequestBody StoveDto stoveDto){
+    public JsonNode getLostark(@Valid @RequestBody StoveDto stoveDto){
         String encryptedMemberNo = lostarkAuthentication.getEncryptedMemberNo(
                 stoveDto.getStoveUrl());
         String battleInfoRoomUrl="https://lostark.game.onstove.com//Profile/Member?id="+encryptedMemberNo;
         WebDriverUtil webDriverUtil = new WebDriverUtil();
         String characterName = webDriverUtil.getCharacterInLostark(battleInfoRoomUrl);
-        String lostarkOpenApiUrl="https://developer-lostark.game.onstove.com/characters/"+characterName+"/siblings";
-        lostarkAuthentication.getCharactersInLostark(lostarkOpenApiUrl);
-
+       // String lostarkOpenApiUrl="https://developer-lostark.game.onstove.com/characters/"+characterName+"/siblings";
+        JsonNode charactersInLostark = lostarkAuthentication.getCharactersInLostark(characterName);
+        return charactersInLostark;
     }
 
 
