@@ -10,7 +10,11 @@ const { naver } = window as any;
 
 export const MainPage = () => {
   const [cookie] = useCookies(['accessToken']);
-  const { data: userData, error, mutate } = useSWR<IUser | undefined | null>(cookie && '/auth/my', fetcher);
+  const {
+    data: userData,
+    error,
+    mutate,
+  } = useSWR<IUser | undefined | null>(cookie.accessToken ? ['/auth/my', cookie.accessToken] : null, fetcher);
   const [component, setComponent] = useState('');
   const onclick = () => {
     fetch('http://192.168.115.15:8080/oauth2/authorization/naver')

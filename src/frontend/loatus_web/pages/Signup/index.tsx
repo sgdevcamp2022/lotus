@@ -15,7 +15,11 @@ const Signup = () => {
   const [passwordCheck, , setPasswordCheck] = useInput('');
   const [nickname, onChangeNickname, setNickname] = useInput('');
   const [mismatchError, setMismatchError] = useState(false);
-  const { data: userData, error, mutate } = useSWR<IUser | undefined | null>(cookie && '/auth/my', fetcher);
+  const {
+    data: userData,
+    error,
+    mutate,
+  } = useSWR<IUser | undefined | null>(cookie.accessToken ? '/auth/my' : null, fetcher);
   const onChangePassword = useCallback(
     (e: any) => {
       setMismatchError(e.target.value === passwordCheck);
@@ -49,6 +53,7 @@ const Signup = () => {
           setPassword('');
           setPasswordCheck('');
           setNickname('');
+          mutate();
         })
         .catch((error) => {
           console.dir(error);

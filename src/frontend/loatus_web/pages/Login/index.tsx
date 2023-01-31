@@ -1,8 +1,8 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import useInput from '@hooks/useInput';
 import axios, { AxiosResponse } from 'axios';
 import { Button, Header, Horizon, Hr, Input, Page, PageHead, Root, SignIn } from '@pages/Login/styles';
-import { Link, Navigate } from 'react-router-dom';
+import { Link, Navigate, useSearchParams } from 'react-router-dom';
 import { IToken, IUser } from '@typings/db';
 import useSWR from 'swr';
 import { useCookies } from 'react-cookie';
@@ -12,7 +12,18 @@ const Login = () => {
   const [cookie, setCookie] = useCookies(['accessToken']);
   const [email, onChangeEmail, setEmail] = useInput('');
   const [password, onChangePassword, setPassword] = useInput('');
-  const { data: userData, error, mutate } = useSWR<IUser | undefined | null>(cookie && '/auth/my', fetcher);
+  const {
+    data: userData,
+    error,
+    mutate,
+  } = useSWR<IUser>(cookie.accessToken ? ['/auth/my', cookie.accessToken] : null, fetcher);
+  const [params, setParams] = useSearchParams();
+
+  useEffect(() => {
+    if (params.get('accessToken')) {
+      setCookie('accessToken', params.get('accessToken'));
+    }
+  }, []);
 
   const onSubmitLogin = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
@@ -69,8 +80,12 @@ const Login = () => {
       <Page>
         <PageHead>이메일로 로그인해 보세요.</PageHead>
         <SignIn>
-          <Button>네이버를 사용하여 로그인</Button>
-          <Button>카카오를 사용하여 로그인</Button>
+          <Button>
+            <a href={'http://localhost:8080/oauth2/authorization/naver'}>네이버를 사용하여 로그인</a>
+          </Button>
+          <Button>
+            <a href={'http://localhost:8080/oauth2/authorization/kakao'}>카카오를 사용하여 로그인</a>
+          </Button>
           <Horizon>
             <Hr />
             <div style={{ padding: '0 20px' }}>또는</div>
