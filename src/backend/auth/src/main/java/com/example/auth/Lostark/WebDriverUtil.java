@@ -38,13 +38,13 @@ public class WebDriverUtil {
         driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
     }
 
-    public void useDriver(String url) {
+    public String useDriver(String url) {
         driver.get(url);
         driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);  // 페이지 불러오는 여유시간.
         String xpath="//*[@id=\"navContent\"]/div/div[2]/section[1]/div[2]/p";
         WebElement element = driver.findElement(By.xpath(xpath));
         System.out.println("element.getText() = " + element.getText());
-        System.out.println("element = " + element);
+        String result=element.getText();
 
 //        log.info("++++++++++++++++++++++===================+++++++++++++ selenium : " + driver.getTitle());
 //        System.out.println("driver = " + driver);
@@ -64,6 +64,7 @@ public class WebDriverUtil {
      //   log.info("++++++++++++++++++++++===================+++++++++++++ searchLabel : " + searchLabel.getText());
 
         quitDriver();
+        return result;
     }
 
     private void quitDriver() {

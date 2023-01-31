@@ -66,7 +66,8 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
 
         TokenInfo jwt = login(authentication, email, provider);
 
-        String uri = UriComponentsBuilder.fromUriString("http://localhost:8080/social")
+      //  String uri = UriComponentsBuilder.fromUriString("http://localhost:8080/social")
+        String uri = UriComponentsBuilder.fromUriString("http://localhost:3090/Mainpage")
                 .queryParam("provider", provider)
                 .queryParam("oauthId", oauthId)
                 .queryParam("grantType", jwt.getGrantType())

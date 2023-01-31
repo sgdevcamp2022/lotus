@@ -1,6 +1,7 @@
 package com.example.auth.Controller;
 
 import com.example.auth.Dto.LoginDto;
+import com.example.auth.Dto.StoveDto;
 import com.example.auth.Entity.User;
 import com.example.auth.Lostark.LostarkAuthentication;
 import com.example.auth.Lostark.WebDriverUtil;
@@ -38,7 +39,6 @@ public class AuthController {
     private final LostarkAuthentication lostarkAuthentication;
 
 
-
     public AuthController(TokenProvider tokenProvider,
             AuthenticationManagerBuilder authenticationManagerBuilder,
             AuthService authService, UserService userService,
@@ -47,7 +47,7 @@ public class AuthController {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.authService = authService;
         this.userService = userService;
-        this.lostarkAuthentication=lostarkAuthentication;
+        this.lostarkAuthentication = lostarkAuthentication;
     }
 
     @PostMapping("/login")
@@ -89,20 +89,34 @@ public class AuthController {
         return userByUsername;
     }
 
-    @GetMapping("/lostark")
-    public void lostark(){
-        WebDriverUtil webDriverUtil=new WebDriverUtil();
-        webDriverUtil.useDriver("https://timeline.onstove.com/83742733");
+    @GetMapping("/stove")
+    public ResponseEntity<Boolean> lostark(@Valid @RequestBody StoveDto stoveDto) {
+        WebDriverUtil webDriverUtil = new WebDriverUtil();
+        String introductionInStove = webDriverUtil.useDriver(stoveDto.getStoveUrl());
+        HttpHeaders httpHeaders=new HttpHeaders();
+        if(introductionInStove.equals(stoveDto.getRandomCode())){
+            return new ResponseEntity<>(true, httpHeaders, HttpStatus.OK);
+        }
+        else{
+            return new ResponseEntity<>(false, httpHeaders, HttpStatus.OK);
+        }
+
+//        WebDriverUtil webDriverUtil=new WebDriverUtil();
+//        webDriverUtil.useDriver("https://timeline.onstove.com/83742733");
     }
 
+
+
     @GetMapping("/randomcode")
-    public ResponseEntity<String> getRandomCode(@Valid @RequestBody String accessToken){
+    public ResponseEntity<String> getRandomCode(@RequestHeader String authorization) {
+        String accessToken = authorization.substring(7);
         HttpHeaders httpHeaders = new HttpHeaders();
 
         String randomCode = lostarkAuthentication.generateRandomCode(accessToken);
         System.out.println("randomCode = " + randomCode);
         return new ResponseEntity<>(randomCode, httpHeaders, HttpStatus.OK);
     }
+
 
 }
 
