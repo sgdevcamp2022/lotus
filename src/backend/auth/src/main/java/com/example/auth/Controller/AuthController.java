@@ -2,18 +2,14 @@ package com.example.auth.Controller;
 
 import com.example.auth.Dto.LoginDto;
 import com.example.auth.Entity.User;
-import com.example.auth.Lostark.Crawling;
+import com.example.auth.Lostark.LostarkAuthentication;
 import com.example.auth.Lostark.WebDriverUtil;
-import com.example.auth.Repository.UserRepository;
 import com.example.auth.Security.JwtFilter;
 import com.example.auth.Service.UserService;
-import com.example.auth.Vo.DefaultResponse;
 import com.example.auth.Vo.TokenInfo;
 import com.example.auth.Security.TokenProvider;
 import com.example.auth.Service.AuthService;
 import com.example.auth.Util.SecurityUtil;
-import java.util.List;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -39,19 +35,19 @@ public class AuthController {
 
     private final AuthService authService;
     private final UserService userService;
-    private final Crawling crawling;
+    private final LostarkAuthentication lostarkAuthentication;
 
 
 
     public AuthController(TokenProvider tokenProvider,
             AuthenticationManagerBuilder authenticationManagerBuilder,
             AuthService authService, UserService userService,
-            Crawling crawling) {
+            LostarkAuthentication lostarkAuthentication) {
         this.tokenProvider = tokenProvider;
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.authService = authService;
         this.userService = userService;
-        this.crawling=crawling;
+        this.lostarkAuthentication=lostarkAuthentication;
     }
 
     @PostMapping("/login")
@@ -93,17 +89,19 @@ public class AuthController {
         return userByUsername;
     }
 
-    @GetMapping("/loark")
-    public List<String> loark(){
-        List<String> process = crawling.process();
-        System.out.println("process = " + process);
-        return process;
-    }
-
     @GetMapping("/lostark")
     public void lostark(){
         WebDriverUtil webDriverUtil=new WebDriverUtil();
         webDriverUtil.useDriver("https://timeline.onstove.com/83742733");
+    }
+
+    @GetMapping("/randomcode")
+    public ResponseEntity<String> getRandomCode(@Valid @RequestBody String accessToken){
+        HttpHeaders httpHeaders = new HttpHeaders();
+
+        String randomCode = lostarkAuthentication.generateRandomCode(accessToken);
+        System.out.println("randomCode = " + randomCode);
+        return new ResponseEntity<>(randomCode, httpHeaders, HttpStatus.OK);
     }
 
 }

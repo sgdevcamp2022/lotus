@@ -2,11 +2,10 @@ package com.example.auth.Oauth2;
 
 import com.example.auth.Entity.RefreshToken;
 import com.example.auth.Entity.User;
-import com.example.auth.Repository.RedisRepository;
+import com.example.auth.Repository.RefreshTokenRepository;
 import com.example.auth.Repository.UserRepository;
 import com.example.auth.Security.TokenProvider;
 import com.example.auth.Vo.TokenInfo;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
@@ -14,7 +13,6 @@ import java.util.Optional;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,13 +26,13 @@ import org.springframework.web.util.UriComponentsBuilder;
 public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     private final TokenProvider tokenProvider;
-    private final RedisRepository redisRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
 
     public OAuth2AuthenticationSuccessHandler(TokenProvider tokenProvider,
-            RedisRepository redisRepository, UserRepository userRepository) {
+            RefreshTokenRepository refreshTokenRepository, UserRepository userRepository) {
         this.tokenProvider = tokenProvider;
-        this.redisRepository = redisRepository;
+        this.refreshTokenRepository = refreshTokenRepository;
         this.userRepository = userRepository;
     }
 
@@ -90,12 +88,12 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
             Long userId = oneByEmail.get().getUserId();
 
         TokenInfo jwt = tokenProvider.createToken(authentication,userId);
-        RefreshToken refreshTokenInRedis = findRefreshToken(email);
+        RefreshToken refreshTokenInRedis = findRefreshToken(userId);
 
         if (Objects.isNull(refreshTokenInRedis)) {    //redis에 refreshtoken 없으면 최초로그인
             RefreshToken redisRefreshToken = new RefreshToken(jwt.getRefreshToken(),
                     userId);
-            redisRepository.save(redisRefreshToken);
+            refreshTokenRepository.save(redisRefreshToken);
         } else {   //있으면 최초로그인x
             jwt.setRefreshToken(null);
         }
@@ -103,7 +101,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
         return jwt;
     }
 
-    private RefreshToken findRefreshToken(String username) {
-        return redisRepository.findRefreshTokenByEmail(username);
+    private RefreshToken findRefreshToken(Long userId) {
+        return refreshTokenRepository.findRefreshTokenByUserId(userId);
     }
 }

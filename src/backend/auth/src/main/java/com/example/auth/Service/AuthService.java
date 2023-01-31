@@ -3,28 +3,18 @@ package com.example.auth.Service;
 import com.example.auth.Dto.LoginDto;
 import com.example.auth.Entity.RefreshToken;
 import com.example.auth.Entity.User;
-import com.example.auth.Repository.RedisRepository;
+import com.example.auth.Repository.RefreshTokenRepository;
 import com.example.auth.Repository.UserRepository;
-import com.example.auth.Vo.DefaultResponse;
-import com.example.auth.Vo.ResponseMessage;
-import com.example.auth.Vo.StatusCode;
 import com.example.auth.Vo.TokenInfo;
 import com.example.auth.Security.TokenProvider;
-import com.example.auth.Util.SecurityUtil;
 
 import java.util.Optional;
-import org.aspectj.bridge.Message;
 
-import org.springframework.boot.json.BasicJsonParser;
-import org.springframework.boot.json.JsonParser;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Base64;
-import java.util.Map;
 import java.util.Objects;
 
 
@@ -33,17 +23,17 @@ public class AuthService {
 
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final TokenProvider tokenProvider;
-    private final RedisRepository redisRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
 
     public AuthService(AuthenticationManagerBuilder authenticationManagerBuilder,
             TokenProvider tokenProvider,
-            RedisRepository redisRepository,
+            RefreshTokenRepository refreshTokenRepository,
             UserRepository userRepository) {
 
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.tokenProvider = tokenProvider;
-        this.redisRepository = redisRepository;
+        this.refreshTokenRepository = refreshTokenRepository;
         this.userRepository=userRepository;
     }
 
@@ -59,12 +49,14 @@ public class AuthService {
         Long userId = oneByEmail.get().getUserId();
 
         TokenInfo jwt = tokenProvider.createToken(authentication, userId);
+
+
         RefreshToken refreshTokenInRedis = findRefreshToken(userId);
 
         if (Objects.isNull(refreshTokenInRedis)) {    //redis에 refreshtoken 없으면 최초로그인
             RefreshToken redisRefreshToken = new RefreshToken(jwt.getRefreshToken(),
                     userId);
-            redisRepository.save(redisRefreshToken);
+            refreshTokenRepository.save(redisRefreshToken);
         } else {   //있으면 최초로그인x
             jwt.setRefreshToken(null);
         }
@@ -74,7 +66,7 @@ public class AuthService {
 
 
     public RefreshToken findRefreshToken(Long userId) {
-        return redisRepository.findRefreshTokenByUserId(userId);
+        return refreshTokenRepository.findRefreshTokenByUserId(userId);
     }
 
 //    public boolean validateRefreshToken(RefreshToken refreshTokenInRedis,
