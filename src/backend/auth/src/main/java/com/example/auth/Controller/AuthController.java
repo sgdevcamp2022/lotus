@@ -7,6 +7,7 @@ import com.example.auth.Lostark.LostarkAuthentication;
 import com.example.auth.Lostark.WebDriverUtil;
 import com.example.auth.Security.JwtFilter;
 import com.example.auth.Service.UserService;
+import com.example.auth.Vo.StoveInfo;
 import com.example.auth.Vo.TokenInfo;
 import com.example.auth.Security.TokenProvider;
 import com.example.auth.Service.AuthService;
@@ -90,21 +91,35 @@ public class AuthController {
     }
 
     @GetMapping("/stove")
-    public ResponseEntity<Boolean> lostark(@Valid @RequestBody StoveDto stoveDto) {
+    public ResponseEntity<StoveInfo> lostark(@Valid @RequestBody StoveDto stoveDto) {
         WebDriverUtil webDriverUtil = new WebDriverUtil();
-        String introductionInStove = webDriverUtil.useDriver(stoveDto.getStoveUrl());
+        String introductionInStove = webDriverUtil.getIntroductionInStove(stoveDto.getStoveUrl());
         HttpHeaders httpHeaders=new HttpHeaders();
-        if(introductionInStove.equals(stoveDto.getRandomCode())){
-            return new ResponseEntity<>(true, httpHeaders, HttpStatus.OK);
+        StoveInfo stoveInfo=new StoveInfo(stoveDto.getStoveUrl(), stoveDto.getRandomCode(), false);
+        if(introductionInStove.equals(stoveDto.getRandomCode())){   //소개글과 랜덤코드가 일치하면
+            stoveInfo.setResult(true);
+            return new ResponseEntity<>(stoveInfo, httpHeaders, HttpStatus.OK);
         }
         else{
-            return new ResponseEntity<>(false, httpHeaders, HttpStatus.OK);
+            return new ResponseEntity<>(stoveInfo, httpHeaders, HttpStatus.OK);
         }
 
 //        WebDriverUtil webDriverUtil=new WebDriverUtil();
 //        webDriverUtil.useDriver("https://timeline.onstove.com/83742733");
     }
 
+
+    @GetMapping("/lostark")
+    public void getLostark(@Valid @RequestBody StoveDto stoveDto){
+        String encryptedMemberNo = lostarkAuthentication.getEncryptedMemberNo(
+                stoveDto.getStoveUrl());
+        String battleInfoRoomUrl="https://lostark.game.onstove.com//Profile/Member?id="+encryptedMemberNo;
+        WebDriverUtil webDriverUtil = new WebDriverUtil();
+        String characterName = webDriverUtil.getCharacterInLostark(battleInfoRoomUrl);
+        String lostarkOpenApiUrl="https://developer-lostark.game.onstove.com/characters/"+characterName+"/siblings";
+        lostarkAuthentication.getCharactersInLostark(lostarkOpenApiUrl);
+
+    }
 
 
     @GetMapping("/randomcode")

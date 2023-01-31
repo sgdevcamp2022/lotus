@@ -38,7 +38,7 @@ public class WebDriverUtil {
         driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
     }
 
-    public String useDriver(String url) {
+    public String getIntroductionInStove(String url) {
         driver.get(url);
         driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);  // 페이지 불러오는 여유시간.
         String xpath="//*[@id=\"navContent\"]/div/div[2]/section[1]/div[2]/p";
@@ -62,6 +62,18 @@ public class WebDriverUtil {
 
       //  WebElement searchLabel = driver.findElement(By.id("label-text"));
      //   log.info("++++++++++++++++++++++===================+++++++++++++ searchLabel : " + searchLabel.getText());
+
+        quitDriver();
+        return result;
+    }
+
+    public String getCharacterInLostark(String url) {
+        driver.get(url);
+        driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);  // 페이지 불러오는 여유시간.
+        String xpath="//*[@id=\"lostark-wrapper\"]/div/main/div/div[1]/span[2]";
+        WebElement element = driver.findElement(By.xpath(xpath));
+        String result=element.getText();
+
 
         quitDriver();
         return result;
