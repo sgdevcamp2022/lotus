@@ -74,7 +74,7 @@ const Signup = () => {
             </label>
             <label id="password-check-label">
               <span>비밀번호 확인</span>
-              <Input type="password" value={passwordCheck} onChange={onChangePasswordCheck} />
+              <Input required type="password" value={passwordCheck} onChange={onChangePasswordCheck} />
             </label>
             <label id="nickname-label">
               <span>닉네임</span>
