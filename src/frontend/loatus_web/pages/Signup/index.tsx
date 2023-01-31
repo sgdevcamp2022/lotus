@@ -1,15 +1,21 @@
 import React, { ChangeEvent, FormEvent, useCallback, useState } from 'react';
 import { Button, Header, Horizon, Hr, Input, Page, PageHead, Root, SignIn } from '@pages/Login/styles';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import useInput from '@hooks/useInput';
 import axios from 'axios';
+import { useCookies } from 'react-cookie';
+import useSWR from 'swr';
+import { IUser } from '@typings/db';
+import fetcher from '@utils/fetcher';
 
 const Signup = () => {
+  const [cookie] = useCookies(['accessToken']);
   const [email, onChangeEmail, setEmail] = useInput('');
   const [password, , setPassword] = useInput('');
   const [passwordCheck, , setPasswordCheck] = useInput('');
   const [nickname, onChangeNickname, setNickname] = useInput('');
   const [mismatchError, setMismatchError] = useState(false);
+  const { data: userData, error, mutate } = useSWR<IUser | undefined | null>(cookie && '/auth/my', fetcher);
   const onChangePassword = useCallback(
     (e: any) => {
       setMismatchError(e.target.value === passwordCheck);
@@ -51,6 +57,9 @@ const Signup = () => {
     [email, password, passwordCheck, nickname],
   );
 
+  if (userData) {
+    return <Navigate to={'/mainpage'} replace />;
+  }
   return (
     <Root>
       <Header>
