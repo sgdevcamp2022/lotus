@@ -1,5 +1,8 @@
 package com.example.auth.Lostark;
 
+import com.example.auth.Vo.DefaultResponse;
+import com.example.auth.Vo.ResponseMessage;
+import com.example.auth.Vo.StatusCode;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -38,7 +41,25 @@ public class WebDriverUtil {
         driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
     }
 
-    public String getIntroductionInStove(String url) {
+    public DefaultResponse getIntroductionInStove(String url) {
+
+        //url 형식이 다를때(길이가 안맞을떄)
+        if(url.length()<29){
+            DefaultResponse defaultResponse=new DefaultResponse(StatusCode.URL_ERROR,
+                    ResponseMessage.STOVE_URL_AGAIN,null);
+        }
+        String memberNo = url.substring(29);
+
+        try{
+            Integer.parseInt(memberNo);
+        } catch(NumberFormatException e){
+            DefaultResponse defaultResponse=new DefaultResponse(StatusCode.URL_ERROR,
+                    ResponseMessage.STOVE_URL_AGAIN,null);
+            return defaultResponse;
+        }
+
+
+
         driver.get(url);
         driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);  // 페이지 불러오는 여유시간.
         String xpath="//*[@id=\"navContent\"]/div/div[2]/section[1]/div[2]/p";
@@ -46,28 +67,12 @@ public class WebDriverUtil {
         System.out.println("element.getText() = " + element.getText());
         String result=element.getText();
 
-//        log.info("++++++++++++++++++++++===================+++++++++++++ selenium : " + driver.getTitle());
-//        System.out.println("driver = " + driver);
-//        System.out.println("driver.getClass() = " + driver.getClass());
-//        List<WebElement> elements=driver.findElements(By);
-//        int a=1;
-//        for(WebElement element: elements){
-//            a++;
-//            System.out.println("element = " + element);
-//            System.out.println("element.getText() = " + element.getText());
-//           // List<WebElement> allChildElements=element.findElements(By.xpath("*"));
-//          //  System.out.println(allChildElements.size());
-//            System.out.println("a="+a);
-//        }
-
-      //  WebElement searchLabel = driver.findElement(By.id("label-text"));
-     //   log.info("++++++++++++++++++++++===================+++++++++++++ searchLabel : " + searchLabel.getText());
-
         quitDriver();
-        return result;
+        return new DefaultResponse(StatusCode.OK, ResponseMessage.STOVE_INTRODUCTION_SUCCESS, result);
     }
 
     public String getCharacterInLostark(String url) {
+        System.out.println("url = " + url);
         driver.get(url);
         driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);  // 페이지 불러오는 여유시간.
         String xpath="//*[@id=\"lostark-wrapper\"]/div/main/div/div[1]/span[2]";

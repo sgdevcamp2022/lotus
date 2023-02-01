@@ -28,6 +28,7 @@ public class SecurityConfig {
             "/api/signup",
             "/auth/login",
             "/sns/**",
+            "/login",
             /* swagger v2 */
             "/v2/api-docs",
             "/swagger-resources",
@@ -49,6 +50,7 @@ public class SecurityConfig {
     private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
     private final CustomOidcUserService customOidcUserService;
     private final Corsconfig corsconfig;
+
     public SecurityConfig(JwtAccessDeniedHandler jwtAccessDeniedHandler,
             JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
             TokenProvider tokenProvider, CustomOAuth2AuthService customOAuth2AuthService,
@@ -62,8 +64,8 @@ public class SecurityConfig {
         this.customOAuth2AuthService = customOAuth2AuthService;
         this.oAuth2AuthenticationFailureHandler = oAuth2AuthenticationFailureHandler;
         this.oAuth2AuthenticationSuccessHandler = oAuth2AuthenticationSuccessHandler;
-        this.customOidcUserService=customOidcUserService;
-        this.corsconfig=corsconfig;
+        this.customOidcUserService = customOidcUserService;
+        this.corsconfig = corsconfig;
     }
 
 
@@ -72,68 +74,65 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-//    @Bean
-//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-//        http
-//
-//                .csrf().disable()
-//                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//                .and()
-//
-//                .exceptionHandling()
-//                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-//               .accessDeniedHandler(jwtAccessDeniedHandler)
-//                .and()
-//
-//                .authorizeRequests()
-//              //  .antMatchers("/api/signup").permitAll()
-//               // .antMatchers("/auth/login").permitAll()
-//                .antMatchers(PERMIT_URL_ARRAY).permitAll()
-//                .antMatchers("/test").hasRole("USER")
-//                .and()
-//                .oauth2Login()
-//                .userInfoEndpoint()
-//                .userService(customOAuth2AuthService)
-//                .and()
-//                .successHandler(oAuth2AuthenticationSuccessHandler)
-//                .failureHandler(oAuth2AuthenticationFailureHandler)
-//              //  .anyRequest().authenticated()
-//
-//                .and()
-//                .apply(new JwtSecurityConfig(tokenProvider));
-//
-//
-//        return http.build();
-//    }
-
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .httpBasic().disable()
-                .formLogin().disable()
-                .csrf().disable()
 
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-               // .addFilter(corsconfig.corsFilter())
-                .authorizeRequests().anyRequest().permitAll()
+
+                .exceptionHandling()
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .accessDeniedHandler(jwtAccessDeniedHandler)
+                .and()
+
+                .authorizeRequests()
+                .antMatchers(PERMIT_URL_ARRAY).permitAll()
+                .antMatchers("/test").hasRole("USER")
+                .anyRequest().authenticated()
                 .and()
                 .oauth2Login()
                 .userInfoEndpoint()
-                .oidcUserService(customOidcUserService)
                 .userService(customOAuth2AuthService)
                 .and()
                 .successHandler(oAuth2AuthenticationSuccessHandler)
-                .failureHandler(oAuth2AuthenticationFailureHandler);
+                .failureHandler(oAuth2AuthenticationFailureHandler)
+                //
+
+                .and()
+                .apply(new JwtSecurityConfig(tokenProvider));
+
         return http.build();
     }
 
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web -> web.ignoring().antMatchers("/images/**", "/js/**", "/webjars/**"));
-    }
+//    @Bean
+//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//        http
+//                .httpBasic().disable()
+//                .formLogin().disable()
+//                .csrf().disable()
+//
+//                .sessionManagement()
+//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                .and()
+//               // .addFilter(corsconfig.corsFilter())
+//                .authorizeRequests().anyRequest().permitAll()
+//                .and()
+//                .oauth2Login()
+//                .userInfoEndpoint()
+//                .oidcUserService(customOidcUserService)
+//                .userService(customOAuth2AuthService)
+//                .and()
+//                .successHandler(oAuth2AuthenticationSuccessHandler)
+//                .failureHandler(oAuth2AuthenticationFailureHandler);
+//        return http.build();
+//    }
+
+//    @Bean
+//    public WebSecurityCustomizer webSecurityCustomizer() {
+//        return (web -> web.ignoring().antMatchers("/images/**", "/js/**", "/webjars/**"));
+//    }
 
 //    @Bean
 //    public CorsConfigurationSource corsConfigurationSource() {

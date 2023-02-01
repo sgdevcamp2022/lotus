@@ -87,7 +87,9 @@ public class LostarkAuthentication {
     }
 
     public String getEncryptedMemberNo(String url){
+
         String memberNo = url.substring(29);
+
         String json="{"+"memberNo:"+memberNo +"}";
 
         JSONObject jsonObject = httpPostBodyConnection(

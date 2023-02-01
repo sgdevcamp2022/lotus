@@ -7,12 +7,14 @@ import com.example.auth.Lostark.LostarkAuthentication;
 import com.example.auth.Lostark.WebDriverUtil;
 import com.example.auth.Security.JwtFilter;
 import com.example.auth.Service.UserService;
+import com.example.auth.Vo.DefaultResponse;
 import com.example.auth.Vo.StoveInfo;
 import com.example.auth.Vo.TokenInfo;
 import com.example.auth.Security.TokenProvider;
 import com.example.auth.Service.AuthService;
 import com.example.auth.Util.SecurityUtil;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -67,6 +69,13 @@ public class AuthController {
 
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@RequestHeader String authorization){
+        String accessToken = authorization.substring(7);
+        HttpHeaders httpHeaders=new HttpHeaders();
+        return new ResponseEntity<>("stoveInfo", httpHeaders, HttpStatus.OK);
+    }
+
 //    @PostMapping("/reissue")
 //    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
 //    public ResponseEntity<DefaultResponse> reissueAccessToken(@RequestHeader HttpHeaders headers) {
@@ -87,33 +96,63 @@ public class AuthController {
     public Optional<User> getUserFromJwt(@RequestHeader String authorization) {
         String accessToken = authorization.substring(7);
         String userId = tokenProvider.getUserIdFromAccessToken(accessToken);
+        Object principal = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("principal = " + principal);
         Optional<User> userByUsername = userService.getUserByUserId(Long.parseLong(userId));
         return userByUsername;
     }
 
+//    @GetMapping("/stove")
+//    public ResponseEntity<StoveInfo> lostark(@Valid @RequestBody StoveDto stoveDto) {
+//        WebDriverUtil webDriverUtil = new WebDriverUtil();
+//        String introductionInStove = webDriverUtil.getIntroductionInStove(stoveDto.getStoveUrl());
+//        HttpHeaders httpHeaders=new HttpHeaders();
+//        StoveInfo stoveInfo=new StoveInfo(stoveDto.getStoveUrl(), stoveDto.getRandomCode(), false);
+//        if(introductionInStove.equals(stoveDto.getRandomCode())){   //소개글과 랜덤코드가 일치하면
+//            stoveInfo.setResult(true);
+//            return new ResponseEntity<>(stoveInfo, httpHeaders, HttpStatus.OK);
+//        }
+//        else{
+//            return new ResponseEntity<>(stoveInfo, httpHeaders, HttpStatus.OK);
+//        }
+//    }
+
     @GetMapping("/stove")
-    public ResponseEntity<StoveInfo> lostark(@Valid @RequestBody StoveDto stoveDto) {
+    public ResponseEntity<JsonNode> lostark(@Valid @RequestBody StoveDto stoveDto) {
         WebDriverUtil webDriverUtil = new WebDriverUtil();
-        String introductionInStove = webDriverUtil.getIntroductionInStove(stoveDto.getStoveUrl());
+        DefaultResponse introductionInStove = webDriverUtil.getIntroductionInStove(
+                stoveDto.getStoveUrl());
+        System.out.println("introductionInStove = " + introductionInStove);
         HttpHeaders httpHeaders=new HttpHeaders();
         StoveInfo stoveInfo=new StoveInfo(stoveDto.getStoveUrl(), stoveDto.getRandomCode(), false);
         if(introductionInStove.equals(stoveDto.getRandomCode())){   //소개글과 랜덤코드가 일치하면
-            stoveInfo.setResult(true);
-            return new ResponseEntity<>(stoveInfo, httpHeaders, HttpStatus.OK);
+
+            String encryptedMemberNo = lostarkAuthentication.getEncryptedMemberNo(
+                    stoveDto.getStoveUrl());
+            System.out.println("encryptedMemberNo = " + encryptedMemberNo);
+            String battleInfoRoomUrl="https://lostark.game.onstove.com//Profile/Member?id="+encryptedMemberNo;
+            WebDriverUtil webDriverUtil2 = new WebDriverUtil();
+            String characterName = webDriverUtil2.getCharacterInLostark(battleInfoRoomUrl);
+            JsonNode charactersInLostark = lostarkAuthentication.getCharactersInLostark(characterName);
+
+            return new ResponseEntity<>(charactersInLostark, httpHeaders, HttpStatus.OK);
         }
         else{
-            return new ResponseEntity<>(stoveInfo, httpHeaders, HttpStatus.OK);
+            return new ResponseEntity<>(null, httpHeaders, HttpStatus.BAD_REQUEST);
+            //stove url형식이 틀릴때
+            //stove url은 맞는데 자기소개글이 랜덤코드와 일치하지 않을때
+            //stove url맞고, 랜덤코드와 자기소개글이 맞는데 로스트아크 캐릭터가 존재하지 않을때
         }
-
-//        WebDriverUtil webDriverUtil=new WebDriverUtil();
-//        webDriverUtil.useDriver("https://timeline.onstove.com/83742733");
     }
+
+
 
 
     @GetMapping("/lostark")
     public JsonNode getLostark(@Valid @RequestBody StoveDto stoveDto){
         String encryptedMemberNo = lostarkAuthentication.getEncryptedMemberNo(
                 stoveDto.getStoveUrl());
+        System.out.println("encryptedMemberNo = " + encryptedMemberNo);
         String battleInfoRoomUrl="https://lostark.game.onstove.com//Profile/Member?id="+encryptedMemberNo;
         WebDriverUtil webDriverUtil = new WebDriverUtil();
         String characterName = webDriverUtil.getCharacterInLostark(battleInfoRoomUrl);

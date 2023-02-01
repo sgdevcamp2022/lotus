@@ -81,7 +81,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
 
         private TokenInfo login(Authentication authentication, String email, String provider) {
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+       // SecurityContextHolder.getContext().setAuthentication(authentication);
 
 
 
