@@ -90,7 +90,7 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .antMatchers(PERMIT_URL_ARRAY).permitAll()
                 .antMatchers("/test").hasRole("USER")
-                .anyRequest().authenticated()
+                //.anyRequest().authenticated()
                 .and()
                 .oauth2Login()
                 .userInfoEndpoint()
@@ -98,7 +98,7 @@ public class SecurityConfig {
                 .and()
                 .successHandler(oAuth2AuthenticationSuccessHandler)
                 .failureHandler(oAuth2AuthenticationFailureHandler)
-                //
+
 
                 .and()
                 .apply(new JwtSecurityConfig(tokenProvider));

@@ -1,5 +1,6 @@
 package com.example.auth.Security;
 
+import com.example.auth.Repository.AccessTokenRepository;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.DefaultSecurityFilterChain;
@@ -9,6 +10,7 @@ public class JwtSecurityConfig extends
         SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
 
     private TokenProvider tokenProvider;
+    private AccessTokenRepository accessTokenRepository;
 
     public JwtSecurityConfig(TokenProvider tokenProvider) {
         this.tokenProvider = tokenProvider;
@@ -17,7 +19,7 @@ public class JwtSecurityConfig extends
     @Override
     public void configure(HttpSecurity http) {
         http.addFilterBefore(
-                new JwtFilter(tokenProvider),
+                new JwtFilter(tokenProvider, accessTokenRepository),
                 UsernamePasswordAuthenticationFilter.class
         );
     }

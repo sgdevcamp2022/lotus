@@ -1,18 +1,26 @@
 package com.example.auth.Service;
 
 import com.example.auth.Dto.LoginDto;
+import com.example.auth.Entity.AccessToken;
 import com.example.auth.Entity.RefreshToken;
 import com.example.auth.Entity.User;
+import com.example.auth.Repository.AccessTokenRepository;
 import com.example.auth.Repository.RefreshTokenRepository;
 import com.example.auth.Repository.UserRepository;
+import com.example.auth.Util.SecurityUtil;
+import com.example.auth.Vo.DefaultResponse;
+import com.example.auth.Vo.ResponseMessage;
+import com.example.auth.Vo.StatusCode;
 import com.example.auth.Vo.TokenInfo;
 import com.example.auth.Security.TokenProvider;
 
+import com.example.auth.exception.DuplicateMemberException;
 import java.util.Optional;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -25,16 +33,19 @@ public class AuthService {
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
+    private final AccessTokenRepository accessTokenRepository;
 
     public AuthService(AuthenticationManagerBuilder authenticationManagerBuilder,
             TokenProvider tokenProvider,
             RefreshTokenRepository refreshTokenRepository,
-            UserRepository userRepository) {
+            UserRepository userRepository,
+            AccessTokenRepository accessTokenRepository) {
 
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.tokenProvider = tokenProvider;
         this.refreshTokenRepository = refreshTokenRepository;
         this.userRepository=userRepository;
+        this.accessTokenRepository=accessTokenRepository;
     }
 
     public TokenInfo login(LoginDto loginDto) {
@@ -65,33 +76,56 @@ public class AuthService {
     }
 
 
+    public void logout(String accessToken, String refreshToken, Long userId){
+        long remainMilliSeconds = tokenProvider.getRemainMilliSeconds(accessToken);
+        System.out.println("remainMilliSeconds = " + remainMilliSeconds);
+        RefreshToken refreshTokenByUserId = refreshTokenRepository.findRefreshTokenByUserId(userId);
+        refreshTokenRepository.delete(refreshTokenByUserId);
+
+        AccessToken acccessTokenInRedis = new AccessToken(userId, accessToken, remainMilliSeconds / 1000);
+        Long expiration = acccessTokenInRedis.getExpiration();
+        System.out.println("expiration = " + expiration);
+
+
+
+        accessTokenRepository.save(acccessTokenInRedis);
+    }
+    public void test(String accessToken){
+        Long userIdFromAccessToken = tokenProvider.getUserIdFromAccessToken(accessToken);
+        Optional<AccessToken> accessTokenByUserId = accessTokenRepository.findAccessTokenByUserId(
+                userIdFromAccessToken);
+
+    }
+
+
+
     public RefreshToken findRefreshToken(Long userId) {
         return refreshTokenRepository.findRefreshTokenByUserId(userId);
     }
 
-//    public boolean validateRefreshToken(RefreshToken refreshTokenInRedis,
-//            String refreshTokenInHeaders) {
-//        System.out.println("refreshTokenInRedis = " + refreshTokenInRedis);
-//        System.out.println("refreshTokenInHeaders = " + refreshTokenInHeaders);
-//
-//        if (Objects.isNull(refreshTokenInRedis)) {    //refreshtoken이 만료됐을때 로그인 요청
-//            return false;
-//        } else {   //refreshtoken이 존재할때
-//            System.out.println("refreshTokenInRedis.getRefreshToken() = "
-//                    + refreshTokenInRedis.getRefreshToken());
-//            if (!refreshTokenInRedis.getRefreshToken().equals(refreshTokenInHeaders)) {
-//                System.out.println("토큰의 유저 정보가 일치하지 않습니다.");
-//                return false;
-//            } else {
-//                return true;
-//            }
-//
-//        }
-//
-//
-//    }
+    public boolean validateRefreshToken(RefreshToken refreshTokenInRedis,
+            String refreshTokenInHeaders) {
+        System.out.println("refreshTokenInRedis = " + refreshTokenInRedis);
+        System.out.println("refreshTokenInHeaders = " + refreshTokenInHeaders);
 
-//    public DefaultResponse reissueRefreshToken(String refreshTokenInHeaders) {
+        if (Objects.isNull(refreshTokenInRedis)) {    //refreshtoken이 만료됐을때 로그인 요청
+            return false;
+        } else {   //refreshtoken이 존재할때
+            System.out.println("refreshTokenInRedis.getRefreshToken() = "
+                    + refreshTokenInRedis.getRefreshToken());
+            if (!refreshTokenInRedis.getRefreshToken().equals(refreshTokenInHeaders)) {
+                System.out.println("토큰의 유저 정보가 일치하지 않습니다.");
+                return false;
+            } else {
+                return true;
+            }
+
+        }
+
+
+    }
+
+    public void reissueAccessToken(String refreshTokenInHeaders) {
 //        String email = SecurityUtil.getCurrentUsername().get();
 //        RefreshToken refreshTokenInRedis = findRefreshToken(email);
 //
@@ -113,20 +147,20 @@ public class AuthService {
 //                        accessToken);
 //            }
 //        }
+//
+//        System.out.println("refreshTokenInRedis" + refreshTokenInRedis);
+//        System.out.println("refreshTokenInHeaders = " + refreshTokenInHeaders);
 
-     /*   System.out.println("refreshTokenInRedis" + refreshTokenInRedis);
-        System.out.println("refreshTokenInHeaders = " + refreshTokenInHeaders);
+//        if(validateRefreshToken(refreshTokenInRedis,refreshTokenInHeaders)){
+//            final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//            String accessToken = tokenProvider.createAccessToken(authentication);
+//            return accessToken;
+//        }
+//        else{
+//            System.out.println("refresh token이 유효하지 않습니다");
+//            return null;
+//        }
 
-        if(validateRefreshToken(refreshTokenInRedis,refreshTokenInHeaders)){
-            final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            String accessToken = tokenProvider.createAccessToken(authentication);
-            return accessToken;
-        }
-        else{
-            System.out.println("refresh token이 유효하지 않습니다");
-            return null;
-        }
-
-    }*/
+    }
 
 }

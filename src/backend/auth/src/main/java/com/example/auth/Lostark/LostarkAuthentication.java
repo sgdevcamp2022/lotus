@@ -2,7 +2,7 @@ package com.example.auth.Lostark;
 
 import com.example.auth.Entity.RandomCode;
 import com.example.auth.Entity.RefreshToken;
-import com.example.auth.Repository.RandomCodeRepository;
+
 import com.example.auth.Security.TokenProvider;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -37,12 +37,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class LostarkAuthentication {
 
-    private final RandomCodeRepository randomCodeRepository;
+
     private final TokenProvider tokenProvider;
 
-    public LostarkAuthentication(RandomCodeRepository randomCodeRepository,
-            TokenProvider tokenProvider) {
-        this.randomCodeRepository = randomCodeRepository;
+    public LostarkAuthentication(TokenProvider tokenProvider) {
         this.tokenProvider = tokenProvider;
     }
 
@@ -62,18 +60,6 @@ public class LostarkAuthentication {
         System.out.println(generatedString);
 
 
-//        /*
-//        * redis에 저장
-//        * */
-//        Long userIdFromAccessToken = Long.parseLong(tokenProvider.getUserIdFromAccessToken(accessToken));
-//        RandomCode randomCodeInRedis = findRandomCode(userIdFromAccessToken);
-//
-//        if (!Objects.isNull(randomCodeInRedis)) {    //있으면 삭제
-//            randomCodeRepository.delete(randomCodeInRedis);
-//        }
-//        //새로 저장
-//        RandomCode randomCode=new RandomCode(generatedString, userIdFromAccessToken);
-//        randomCodeRepository.save(randomCode);
 
         return generatedString;
     }
@@ -82,9 +68,7 @@ public class LostarkAuthentication {
 
 
 
-    public RandomCode findRandomCode(Long userId) {
-        return randomCodeRepository.findRandomCodeByUserId(userId);
-    }
+
 
     public String getEncryptedMemberNo(String memberNo){
 

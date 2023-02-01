@@ -12,9 +12,9 @@ public class Corsconfig {
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-       // config.setAllowCredentials(true);
-       // config.addAllowedOriginPattern("*");
-        config.addAllowedOrigin("*");
+        config.setAllowCredentials(true);
+        config.addAllowedOriginPattern("*");
+      //  config.addAllowedOrigin("*");
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
 

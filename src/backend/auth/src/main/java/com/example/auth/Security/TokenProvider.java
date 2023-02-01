@@ -167,13 +167,34 @@ public class TokenProvider implements InitializingBean {
         return false;
     }
 
-    public String getUserIdFromAccessToken(String accessToken) {
-        String payloadJWT = accessToken.split("\\.")[1];
-        Base64.Decoder decoder = Base64.getUrlDecoder();
+    public Claims extractAllClaims(String token) { // 2
+        System.out.println("token = " + token);
+        return Jwts.parserBuilder()
+                .setSigningKey(secret)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
 
-        String payload = new String(decoder.decode(payloadJWT));
-        JsonParser jsonParser = new BasicJsonParser();
-        Map<String, Object> jsonArray = jsonParser.parseMap(payload);
-        return jsonArray.get("id").toString();
+//    public Map<String, Object> decodeToken(String token){
+//        String payloadJWT = token.split("\\.")[1];
+//        Base64.Decoder decoder = Base64.getUrlDecoder();
+//
+//        String payload = new String(decoder.decode(payloadJWT));
+//        JsonParser jsonParser = new BasicJsonParser();
+//        Map<String, Object> jsonArray = jsonParser.parseMap(payload);
+//        return jsonArray;
+//    }
+
+    public Long getUserIdFromAccessToken(String accessToken) {
+        String id = extractAllClaims(accessToken).get("id").toString();
+        return Long.parseLong(id);
+    }
+
+    public long getRemainMilliSeconds(String accessToken){
+        Date expiration = extractAllClaims(accessToken).getExpiration();
+        Date now=new Date();
+        return expiration.getTime()-now.getTime();
+       // return Long.parseLong(exp);
     }
 }

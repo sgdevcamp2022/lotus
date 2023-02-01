@@ -16,6 +16,7 @@ import com.example.auth.Security.TokenProvider;
 import com.example.auth.Service.AuthService;
 import com.example.auth.Util.SecurityUtil;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,7 +58,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenInfo> authorize(@Valid @RequestBody LoginDto loginDto) {
+    public DefaultResponse<TokenInfo> authorize(@Valid @RequestBody LoginDto loginDto) {
         TokenInfo jwt = authService.login(loginDto);
         // authService.saveRedis(jwt.getRefreshToken(), jwt.getUsername());
 
@@ -67,24 +68,39 @@ public class AuthController {
         Optional<String> currentUsername = SecurityUtil.getCurrentUsername();
         System.out.println("currentUsername = " + currentUsername);
 
-        return new ResponseEntity<>(jwt, httpHeaders, HttpStatus.OK);
+        return new DefaultResponse<>(StatusCode.OK,ResponseMessage.LOGIN_SUCCESS,jwt);
 
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(@RequestHeader String authorization){
+    public DefaultResponse<Object> logout(@RequestHeader("Authorization") String authorization,
+            @RequestHeader("RefreshToken") String refreshToken){
+
         String accessToken = authorization.substring(7);
-        HttpHeaders httpHeaders=new HttpHeaders();
-        return new ResponseEntity<>("stoveInfo", httpHeaders, HttpStatus.OK);
+        Long userIdFromAccessToken = tokenProvider.getUserIdFromAccessToken(accessToken);
+        authService.logout(accessToken, refreshToken,userIdFromAccessToken);
+
+        return new DefaultResponse(StatusCode.OK,ResponseMessage.LOGOUT_SUCCESSS,null);
+    }
+
+    @PostMapping("/test")
+    public void test(@RequestHeader("Authorization") String authorization){
+        String accessToken = authorization.substring(7);
+        authService.test(accessToken);
     }
 
 //    @PostMapping("/reissue")
 //    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-//    public ResponseEntity<DefaultResponse> reissueAccessToken(@RequestHeader HttpHeaders headers) {
-//        HttpHeaders httpHeaders = new HttpHeaders();
-//        DefaultResponse response = authService.reissueRefreshToken(
-//                headers.getFirst("refreshtoken"));
-//        return new ResponseEntity<>(response, httpHeaders, HttpStatus.OK);
+//    public void reissueAccessToken(@RequestHeader HttpHeaders headers) {
+//        String accessToken = headers.getFirst("authorization").substring(7);
+//        System.out.println("accessToken = " + accessToken);
+//        String refreshToken=headers.getFirst("refreshtoken");
+//        System.out.println("refreshToken = " + refreshToken);
+////        DefaultResponse response = authService.reissueAccessToken(
+////                headers.getFirst("refreshtoken"));
+//
+////        HttpHeaders httpHeaders = new HttpHeaders();
+////        return new ResponseEntity<>(response, httpHeaders, HttpStatus.OK);
 //    }
 
 
@@ -97,10 +113,10 @@ public class AuthController {
     @GetMapping("/my")
     public Optional<User> getUserFromJwt(@RequestHeader String authorization) {
         String accessToken = authorization.substring(7);
-        String userId = tokenProvider.getUserIdFromAccessToken(accessToken);
+        Long userId = tokenProvider.getUserIdFromAccessToken(accessToken);
         Object principal = SecurityContextHolder.getContext().getAuthentication();
         System.out.println("principal = " + principal);
-        Optional<User> userByUsername = userService.getUserByUserId(Long.parseLong(userId));
+        Optional<User> userByUsername = userService.getUserByUserId(userId);
         return userByUsername;
     }
 
@@ -119,7 +135,7 @@ public class AuthController {
 //        }
 //    }
 
-    @GetMapping("/stove")
+    @PostMapping("/stove")
     public DefaultResponse<JsonNode> lostark(@Valid @RequestBody StoveDto stoveDto) {
         WebDriverUtil webDriverUtil = new WebDriverUtil();
         DefaultResponse introductionInStove = webDriverUtil.getIntroductionInStove(
@@ -195,7 +211,7 @@ public class AuthController {
 
 
     @GetMapping("/randomcode")
-    public ResponseEntity<String> getRandomCode(@RequestHeader String authorization) {
+    public ResponseEntity<String> getRandomCode() {
         HttpHeaders httpHeaders = new HttpHeaders();
 
         String randomCode = lostarkAuthentication.generateRandomCode();

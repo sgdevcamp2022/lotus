@@ -1,12 +1,12 @@
 package com.example.auth.Repository;
 
 
+import com.example.auth.Entity.AccessToken;
 import com.example.auth.Entity.RefreshToken;
+import java.util.Optional;
 import org.springframework.data.repository.CrudRepository;
 
-public interface AccessTokenRepository extends CrudRepository<RefreshToken, String> {
+public interface AccessTokenRepository extends CrudRepository<AccessToken, Long> {
 
-    RefreshToken findRefreshTokenByEmail(String email);
-    RefreshToken findRefreshTokenByUserId(Long userId);
-    RefreshToken findRefreshTokenByEmailAndProvider(String email, String provider);
+    Optional<AccessToken> findAccessTokenByUserId(Long userId);
 }
