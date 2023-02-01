@@ -42,23 +42,21 @@ def test_user_create(request):
         # return JsonResponse({'message': us})    
         pw=data['password']
         # return JsonResponse({'message': pw})
-        if User.objects.filter(username=us) is not None:
+        if User.objects.filter(username=us) is None:
             # return JsonResponse({'message': "none"})    
             user = User.objects.create_user(username=us, password=pw)
-        return JsonResponse({'message': 'SUCCESS', 'username': user.username})    
-        # u=User.objects.get(username=us) #username return
+        # return JsonResponse({'message': 'SUCCESS', 'username': user.username})    
+        u=User.objects.get(username=us) #username return
         # print(u.id)
-        # SECRET = 'SECRET'
-        # access_token = jwt.encode({'id':u.id, 'username': u.username}, SECRET, algorithm='HS256')
+        SECRET = 'SECRET'
+        access_token = jwt.encode({'id':u.id, 'username': u.username}, SECRET, algorithm='HS256')
         # print(access_token)
         # print(type(access_token))
-        # k=access_token.encode('utf-8').decode('utf-8')
+        k=access_token.encode('utf-8').decode('utf-8')
         # print(k)
         # payload=jwt.decode(access_token, SECRET, algorithms='HS256')
         # print(payload)
-        # return JsonResponse({'message': 'SUCCESS', 'access_token': k}, status = 200)    
-    # elif request.method=="GET":
-    #     return render(request, 'todo/test.html', {'GET': 'GET 방식입니다'})    
+        return JsonResponse({'access_token': k}, status = 200)    
 
 def test_user_login(request):
     access_token=request.headers.get('Authorization', None)
@@ -66,9 +64,9 @@ def test_user_login(request):
     payload = jwt.decode(access_token, 'SECRET', algorithms='HS256')
     # return JsonResponse({'message': payload}, status = 200)    
     u = User.objects.get(id=payload['id'])
-    print(type(u))
-    print(u)
-    return JsonResponse({'message': u.username}, status = 200)    
+    # print(type(u))
+    # print(u)
+    return JsonResponse({'username': u.username, 'password': u.password}, status = 200)    
 
 def regist(request):
     if request.method=='POST':
