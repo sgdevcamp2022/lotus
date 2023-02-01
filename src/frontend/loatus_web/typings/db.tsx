@@ -15,3 +15,9 @@ export type IUser = {
   provider: string;
   userid: number;
 };
+
+export type lostarkInfo = {
+  stoveUrl: string;
+  randomCode: string;
+  result: object;
+};
