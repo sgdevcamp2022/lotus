@@ -8,6 +8,7 @@ import useSWR from 'swr';
 import { IUser } from '@typings/db';
 import fetcher from '@utils/fetcher';
 import { toast, ToastContainer } from 'react-toastify';
+import { Form } from 'react-bootstrap';
 
 const Signup = () => {
   const [cookie] = useCookies(['accessToken']);
@@ -95,26 +96,18 @@ const Signup = () => {
           </div>
         ) : (
           <SignIn>
-            <form onSubmit={onSubmitSignup}>
-              <label id="email-label">
-                <span>이메일</span>
-                <Input required placeholder={'name@email.com'} type="email" value={email} onChange={onChangeEmail} />
-              </label>
-              <label id="password-label">
-                <span>비밀번호</span>
-                <Input required type="password" value={password} onChange={onChangePassword} />
-              </label>
-              <label id="password-check-label">
-                <span>비밀번호 확인</span>
-                <Input required type="password" value={passwordCheck} onChange={onChangePasswordCheck} />
-              </label>
-              <label id="nickname-label">
-                <span>닉네임</span>
-                <Input required type="text" value={nickname} onChange={onChangeNickname} />
-              </label>
+            <Form onSubmit={onSubmitSignup}>
+              <Form.Label id="email-label">이메일</Form.Label>
+              <Input required placeholder={'name@email.com'} type="email" value={email} onChange={onChangeEmail} />
+              <Form.Label id="password-label">비밀번호</Form.Label>
+              <Input required type="password" value={password} onChange={onChangePassword} />
+              <Form.Label id="password-check-label">비밀번호 확인</Form.Label>
+              <Input required type="password" value={passwordCheck} onChange={onChangePasswordCheck} />
+              <Form.Label id="nickname-label">닉네임</Form.Label>
+              <Input required type="text" value={nickname} onChange={onChangeNickname} />
               <Button type="submit">회원가입</Button>
               {password && !mismatchError && '비밀번호가 다릅니다!'}
-            </form>
+            </Form>
             <Horizon>
               <Hr />
               <div style={{ padding: '0 20px' }}>또는</div>

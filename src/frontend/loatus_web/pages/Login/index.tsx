@@ -9,6 +9,8 @@ import { useCookies } from 'react-cookie';
 import fetcher from '@utils/fetcher';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { Form } from 'react-bootstrap';
 
 const Login = () => {
   const [cookie, setCookie] = useCookies(['accessToken']);
@@ -101,17 +103,13 @@ const Login = () => {
             <div style={{ padding: '0 20px' }}>또는</div>
             <Hr />
           </Horizon>
-          <form onSubmit={onSubmitLogin}>
-            <label id="email-label">
-              <span>이메일</span>
-              <Input placeholder={'name@email.com'} type="email" value={email} onChange={onChangeEmail} />
-            </label>
-            <label id="password-label">
-              <span>비밀번호</span>
-              <Input type="password" value={password} onChange={onChangePassword} />
-            </label>
+          <Form onSubmit={onSubmitLogin}>
+            <Form.Label id="email-label">이메일</Form.Label>
+            <Input placeholder={'name@email.com'} type="email" value={email} onChange={onChangeEmail} />
+            <Form.Label id="password-label">비밀번호</Form.Label>
+            <Input type="password" value={password} onChange={onChangePassword} />
             <Button type="submit">로그인</Button>
-          </form>
+          </Form>
         </SignIn>
       </Page>
       <ToastContainer />
