@@ -16,7 +16,7 @@ const Signup = () => {
   const [passwordCheck, , setPasswordCheck] = useInput('');
   const [nickname, onChangeNickname, setNickname] = useInput('');
   const [mismatchError, setMismatchError] = useState(false);
-  const [signupError, setSignupError] = useState(false);
+  const [signupSuccess, setSignupSuccess] = useState(false);
   const {
     data: userData,
     error,
@@ -59,14 +59,14 @@ const Signup = () => {
           toast.success(response.data, {
             position: 'top-right',
           });
-          setSignupError(false);
+          setSignupSuccess(true);
         })
         .catch((error) => {
           console.dir(error);
           toast.error('이미 존재하는 이메일입니다.', {
             position: 'top-right',
           });
-          setSignupError(true);
+          setSignupSuccess(false);
         });
     },
     [email, password, passwordCheck, nickname],
@@ -85,39 +85,47 @@ const Signup = () => {
         <div className="right-col"></div>
       </Header>
       <Page>
-        <PageHead>회원가입</PageHead>
-        <SignIn>
-          <form onSubmit={onSubmitSignup}>
-            <label id="email-label">
-              <span>이메일</span>
-              <Input required placeholder={'name@email.com'} type="email" value={email} onChange={onChangeEmail} />
-            </label>
-            <label id="password-label">
-              <span>비밀번호</span>
-              <Input required type="password" value={password} onChange={onChangePassword} />
-            </label>
-            <label id="password-check-label">
-              <span>비밀번호 확인</span>
-              <Input required type="password" value={passwordCheck} onChange={onChangePasswordCheck} />
-            </label>
-            <label id="nickname-label">
-              <span>닉네임</span>
-              <Input required type="text" value={nickname} onChange={onChangeNickname} />
-            </label>
-            <Button type="submit">회원가입</Button>
-            {password && !mismatchError && '비밀번호가 다릅니다!'}
-            {signupError && !nickname && '닉네임을 채워주세요!'}
-          </form>
-          <Horizon>
-            <Hr />
-            <div style={{ padding: '0 20px' }}>또는</div>
-            <Hr />
-          </Horizon>
-          <Button>네이버로 계속</Button>
-          <Button>카카오로 계속</Button>
-          이미 Loatus 계정이 있으신가요?
-          <Link to="/login">로그인하러 가기</Link>
-        </SignIn>
+        <PageHead>회원가입{signupSuccess && '을 성공했습니다!'}</PageHead>
+        {signupSuccess ? (
+          <div>
+            <h4>지금 바로 로그인해 보세요</h4>
+            <Button>
+              <Link to={'/login'}>로그인 하러 가기</Link>
+            </Button>
+          </div>
+        ) : (
+          <SignIn>
+            <form onSubmit={onSubmitSignup}>
+              <label id="email-label">
+                <span>이메일</span>
+                <Input required placeholder={'name@email.com'} type="email" value={email} onChange={onChangeEmail} />
+              </label>
+              <label id="password-label">
+                <span>비밀번호</span>
+                <Input required type="password" value={password} onChange={onChangePassword} />
+              </label>
+              <label id="password-check-label">
+                <span>비밀번호 확인</span>
+                <Input required type="password" value={passwordCheck} onChange={onChangePasswordCheck} />
+              </label>
+              <label id="nickname-label">
+                <span>닉네임</span>
+                <Input required type="text" value={nickname} onChange={onChangeNickname} />
+              </label>
+              <Button type="submit">회원가입</Button>
+              {password && !mismatchError && '비밀번호가 다릅니다!'}
+            </form>
+            <Horizon>
+              <Hr />
+              <div style={{ padding: '0 20px' }}>또는</div>
+              <Hr />
+            </Horizon>
+            <Button>네이버로 계속</Button>
+            <Button>카카오로 계속</Button>
+            이미 Loatus 계정이 있으신가요?
+            <Link to="/login">로그인하러 가기</Link>
+          </SignIn>
+        )}
       </Page>
       <ToastContainer />
     </Root>
