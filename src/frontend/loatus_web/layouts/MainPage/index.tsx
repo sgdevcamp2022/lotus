@@ -1,10 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import useSWR from 'swr';
-import { IUser } from '@typings/db';
+import { IUser, lostarkInfo } from '@typings/db';
 import fetcher from '@utils/fetcher';
 import { useCookies } from 'react-cookie';
-import { Link, Navigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import {
   Button,
@@ -75,9 +74,12 @@ export const MainPage = () => {
             stoveUrl,
           },
         })
-        .then((response) => {
-          //TODO response.data를 이용하여 인증 완료하기
-          console.log(response.data);
+        .then((response: AxiosResponse<lostarkInfo>) => {
+          //TODO 서버에서 캐릭터 정보 받아오기 만들어야 함.
+          toast.success(response.data.message, {
+            position: 'top-right',
+          });
+          alert(response.data.object || '아무것도 없습니다');
         })
         .catch((error) => {
           toast.error('인증이 완료되지 않았습니다', {
@@ -103,6 +105,7 @@ export const MainPage = () => {
         toast.success('로그아웃에 성공했습니다.', {
           position: 'top-right',
         });
+        setCookie('accessToken', '');
       })
       .catch((error) => {
         toast.error('로그아웃에 실패했습니다.', {
@@ -110,10 +113,6 @@ export const MainPage = () => {
         });
       });
   }, []);
-
-  // if (userData === undefined || userData === null) {
-  //   return <Navigate to={'/login'} replace />;
-  // }
 
   return (
     <div>

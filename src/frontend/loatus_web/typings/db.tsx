@@ -17,7 +17,7 @@ export type IUser = {
 };
 
 export type lostarkInfo = {
-  stoveUrl: string;
-  randomCode: string;
-  result: object;
+  code: number;
+  message: string;
+  object: object[];
 };
