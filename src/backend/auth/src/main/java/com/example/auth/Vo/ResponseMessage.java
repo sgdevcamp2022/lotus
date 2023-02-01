@@ -10,5 +10,7 @@ public class ResponseMessage {
     public static final String LOGIN_AGAIN = "재로그인 요청";
     public static final String STOVE_URL_AGAIN = "스토브 URL 정확히 기입";
     public static final String STOVE_INTRODUCTION_SUCCESS = "스토브 자기소개글 조회 성공";
+    public static final String STOVE_LOSTARK_SUCCESS = "스토브 계정으로부터 로스트아크 캐릭터 조회 성공";
+    public static final String BAD_REQUEST="BAD REQUEST";
 
 }

@@ -47,7 +47,7 @@ public class LostarkAuthentication {
     }
 
 
-    public String generateRandomCode(String accessToken){
+    public String generateRandomCode(){
         /*
         * 랜덤 문자열 생성
         * */
@@ -62,18 +62,18 @@ public class LostarkAuthentication {
         System.out.println(generatedString);
 
 
-        /*
-        * redis에 저장
-        * */
-        Long userIdFromAccessToken = Long.parseLong(tokenProvider.getUserIdFromAccessToken(accessToken));
-        RandomCode randomCodeInRedis = findRandomCode(userIdFromAccessToken);
-
-        if (!Objects.isNull(randomCodeInRedis)) {    //있으면 삭제
-            randomCodeRepository.delete(randomCodeInRedis);
-        }
-        //새로 저장
-        RandomCode randomCode=new RandomCode(generatedString, userIdFromAccessToken);
-        randomCodeRepository.save(randomCode);
+//        /*
+//        * redis에 저장
+//        * */
+//        Long userIdFromAccessToken = Long.parseLong(tokenProvider.getUserIdFromAccessToken(accessToken));
+//        RandomCode randomCodeInRedis = findRandomCode(userIdFromAccessToken);
+//
+//        if (!Objects.isNull(randomCodeInRedis)) {    //있으면 삭제
+//            randomCodeRepository.delete(randomCodeInRedis);
+//        }
+//        //새로 저장
+//        RandomCode randomCode=new RandomCode(generatedString, userIdFromAccessToken);
+//        randomCodeRepository.save(randomCode);
 
         return generatedString;
     }
@@ -86,9 +86,11 @@ public class LostarkAuthentication {
         return randomCodeRepository.findRandomCodeByUserId(userId);
     }
 
-    public String getEncryptedMemberNo(String url){
+    public String getEncryptedMemberNo(String memberNo){
 
-        String memberNo = url.substring(29);
+
+
+       // String memberNo = url.substring(29);
 
         String json="{"+"memberNo:"+memberNo +"}";
 

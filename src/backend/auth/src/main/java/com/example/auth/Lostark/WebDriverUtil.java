@@ -3,6 +3,7 @@ package com.example.auth.Lostark;
 import com.example.auth.Vo.DefaultResponse;
 import com.example.auth.Vo.ResponseMessage;
 import com.example.auth.Vo.StatusCode;
+import com.example.auth.Vo.StoveInfo;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -47,6 +48,7 @@ public class WebDriverUtil {
         if(url.length()<29){
             DefaultResponse defaultResponse=new DefaultResponse(StatusCode.URL_ERROR,
                     ResponseMessage.STOVE_URL_AGAIN,null);
+            return defaultResponse;
         }
         String memberNo = url.substring(29);
 
@@ -66,9 +68,9 @@ public class WebDriverUtil {
         WebElement element = driver.findElement(By.xpath(xpath));
         System.out.println("element.getText() = " + element.getText());
         String result=element.getText();
-
+        StoveInfo stoveInfo = new StoveInfo(result, memberNo);
         quitDriver();
-        return new DefaultResponse(StatusCode.OK, ResponseMessage.STOVE_INTRODUCTION_SUCCESS, result);
+        return new DefaultResponse(StatusCode.OK, ResponseMessage.STOVE_INTRODUCTION_SUCCESS, stoveInfo);
     }
 
     public String getCharacterInLostark(String url) {
