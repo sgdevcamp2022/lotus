@@ -68,21 +68,24 @@ export const MainPage = () => {
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       axios
-        .post('/auth/stove', {
+        .post(
+          '/auth/stove',
+          {
             randomCode,
             stoveUrl,
-        }, {
-          headers: {
-            authorization: cookie.accessToken
           },
-          withCredentials: true
-        })
+          {
+            headers: {
+              authorization: cookie.accessToken,
+            },
+            withCredentials: true,
+          },
+        )
         .then((response: AxiosResponse<lostarkInfo>) => {
           //TODO 서버에서 캐릭터 정보 받아오기 만들어야 함.
           toast.success(response.data.message, {
             position: 'top-right',
           });
-          alert(response.data.object || '아무것도 없습니다');
         })
         .catch((error) => {
           toast.error('인증이 완료되지 않았습니다', {
@@ -95,17 +98,14 @@ export const MainPage = () => {
 
   const onClickLogout = useCallback(() => {
     axios
-      .post(
-        '/auth/logout',
-        {
-          //logout data
+      .get('/auth/logout', {
+        headers: {
+          authorization: cookie.accessToken,
         },
-        {
-          withCredentials: true,
-        },
-      )
+        withCredentials: true,
+      })
       .then((response) => {
-        toast.success('로그아웃에 성공했습니다.', {
+        toast.success(response.data.message, {
           position: 'top-right',
         });
         setCookie('accessToken', '');
@@ -114,6 +114,34 @@ export const MainPage = () => {
         toast.error('로그아웃에 실패했습니다.', {
           position: 'top-right',
         });
+      });
+  }, []);
+
+  const onClickRegist = useCallback(() => {
+    axios
+      .post(
+        '/post/regist/',
+        {
+          title: 'test1',
+          content: 'content test',
+        },
+        {
+          headers: {
+            authorization: cookie.accessToken,
+          },
+        },
+      )
+      .then((response) => {
+        toast.success(response.data.message, {
+          position: 'top-right',
+        });
+        console.log(response.data);
+      })
+      .catch((error) => {
+        toast.error('실패', {
+          position: 'top-right',
+        });
+        console.log(error);
       });
   }, []);
 
@@ -136,8 +164,14 @@ export const MainPage = () => {
                   <NavDropdown
                     title={
                       <span>
-                        {/*TODO 아래 예외조건 삭제해야 합니다.*/}
-                        <img src={gravatar.url(userData?.email, { s: '25', d: 'retro' })} alt={'avatar'} />
+                        <img
+                          src={
+                            userData?.profile_image
+                              ? userData?.profile_image
+                              : gravatar.url(userData?.email, { s: '25', d: 'retro' })
+                          }
+                          alt={'avatar'}
+                        />
                         &nbsp;{userData?.nickname}
                       </span>
                     }
@@ -224,6 +258,10 @@ export const MainPage = () => {
           <section>모집</section>
           <section>오늘 할 일</section>
           <section>공지</section>
+          <section>
+            <h1>기능테스트</h1>
+            <Button onClick={onClickRegist}>가입하기</Button>
+          </section>
         </Container>
       </main>
 
