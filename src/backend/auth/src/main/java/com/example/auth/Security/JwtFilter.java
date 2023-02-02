@@ -47,16 +47,13 @@ public class JwtFilter extends GenericFilterBean {
         if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
             Long userIdFromToken = getUserIdFromToken(jwt);
             Boolean isLogout = checkAccessTokenExists(userIdFromToken);
-            if(!isLogout){
+            if (!isLogout) {
                 Authentication authentication = tokenProvider.getAuthentication(jwt);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 logger.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}",
                         authentication.getName(),
                         requestURI);
             }
-
-
-
 
 
         } else {
@@ -90,14 +87,13 @@ public class JwtFilter extends GenericFilterBean {
         Long id = (Long) stringObjectMap.get("id");
         return id;
     }
-    
-    private Boolean checkAccessTokenExists(Long userId){
+
+    private Boolean checkAccessTokenExists(Long userId) {
         Optional<AccessToken> accessTokenByUserId = accessTokenRepository.findAccessTokenByUserId(
                 userId);
-        if(accessTokenRepository.findAccessTokenByUserId(userId).orElse(null)!=null){
+        if (accessTokenRepository.findAccessTokenByUserId(userId).orElse(null) != null) {
             return true;        //로그아웃상태
-        }
-        else {
+        } else {
             return false;       //로그아웃상태x
         }
 

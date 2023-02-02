@@ -4,6 +4,7 @@ import com.example.auth.Oauth2.CustomOAuth2AuthService;
 import com.example.auth.Oauth2.CustomOidcUserService;
 import com.example.auth.Oauth2.OAuth2AuthenticationFailureHandler;
 import com.example.auth.Oauth2.OAuth2AuthenticationSuccessHandler;
+import com.example.auth.Repository.AccessTokenRepository;
 import com.example.auth.Security.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -50,6 +51,7 @@ public class SecurityConfig {
     private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
     private final CustomOidcUserService customOidcUserService;
     private final Corsconfig corsconfig;
+    private final AccessTokenRepository accessTokenRepository;
 
     public SecurityConfig(JwtAccessDeniedHandler jwtAccessDeniedHandler,
             JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
@@ -57,7 +59,8 @@ public class SecurityConfig {
             OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler,
             OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler,
             CustomOidcUserService customOidcUserService,
-            Corsconfig corsconfig) {
+            Corsconfig corsconfig,
+            AccessTokenRepository accessTokenRepository) {
         this.jwtAccessDeniedHandler = jwtAccessDeniedHandler;
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
         this.tokenProvider = tokenProvider;
@@ -66,6 +69,7 @@ public class SecurityConfig {
         this.oAuth2AuthenticationSuccessHandler = oAuth2AuthenticationSuccessHandler;
         this.customOidcUserService = customOidcUserService;
         this.corsconfig = corsconfig;
+        this.accessTokenRepository = accessTokenRepository;
     }
 
 
@@ -99,9 +103,8 @@ public class SecurityConfig {
                 .successHandler(oAuth2AuthenticationSuccessHandler)
                 .failureHandler(oAuth2AuthenticationFailureHandler)
 
-
                 .and()
-                .apply(new JwtSecurityConfig(tokenProvider));
+                .apply(new JwtSecurityConfig(tokenProvider,accessTokenRepository));
 
         return http.build();
     }
