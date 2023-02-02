@@ -111,7 +111,7 @@ export const MainPage = () => {
         },
       )
       .then((response) => {
-        toast.success('로그아웃에 성공했습니다.', {
+        toast.success(response.data.message, {
           position: 'top-right',
         });
         setCookie('accessToken', '');

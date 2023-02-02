@@ -45,7 +45,7 @@ const Signup = () => {
         return;
       }
       axios
-        .post('http://localhost:8080/api/signup', {
+        .post('/api/signup', {
           email,
           nickname,
           password,
