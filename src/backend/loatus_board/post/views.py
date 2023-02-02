@@ -62,12 +62,18 @@ def test_user_login(request):
 def regist(request):
     if request.method=='POST':
         try:
-            res=requests.get("http://192.168.195.15:8080/auth/my", headers={'Authorization': "Bearer "+"eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJlcnJvcm1hbkBuYXZlci5jb21tIiwiaWQiOjMsImF1dGgiOiJST0xFX1VTRVIiLCJleHAiOjE2NzUzMTcxNzV9.YDoDseG8814XfdBnBiGFvCZmQn5Buorltr-3l2cCiLsv2zwvcaXLE114s1OtfOGlh8VNTkcqfC32Vi6Tn2XzGA"})
+            # return JsonResponse({'message': "hello"})
+            ac=request.headers.get('Authorization', None)
+            print(ac)
+            
+            res=requests.get("http://192.168.195.15:8080/auth/my", headers={'Authorization': "Bearer "+ac})
+            
             res_content=res.content.decode('utf-8')
             json_res_content=json.loads(res_content)
-            print(json_res_content["userId"])  #3
+            # print(json_res_content["userId"])  #3
+            return JsonResponse({'message': "well"})
             
-            return JsonResponse({'message': 'well'})
+            
             access_token=request.headers.get('Authorization', None)
             payload = jwt.decode(access_token, 'SECRET', algorithms='HS256')
             u = User.objects.get(id=payload['id'])
