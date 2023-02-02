@@ -1,6 +1,7 @@
 package com.example.auth.Oauth2;
 
 
+import com.example.auth.Entity.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
@@ -126,6 +127,16 @@ public class OAuth2Attributes {
                 .provider(Provider.GITHUB)
                 .attributes(attributes)
                 .nameAttributeKey(userNameAttributeName)
+                .build();
+    }
+
+    public User toEntity(){
+        return User.builder()
+                .nickname(nickname)
+                .email(email)
+                .profile_image(picture)
+                .auth("ROLE_USER")
+                .provider(provider.toString())
                 .build();
     }
 

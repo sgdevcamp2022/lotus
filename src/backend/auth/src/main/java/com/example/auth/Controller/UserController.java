@@ -3,6 +3,7 @@ package com.example.auth.Controller;
 import com.example.auth.Dto.UserDto;
 import com.example.auth.Entity.User;
 import com.example.auth.Service.UserService;
+import java.util.Optional;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -53,8 +54,9 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserWithAuthorities(username));
     }
 
-    @PostMapping("/redis")
-    public void redisTest() {
-        //userService.test();
+    @GetMapping("/userman")
+    public User redisTest() {
+        Optional<User> userByUserId = userService.getUserByUserId(1L);
+        return userByUserId.get();
     }
 }

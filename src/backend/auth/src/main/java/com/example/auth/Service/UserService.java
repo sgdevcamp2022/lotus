@@ -3,6 +3,8 @@ package com.example.auth.Service;
 import com.example.auth.Dto.UserDto;
 
 import com.example.auth.Entity.User;
+import com.example.auth.Oauth2.OAuth2Attributes;
+import com.example.auth.Oauth2.Provider;
 import com.example.auth.Repository.UserRepository;
 import com.example.auth.Security.TokenProvider;
 import com.example.auth.Util.SecurityUtil;
@@ -37,16 +39,18 @@ public class UserService {
     @Transactional
     public UserDto signup(UserDto userDto) {
         //  if (userRepository.findOneWithAuthoritiesByUsername(userDto.getUsername()).orElse(null) != null) {
-        if (userRepository.findOneByUsername(userDto.getUsername()).orElse(null) != null) {
+        if (userRepository.findOneByEmail(userDto.getEmail()).orElse(null) != null) {
             throw new DuplicateMemberException("이미 가입되어 있는 유저입니다.");
         }
 
         User user = User.builder()
-                .username(userDto.getUsername())
+                .email(userDto.getEmail())
                 .password(passwordEncoder.encode(userDto.getPassword()))
                 .nickname(userDto.getNickname())
+                .profile_image(userDto.getProfile_image())
                 .auth("ROLE_USER")
                 .activated(true)
+                .provider(Provider.LOCAL.toString())
                 .build();
 
         System.out.println(user.getPassword());
@@ -55,15 +59,23 @@ public class UserService {
     }
 
 
-    public Optional<User> getUserByUsername(String username) {
 
-        Optional<User> oneByUsername = userRepository.findOneByUsername(username);
+
+    public Optional<User> getUserByUsername(String email) {
+
+        Optional<User> oneByUsername = userRepository.findOneByEmail(email);
         return oneByUsername;
     }
 
+    public Optional<User> getUserByUserId(Long userId) {
+
+        Optional<User> oneByUserId = userRepository.findOneByUserId(userId);
+        return oneByUserId;
+    }
+
     @Transactional(readOnly = true)
-    public UserDto getUserWithAuthorities(String username) {
-        return UserDto.from(userRepository.findOneWithAuthoritiesByUsername(username).orElse(null));
+    public UserDto getUserWithAuthorities(String email) {
+        return UserDto.from(userRepository.findOneWithAuthoritiesByEmail(email).orElse(null));
     }
 
     /*@Transactional(readOnly = true)
@@ -79,7 +91,7 @@ public class UserService {
     public UserDto getMyUserWithAuthorities() {
         return UserDto.from(
                 SecurityUtil.getCurrentUsername()
-                        .flatMap(userRepository::findOneByUsername)
+                        .flatMap(userRepository::findOneByEmail)
                         .orElseThrow(() -> new NotFoundMemberException("Member not found"))
         );
     }

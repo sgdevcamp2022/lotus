@@ -19,7 +19,7 @@ public class UserDto {
 
     @NotNull
     @Size(min = 3, max = 50)
-    private String username;
+    private String email;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Size(min = 3, max = 100)
@@ -33,18 +33,21 @@ public class UserDto {
 
     private String auth;
 
+    private String profile_image;
+
     public static UserDto from(User user) {
         if (user == null) {
             return null;
         }
 
         return UserDto.builder()
-                .username(user.getUsername())
+                .email(user.getEmail())
                 .nickname(user.getNickname())
                 /*  .authorityDtoSet(user.getAuthorities().stream()
                           .map(authority -> AuthorityDto.builder().authorityName(authority.getAuthorityName()).build())
                           .collect(Collectors.toSet()))*/
                 .auth(user.getAuth())
+                .profile_image(user.getProfile_image())
                 .build();
     }
 }
