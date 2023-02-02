@@ -98,18 +98,12 @@ export const MainPage = () => {
 
   const onClickLogout = useCallback(() => {
     axios
-      .post(
-        '/auth/logout',
-        {
-          //logout data
+      .get('/auth/logout', {
+        headers: {
+          authorization: cookie.accessToken,
         },
-        {
-          headers: {
-            authorization: cookie.accessToken,
-          },
-          withCredentials: true,
-        },
-      )
+        withCredentials: true,
+      })
       .then((response) => {
         toast.success(response.data.message, {
           position: 'top-right',
