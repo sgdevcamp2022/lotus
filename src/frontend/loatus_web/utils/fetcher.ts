@@ -8,6 +8,7 @@ const fetcher = ([url, token]: string[]) =>
         Authorization: 'Bearer ' + token,
       },
     })
-    .then((response) => response.data);
+    .then((response) => response.data)
+    .catch((error) => null);
 
 export default fetcher;

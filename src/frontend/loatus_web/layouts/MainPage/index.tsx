@@ -43,7 +43,7 @@ export const MainPage = () => {
         toast.success(response.data.message, {
           position: 'top-right',
         });
-        setCookie('accessToken', '');
+        //setCookie('accessToken', '');
       })
       .catch((error) => {
         toast.error('로그아웃에 실패했습니다.', {
