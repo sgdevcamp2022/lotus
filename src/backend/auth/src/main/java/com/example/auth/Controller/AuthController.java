@@ -173,6 +173,7 @@ public class AuthController {
 
             WebDriverUtil webDriverUtil2 = new WebDriverUtil();
             String characterName = webDriverUtil2.getCharacterInLostark(battleInfoRoomUrl);
+            System.out.println("characterName = " + characterName);
 
             JsonNode charactersInLostark = lostarkAuthentication.getCharactersInLostark(characterName);
             DefaultResponse<JsonNode> jsonNodeDefaultResponse = new DefaultResponse<>();
@@ -232,6 +233,12 @@ public class AuthController {
         return new ResponseEntity<>(randomCode, httpHeaders, HttpStatus.OK);
     }
 
+
+    @PostMapping("/test2")
+    public void test() {
+        WebDriverUtil webDriverUtil = new WebDriverUtil();
+        webDriverUtil.getCharacterInLostark("https://lostark.game.onstove.com//Profile/Member?id="+"rHrU7cL9LfqZN76GdfAd4otJAbcJO9u/WcaPmuZh7ig=");
+    }
 
 }
 
