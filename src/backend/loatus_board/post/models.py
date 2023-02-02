@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 class Post(models.Model):
     title=models.CharField(max_length=200, verbose_name='TITLE', help_text='*MAX 100*')
-    author=models.CharField(max_length=100, verbose_name='AUTHOR')
+    author=models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
     content=models.TextField(verbose_name='CONTENT')
     published_date=models.DateTimeField(auto_now=True, verbose_name='PUBLISH_DATE')
 
