@@ -40,6 +40,9 @@ public class User {
     @Column(name="provider", length=10)
     private String provider;
 
+    @Column(name="stove_no", length=15)
+    private String stove_no;
+
 //    @ManyToMany
 //    @JoinTable(
 //            name = "user_authority",

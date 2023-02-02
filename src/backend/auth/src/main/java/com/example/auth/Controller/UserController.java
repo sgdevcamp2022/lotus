@@ -2,6 +2,7 @@ package com.example.auth.Controller;
 
 import com.example.auth.Dto.UserDto;
 import com.example.auth.Entity.User;
+import com.example.auth.Security.TokenProvider;
 import com.example.auth.Service.UserService;
 import java.util.Optional;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +20,11 @@ public class UserController {
 
     private final UserService userService;
 
-    public UserController(UserService userService) {
+    private final TokenProvider tokenProvider;
+
+    public UserController(UserService userService, TokenProvider tokenProvider) {
         this.userService = userService;
+        this.tokenProvider=tokenProvider;
     }
 
     @GetMapping("/hello")
@@ -59,4 +63,17 @@ public class UserController {
         Optional<User> userByUserId = userService.getUserByUserId(1L);
         return userByUserId.get();
     }
+
+    @PostMapping("/updateStove")
+    public void updateStove(@RequestHeader String authorization) {
+
+        String accessToken = authorization.substring(7);
+        Long userId = tokenProvider.getUserIdFromAccessToken(accessToken);
+
+
+
+        userService.updateStoveNo(userId,"14421423");
+    }
+
+
 }

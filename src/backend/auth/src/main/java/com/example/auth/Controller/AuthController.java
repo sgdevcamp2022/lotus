@@ -112,13 +112,18 @@ public class AuthController {
 
     @GetMapping("/my")
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    public Optional<User> getUserFromJwt(@RequestHeader String authorization) {
+    public DefaultResponse<> getUserFromJwt(@RequestHeader String authorization) {
         String accessToken = authorization.substring(7);
         Long userId = tokenProvider.getUserIdFromAccessToken(accessToken);
         Object principal = SecurityContextHolder.getContext().getAuthentication();
         System.out.println("principal = " + principal);
         Optional<User> userByUsername = userService.getUserByUserId(userId);
-        return userByUsername;
+
+        if(userByUsername.isEmpty()){
+          return new DefaultResponse(StatusCode.USER_NONEXISTENCE,ResponseMessage.READ_USER_FAILURE,null);
+        }
+
+        //return userByUsername;
     }
 
 //    @GetMapping("/stove")
@@ -137,13 +142,18 @@ public class AuthController {
 //    }
 
     @PostMapping("/stove")
-    public DefaultResponse<JsonNode> lostark(@Valid @RequestBody StoveDto stoveDto) {
+    public DefaultResponse<JsonNode> lostark(@Valid @RequestBody StoveDto stoveDto,
+            @RequestHeader String authorization) {
+        String accessToken = authorization.substring(7);
+        Long userId = tokenProvider.getUserIdFromAccessToken(accessToken);
+
+
         WebDriverUtil webDriverUtil = new WebDriverUtil();
         DefaultResponse introductionInStove = webDriverUtil.getIntroductionInStove(
                 stoveDto.getStoveUrl());
         switch(introductionInStove.getCode()){
             case StatusCode.URL_ERROR:{
-                //return introductionInStove;
+                return introductionInStove;
             }
         }
         System.out.println("introductionInStove = " + introductionInStove);
@@ -153,6 +163,7 @@ public class AuthController {
 
 
         if(stoveInfo.getRandomCode().equals(stoveDto.getRandomCode())){   //소개글과 랜덤코드가 일치하면
+            userService.updateStoveNo(userId,stoveInfo.getMemberNo());     //회원테이블에 stoveno추가
 
             String encryptedMemberNo = lostarkAuthentication.getEncryptedMemberNo(
                     stoveInfo.getMemberNo());

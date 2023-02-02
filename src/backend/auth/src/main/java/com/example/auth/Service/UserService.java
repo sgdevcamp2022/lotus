@@ -8,6 +8,9 @@ import com.example.auth.Oauth2.Provider;
 import com.example.auth.Repository.UserRepository;
 import com.example.auth.Security.TokenProvider;
 import com.example.auth.Util.SecurityUtil;
+import com.example.auth.Vo.DefaultResponse;
+import com.example.auth.Vo.ResponseMessage;
+import com.example.auth.Vo.StatusCode;
 import com.example.auth.exception.DuplicateMemberException;
 import com.example.auth.exception.NotFoundMemberException;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -94,6 +97,20 @@ public class UserService {
                         .flatMap(userRepository::findOneByEmail)
                         .orElseThrow(() -> new NotFoundMemberException("Member not found"))
         );
+    }
+
+    @Transactional
+    public DefaultResponse updateStoveNo(Long userId, String stoveNo){
+        Optional<User> oneByUserId = userRepository.findOneByUserId(userId);
+        if(oneByUserId.isEmpty()){
+            return new DefaultResponse(StatusCode.STOVENO_ERROR, ResponseMessage.STOVE_NUMBER_FAILURE, null);
+        }
+        else{
+            User user = oneByUserId.get();
+            user.setStove_no(stoveNo);
+            userRepository.save(user);
+            return new DefaultResponse(StatusCode.OK, ResponseMessage.STOVE_NUMBER_SUCCESS, null);
+        }
     }
 
 
