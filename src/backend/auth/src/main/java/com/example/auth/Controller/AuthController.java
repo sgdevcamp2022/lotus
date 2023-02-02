@@ -68,17 +68,15 @@ public class AuthController {
         Optional<String> currentUsername = SecurityUtil.getCurrentUsername();
         System.out.println("currentUsername = " + currentUsername);
 
-        return new DefaultResponse<>(StatusCode.OK,ResponseMessage.LOGIN_SUCCESS,jwt);
-
+        return new DefaultResponse<>(StatusCode.BAD_REQUEST,ResponseMessage.LOGIN_SUCCESS,jwt);
     }
 
-    @PostMapping("/logout")
-    public DefaultResponse<Object> logout(@RequestHeader("Authorization") String authorization,
-            @RequestHeader("RefreshToken") String refreshToken){
+    @GetMapping("/logout")
+    public DefaultResponse<Object> logout(@RequestHeader("Authorization") String authorization){
 
         String accessToken = authorization.substring(7);
         Long userIdFromAccessToken = tokenProvider.getUserIdFromAccessToken(accessToken);
-        authService.logout(accessToken, refreshToken,userIdFromAccessToken);
+        authService.logout(accessToken, "refreshToken",userIdFromAccessToken);
 
         return new DefaultResponse(StatusCode.OK,ResponseMessage.LOGOUT_SUCCESSS,null);
     }
@@ -111,19 +109,22 @@ public class AuthController {
     }
 
     @GetMapping("/my")
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    public DefaultResponse<> getUserFromJwt(@RequestHeader String authorization) {
+   // @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    public User getUserFromJwt(@RequestHeader String authorization) {
         String accessToken = authorization.substring(7);
         Long userId = tokenProvider.getUserIdFromAccessToken(accessToken);
         Object principal = SecurityContextHolder.getContext().getAuthentication();
         System.out.println("principal = " + principal);
         Optional<User> userByUsername = userService.getUserByUserId(userId);
 
-        if(userByUsername.isEmpty()){
-          return new DefaultResponse(StatusCode.USER_NONEXISTENCE,ResponseMessage.READ_USER_FAILURE,null);
-        }
+   //     if(userByUsername.isEmpty()){
+     //     return new DefaultResponse(StatusCode.USER_NONEXISTENCE,ResponseMessage.READ_USER_FAILURE,null);
+     //   }
+//        if(userByUsername.get().getStove_no().isEmpty()){
+//            System.out.println("썩션칵");
+//        }
 
-        //return userByUsername;
+        return userByUsername.get();
     }
 
 //    @GetMapping("/stove")

@@ -180,6 +180,7 @@ public class TokenProvider implements InitializingBean {
     }
 
     public Claims extractAllClaims(String token) { // 2
+
         System.out.println("token = " + token);
         return Jwts.parserBuilder()
                 .setSigningKey(secret)

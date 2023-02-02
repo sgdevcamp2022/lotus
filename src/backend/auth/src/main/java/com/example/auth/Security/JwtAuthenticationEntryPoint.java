@@ -1,5 +1,8 @@
 package com.example.auth.Security;
 
+import com.example.auth.Vo.DefaultResponse;
+import com.example.auth.Vo.ResponseMessage;
+import com.example.auth.Vo.StatusCode;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -18,5 +21,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
             AuthenticationException authException) throws IOException {
         // 유효한 자격증명을 제공하지 않고 접근하려 할때 401
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        //response.getWriter().write(new DefaultResponse(StatusCode.BAD_REQUEST, ResponseMessage.TOKEN_INVALID,null));
     }
 }
