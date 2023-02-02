@@ -1,5 +1,6 @@
 package com.example.auth.Security;
 
+import com.example.auth.Repository.AccessTokenRepository;
 import com.example.auth.Vo.TokenInfo;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -34,15 +35,18 @@ public class TokenProvider implements InitializingBean {
     private final String secret;
     private final long accessTokenValidityInMilliseconds;
     private final long refreshTokenValidityInMilliseconds;
+    private final AccessTokenRepository accessTokenRepository;
     private Key key;
 
     public TokenProvider(
             @Value("${jwt.secret}") String secret,
             @Value("${jwt.accessToken-validity-in-seconds}") long accessTokenValidityInSeconds,
-            @Value("${jwt.refreshToken-validity-in-seconds}") long refreshTokenValidityInSeconds) {
+            @Value("${jwt.refreshToken-validity-in-seconds}") long refreshTokenValidityInSeconds,
+            AccessTokenRepository accessTokenRepository) {
         this.secret = secret;
         this.accessTokenValidityInMilliseconds = accessTokenValidityInSeconds * 1000;
         this.refreshTokenValidityInMilliseconds = refreshTokenValidityInSeconds * 1000;
+        this.accessTokenRepository=accessTokenRepository;
     }
 
     @Override
@@ -140,6 +144,8 @@ public class TokenProvider implements InitializingBean {
                 .parseClaimsJws(token)
                 .getBody();
 
+        System.out.println("claims.getid"+claims.get("id"));
+
         Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
                         .map(SimpleGrantedAuthority::new)
@@ -154,6 +160,12 @@ public class TokenProvider implements InitializingBean {
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            Long userIdFromToken = getUserIdFromAccessToken(token);
+            System.out.println("userIdFromToken = " + userIdFromToken);
+            if (accessTokenRepository.findAccessTokenByUserId(userIdFromToken).orElse(null) != null) {
+                System.out.println("여기들어왔습니다");
+                return false;        //로그아웃상태
+            }
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             logger.info("잘못된 JWT 서명입니다.");

@@ -79,6 +79,7 @@ public class AuthService {
     public void logout(String accessToken, String refreshToken, Long userId){
         long remainMilliSeconds = tokenProvider.getRemainMilliSeconds(accessToken);
         System.out.println("remainMilliSeconds = " + remainMilliSeconds);
+        System.out.println("refreshToken = " + refreshToken);
         RefreshToken refreshTokenByUserId = refreshTokenRepository.findRefreshTokenByUserId(userId);
         refreshTokenRepository.delete(refreshTokenByUserId);
 

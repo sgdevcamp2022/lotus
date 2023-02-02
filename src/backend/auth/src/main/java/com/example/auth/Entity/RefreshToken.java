@@ -11,7 +11,7 @@ import javax.persistence.Id;
 import java.time.LocalDateTime;
 
 @Getter
-@RedisHash(value = "refreshtoken", timeToLive = 10)
+@RedisHash(value = "refreshtoken", timeToLive = 604800)
 @NoArgsConstructor
 @AllArgsConstructor
 public class RefreshToken {

@@ -111,6 +111,7 @@ public class AuthController {
     }
 
     @GetMapping("/my")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public Optional<User> getUserFromJwt(@RequestHeader String authorization) {
         String accessToken = authorization.substring(7);
         Long userId = tokenProvider.getUserIdFromAccessToken(accessToken);
