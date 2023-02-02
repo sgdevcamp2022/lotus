@@ -68,11 +68,14 @@ export const MainPage = () => {
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       axios
-        .get('/auth/lostark', {
-          params: {
+        .post('/auth/stove', {
             randomCode,
             stoveUrl,
+        }, {
+          headers: {
+            authorization: cookie.accessToken
           },
+          withCredentials: true
         })
         .then((response: AxiosResponse<lostarkInfo>) => {
           //TODO 서버에서 캐릭터 정보 받아오기 만들어야 함.

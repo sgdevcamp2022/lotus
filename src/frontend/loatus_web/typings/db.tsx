@@ -1,3 +1,9 @@
+export type ILogin = {
+  code: number;
+  message: string;
+  object: IToken | null;
+};
+
 export type IToken = {
   accessToken: string;
   grantType: string;

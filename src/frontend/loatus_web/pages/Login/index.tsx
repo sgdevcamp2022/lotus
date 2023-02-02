@@ -43,8 +43,13 @@ const Login = () => {
             withCredentials: true,
           },
         )
-        .then((response: AxiosResponse<IToken>) => {
-          setCookie('accessToken', response?.data.accessToken, { path: '/' });
+        .then((response) => {
+          if (response?.data.code !== 200) {
+            toast.error(response.data.message, {
+              position: 'top-right',
+            });
+          }
+          setCookie('accessToken', response?.data.object.accessToken, { path: '/' });
           mutate();
           setEmail('');
         })
@@ -65,7 +70,7 @@ const Login = () => {
   );
 
   if (userData) {
-    return <Navigate to="/Mainpage" replace />;
+    return <Navigate to="/" replace />;
   }
 
   return (
@@ -97,6 +102,9 @@ const Login = () => {
           </Button>
           <Button>
             <a href={'http://localhost:8080/oauth2/authorization/kakao'}>카카오를 사용하여 로그인</a>
+          </Button>
+          <Button>
+            <a href={'http://localhost:8080/oauth2/authorization/google'}>구글을 사용하여 로그인</a>
           </Button>
           <Horizon>
             <Hr />
