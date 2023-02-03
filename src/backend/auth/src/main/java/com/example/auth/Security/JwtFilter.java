@@ -2,16 +2,24 @@ package com.example.auth.Security;
 
 import com.example.auth.Entity.AccessToken;
 import com.example.auth.Repository.AccessTokenRepository;
+import com.example.auth.Vo.ResponseMessage;
 import com.example.auth.exception.DuplicateMemberException;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import java.util.Base64;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.json.BasicJsonParser;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
@@ -44,25 +52,32 @@ public class JwtFilter extends GenericFilterBean {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         String jwt = resolveToken(httpServletRequest);
         String requestURI = httpServletRequest.getRequestURI();
-        if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
-            Long userIdFromToken = getUserIdFromToken(jwt);
-            Boolean isLogout = checkAccessTokenExists(userIdFromToken);
-            System.out.println("isLogout = " + isLogout);
-            if (!isLogout) {
-                System.out.println("check1");
+
+        /*
+         * validate token에서 못잡은 예외는 access token이 첨부되지않았을때가 유일하다고 가정
+         * */
+        httpServletRequest.setAttribute("exception",
+                ResponseMessage.NO_JWT);   //exception attribute에 no_jwt로 기본 설정
+
+        if (StringUtils.hasText(jwt) && tokenProvider.validateToken(httpServletRequest, jwt)) {
+            /*
+             * securitycontextholder에 authentication을 set하지 않으면
+             * 다음 요청이 들어왔을때 authenticationentrypoint로 가는듯하다(인증되지 않았을때 처리)
+             * 즉 여기가 실행돼야 인증됐다는 뜻이고
+             * validate token-> 토큰 예외에 각 상황을 set해두고
+             * jwt가 존재하지 않는경우는 no_jwt로 초기에 설정을 해둔것이다
+             * */
                 Authentication authentication = tokenProvider.getAuthentication(jwt);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 logger.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}",
                         authentication.getName(),
                         requestURI);
-            }
-            System.out.println("check2");
-
         } else {
             logger.debug("유효한 JWT 토큰이 없습니다, uri: {}", requestURI);
         }
         filterChain.doFilter(servletRequest, servletResponse);
     }
+
 
     private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
@@ -90,16 +105,15 @@ public class JwtFilter extends GenericFilterBean {
         return id;
     }
 
-    private Boolean checkAccessTokenExists(Long userId) {
-        System.out.println("userId in exists = " + userId);
-       // Optional<AccessToken> accessTokenByUserId = accessTokenRepository.findAccessTokenByUserId(
-         //       userId);
-        if (accessTokenRepository.findAccessTokenByUserId(userId).orElse(null) != null) {
-            return true;        //로그아웃상태
-        } else {
-            return false;       //로그아웃상태x
-        }
-
-
-    }
+//    private Boolean checkAccessTokenExists(HttpServletRequest httpServletRequest, Long userId) {
+//
+//        if (accessTokenRepository.findAccessTokenByUserId(userId).orElse(null) != null) {
+//            httpServletRequest.setAttribute("exception", ResponseMessage.LOGOUT_JWT);
+//            return true;        //로그아웃상태
+//        } else {
+//            return false;       //로그아웃상태x
+//        }
+//
+//
+//    }
 }
