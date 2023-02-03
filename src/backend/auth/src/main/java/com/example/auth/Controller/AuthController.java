@@ -63,7 +63,7 @@ public class AuthController {
         // authService.saveRedis(jwt.getRefreshToken(), jwt.getUsername());
 
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
+        //httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
 
         Optional<String> currentUsername = SecurityUtil.getCurrentUsername();
         System.out.println("currentUsername = " + currentUsername);
@@ -124,6 +124,10 @@ public class AuthController {
 //        if(userByUsername.get().getStove_no().isEmpty()){
 //            System.out.println("썩션칵");
 //        }
+
+        if(userByUsername.isEmpty()){
+
+        }
 
         return userByUsername.get();
     }
@@ -207,14 +211,15 @@ public class AuthController {
                 System.out.println("check1");
                 return new ResponseEntity<>(introductionInStove, httpHeaders,
                         StatusCode.STOVENO_ERROR);
-                //return introductionInStove;
             }
         }
         System.out.println("introductionInStove = " + introductionInStove);
 
         StoveInfo stoveInfo = (StoveInfo) introductionInStove.getObject();
+        System.out.println("check1");
 
         if (stoveInfo.getRandomCode().equals(stoveDto.getRandomCode())) {   //소개글과 랜덤코드가 일치하면
+            System.out.println("check2");
             userService.updateStoveNo(userId, stoveInfo.getMemberNo());     //회원테이블에 stoveno추가
 
             String encryptedMemberNo = lostarkAuthentication.getEncryptedMemberNo(

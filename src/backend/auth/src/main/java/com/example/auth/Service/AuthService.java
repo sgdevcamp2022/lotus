@@ -72,6 +72,12 @@ public class AuthService {
             jwt.setRefreshToken(null);
         }
 
+        Optional<AccessToken> accessTokenByUserId = accessTokenRepository.findAccessTokenByUserId(
+                userId);
+        if(accessTokenByUserId.isPresent()){  //로그아웃한 유저가 다시 로그인하면
+            accessTokenRepository.delete(accessTokenByUserId.get());    //redis에 남아있던 accesstoken 제거
+        }
+
         return jwt;
     }
 

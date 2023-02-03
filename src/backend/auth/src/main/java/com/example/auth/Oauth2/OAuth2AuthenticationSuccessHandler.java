@@ -1,7 +1,9 @@
 package com.example.auth.Oauth2;
 
+import com.example.auth.Entity.AccessToken;
 import com.example.auth.Entity.RefreshToken;
 import com.example.auth.Entity.User;
+import com.example.auth.Repository.AccessTokenRepository;
 import com.example.auth.Repository.RefreshTokenRepository;
 import com.example.auth.Repository.UserRepository;
 import com.example.auth.Security.TokenProvider;
@@ -28,12 +30,15 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
+    private final AccessTokenRepository accessTokenRepository;
 
     public OAuth2AuthenticationSuccessHandler(TokenProvider tokenProvider,
-            RefreshTokenRepository refreshTokenRepository, UserRepository userRepository) {
+            RefreshTokenRepository refreshTokenRepository, UserRepository userRepository,
+            AccessTokenRepository accessTokenRepository) {
         this.tokenProvider = tokenProvider;
         this.refreshTokenRepository = refreshTokenRepository;
         this.userRepository = userRepository;
+        this.accessTokenRepository = accessTokenRepository;
     }
 
     @Override
@@ -98,6 +103,12 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
         } else {   //있으면 최초로그인x
             jwt.setRefreshToken(null);
         }
+
+            Optional<AccessToken> accessTokenByUserId = accessTokenRepository.findAccessTokenByUserId(
+                    userId);
+            if(accessTokenByUserId.isPresent()){  //로그아웃한 유저가 다시 로그인하면
+                accessTokenRepository.delete(accessTokenByUserId.get());    //redis에 남아있던 accesstoken 제거
+            }
 
         return jwt;
     }
