@@ -16,4 +16,10 @@ public class ResponseMessage {
     public static final String BAD_REQUEST="BAD REQUEST";
     public static final String STOVE_NUMBER_FAILURE="회원테이블 스토브 번호 업데이트 실패";
     public static final String STOVE_NUMBER_SUCCESS="회원테이블 스토브 번호 업데이트 성공";
+    public static final String WRONG_JWT="잘못된 JWT 서명입니다";
+    public static final String EXPIRED_JWT="만료된 JWT 토큰입니다";
+    public static final String UNSUPPORTED_JWT="지원되지 않는 JWT 토큰입니다";
+    public static final String Illegal_JWT="잘못된 JWT 토큰입니다";
+    public static final String NO_JWT="JWT 토큰이 존재하지 않습니다";
+    public static final String LOGOUT_JWT="로그아웃한 사용자 입니다.";
 }

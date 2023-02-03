@@ -1,13 +1,18 @@
 package com.example.auth.Security;
 
 import com.example.auth.Repository.AccessTokenRepository;
+import com.example.auth.Vo.ResponseMessage;
 import com.example.auth.Vo.TokenInfo;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import java.io.IOException;
 import java.util.Base64;
 import java.util.Map;
 import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -157,23 +162,28 @@ public class TokenProvider implements InitializingBean {
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 
-    public boolean validateToken(String token) {
+    public boolean validateToken(HttpServletRequest request,String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             Long userIdFromToken = getUserIdFromAccessToken(token);
-            System.out.println("userIdFromToken = " + userIdFromToken);
+
             if (accessTokenRepository.findAccessTokenByUserId(userIdFromToken).orElse(null) != null) {
-                System.out.println("여기들어왔습니다");
+                logger.info("로그아웃한 사용자입니다.");
+                request.setAttribute("exception", ResponseMessage.LOGOUT_JWT);
                 return false;        //로그아웃상태
             }
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
+            request.setAttribute("exception", ResponseMessage.WRONG_JWT);
             logger.info("잘못된 JWT 서명입니다.");
         } catch (ExpiredJwtException e) {
+            request.setAttribute("exception", ResponseMessage.EXPIRED_JWT);
             logger.info("만료된 JWT 토큰입니다.");
         } catch (UnsupportedJwtException e) {
+            request.setAttribute("exception", ResponseMessage.UNSUPPORTED_JWT);
             logger.info("지원되지 않는 JWT 토큰입니다.");
         } catch (IllegalArgumentException e) {
+            request.setAttribute("exception", ResponseMessage.Illegal_JWT);
             logger.info("JWT 토큰이 잘못되었습니다.");
         }
         return false;
@@ -210,4 +220,18 @@ public class TokenProvider implements InitializingBean {
         return expiration.getTime()-now.getTime();
        // return Long.parseLong(exp);
     }
+
+    //한글 출력을 위해 getWriter() 사용
+    private void setResponse(HttpServletResponse response) throws IOException {
+        response.setContentType("application/json;charset=UTF-8");
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+
+        JSONObject responseJson = new JSONObject();
+        responseJson.put("message", "message");
+        responseJson.put("code", "code");
+
+        response.getWriter().print(responseJson);
+    }
+
+
 }

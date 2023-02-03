@@ -94,7 +94,7 @@ public class SecurityConfig {
                 .authorizeRequests()
                 .antMatchers(PERMIT_URL_ARRAY).permitAll()
                 .antMatchers("/test").hasRole("USER")
-                //.anyRequest().authenticated()
+                .anyRequest().authenticated()
                 .and()
                 .oauth2Login()
                 .userInfoEndpoint()

@@ -102,15 +102,16 @@ public class AuthController {
 //    }
 
 
-    @PostMapping("/validate")
-    public boolean validateAccessToken(@RequestHeader String authorization) {
-        String accessToken = authorization.substring(7);
-        return tokenProvider.validateToken(accessToken);
-    }
+//    @PostMapping("/validate")
+//    public boolean validateAccessToken(@RequestHeader String authorization) {
+//        String accessToken = authorization.substring(7);
+//        return tokenProvider.validateToken(accessToken);
+//    }
 
     @GetMapping("/my")
    // @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public User getUserFromJwt(@RequestHeader String authorization) {
+        System.out.println(" 누가빠른가");
         String accessToken = authorization.substring(7);
         Long userId = tokenProvider.getUserIdFromAccessToken(accessToken);
         Object principal = SecurityContextHolder.getContext().getAuthentication();
@@ -142,53 +143,106 @@ public class AuthController {
 //        }
 //    }
 
+//    @PostMapping("/stove")
+//    public DefaultResponse<JsonNode> lostark(@Valid @RequestBody StoveDto stoveDto,
+//            @RequestHeader String authorization) {
+//        String accessToken = authorization.substring(7);
+//        Long userId = tokenProvider.getUserIdFromAccessToken(accessToken);
+//
+//
+//        WebDriverUtil webDriverUtil = new WebDriverUtil();
+//        DefaultResponse introductionInStove = webDriverUtil.getIntroductionInStove(
+//                stoveDto.getStoveUrl());
+//        switch(introductionInStove.getCode()){
+//            case StatusCode.URL_ERROR:{
+//                return introductionInStove;
+//            }
+//        }
+//        System.out.println("introductionInStove = " + introductionInStove);
+//
+//        HttpHeaders httpHeaders=new HttpHeaders();
+//        StoveInfo stoveInfo =(StoveInfo) introductionInStove.getObject();
+//
+//
+//        if(stoveInfo.getRandomCode().equals(stoveDto.getRandomCode())){   //소개글과 랜덤코드가 일치하면
+//            userService.updateStoveNo(userId,stoveInfo.getMemberNo());     //회원테이블에 stoveno추가
+//
+//            String encryptedMemberNo = lostarkAuthentication.getEncryptedMemberNo(
+//                    stoveInfo.getMemberNo());
+//            System.out.println("encryptedMemberNo = " + encryptedMemberNo);
+//            String battleInfoRoomUrl="https://lostark.game.onstove.com//Profile/Member?id="+encryptedMemberNo;
+//
+//            WebDriverUtil webDriverUtil2 = new WebDriverUtil();
+//            String characterName = webDriverUtil2.getCharacterInLostark(battleInfoRoomUrl);
+//
+//            JsonNode charactersInLostark = lostarkAuthentication.getCharactersInLostark(characterName);
+//            DefaultResponse<JsonNode> jsonNodeDefaultResponse = new DefaultResponse<>();
+//            jsonNodeDefaultResponse.setObject(charactersInLostark);
+//            jsonNodeDefaultResponse.setCode(StatusCode.OK);
+//            jsonNodeDefaultResponse.setMessage(ResponseMessage.STOVE_LOSTARK_SUCCESS);
+//
+//            return jsonNodeDefaultResponse;
+//        }
+//        else{
+//            DefaultResponse<JsonNode> jsonNodeDefaultResponse = new DefaultResponse<>();
+//            jsonNodeDefaultResponse.setCode(StatusCode.BAD_REQUEST);
+//            jsonNodeDefaultResponse.setMessage(ResponseMessage.BAD_REQUEST);
+//            return jsonNodeDefaultResponse;
+//        }
+//    }
+
     @PostMapping("/stove")
-    public DefaultResponse<JsonNode> lostark(@Valid @RequestBody StoveDto stoveDto,
+    public ResponseEntity<DefaultResponse> lostark(@Valid @RequestBody StoveDto stoveDto,
             @RequestHeader String authorization) {
         String accessToken = authorization.substring(7);
         Long userId = tokenProvider.getUserIdFromAccessToken(accessToken);
-
+        HttpHeaders httpHeaders = new HttpHeaders();
 
         WebDriverUtil webDriverUtil = new WebDriverUtil();
         DefaultResponse introductionInStove = webDriverUtil.getIntroductionInStove(
                 stoveDto.getStoveUrl());
-        switch(introductionInStove.getCode()){
-            case StatusCode.URL_ERROR:{
-                return introductionInStove;
+        switch (introductionInStove.getCode()) {
+
+            case StatusCode.URL_ERROR: {
+                System.out.println("check1");
+                return new ResponseEntity<>(introductionInStove, httpHeaders,
+                        StatusCode.STOVENO_ERROR);
+                //return introductionInStove;
             }
         }
         System.out.println("introductionInStove = " + introductionInStove);
 
-        HttpHeaders httpHeaders=new HttpHeaders();
-        StoveInfo stoveInfo =(StoveInfo) introductionInStove.getObject();
+        StoveInfo stoveInfo = (StoveInfo) introductionInStove.getObject();
 
-
-        if(stoveInfo.getRandomCode().equals(stoveDto.getRandomCode())){   //소개글과 랜덤코드가 일치하면
-            userService.updateStoveNo(userId,stoveInfo.getMemberNo());     //회원테이블에 stoveno추가
+        if (stoveInfo.getRandomCode().equals(stoveDto.getRandomCode())) {   //소개글과 랜덤코드가 일치하면
+            userService.updateStoveNo(userId, stoveInfo.getMemberNo());     //회원테이블에 stoveno추가
 
             String encryptedMemberNo = lostarkAuthentication.getEncryptedMemberNo(
                     stoveInfo.getMemberNo());
             System.out.println("encryptedMemberNo = " + encryptedMemberNo);
-            String battleInfoRoomUrl="https://lostark.game.onstove.com//Profile/Member?id="+encryptedMemberNo;
+            String battleInfoRoomUrl =
+                    "https://lostark.game.onstove.com//Profile/Member?id=" + encryptedMemberNo;
 
             WebDriverUtil webDriverUtil2 = new WebDriverUtil();
             String characterName = webDriverUtil2.getCharacterInLostark(battleInfoRoomUrl);
             System.out.println("characterName = " + characterName);
 
-            JsonNode charactersInLostark = lostarkAuthentication.getCharactersInLostark(characterName);
+            JsonNode charactersInLostark = lostarkAuthentication.getCharactersInLostark(
+                    characterName);
             DefaultResponse<JsonNode> jsonNodeDefaultResponse = new DefaultResponse<>();
             jsonNodeDefaultResponse.setObject(charactersInLostark);
             jsonNodeDefaultResponse.setCode(StatusCode.OK);
             jsonNodeDefaultResponse.setMessage(ResponseMessage.STOVE_LOSTARK_SUCCESS);
 
-            return jsonNodeDefaultResponse;
-        }
-        else{
+            return new ResponseEntity<>(jsonNodeDefaultResponse, httpHeaders, HttpStatus.OK);
+        } else {
             DefaultResponse<JsonNode> jsonNodeDefaultResponse = new DefaultResponse<>();
             jsonNodeDefaultResponse.setCode(StatusCode.BAD_REQUEST);
             jsonNodeDefaultResponse.setMessage(ResponseMessage.BAD_REQUEST);
-            return jsonNodeDefaultResponse;
+            return new ResponseEntity<>(jsonNodeDefaultResponse, httpHeaders,
+                    HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
     }
 
 //    @GetMapping("/lostark")
