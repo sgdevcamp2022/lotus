@@ -1,10 +1,9 @@
 package com.example.auth.Lostark;
 
-import com.example.auth.Vo.DefaultResponse;
-import com.example.auth.Vo.ResponseMessage;
-import com.example.auth.Vo.StatusCode;
-import com.example.auth.Vo.StoveInfo;
-import java.util.List;
+import com.example.auth.Dto.Response.DefaultResponse;
+import com.example.auth.Dto.Response.ResponseMessage;
+import com.example.auth.Dto.Response.StatusCode;
+import com.example.auth.Dto.Response.StoveResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -68,9 +67,10 @@ public class WebDriverUtil {
         WebElement element = driver.findElement(By.xpath(xpath));
         System.out.println("element.getText() = " + element.getText());
         String result=element.getText();
-        StoveInfo stoveInfo = new StoveInfo(result, memberNo);
+        StoveResponse stoveResponse = new StoveResponse(result, memberNo);
         quitDriver();
-        return new DefaultResponse(StatusCode.OK, ResponseMessage.STOVE_INTRODUCTION_SUCCESS, stoveInfo);
+        return new DefaultResponse(StatusCode.OK, ResponseMessage.STOVE_INTRODUCTION_SUCCESS,
+                stoveResponse);
     }
 
     public String getCharacterInLostark(String url) {

@@ -1,4 +1,4 @@
-package com.example.auth.Dto;
+package com.example.auth.Dto.Request;
 
 
 import com.example.auth.Entity.User;
@@ -7,15 +7,13 @@ import com.sun.istack.NotNull;
 import lombok.*;
 
 import javax.validation.constraints.Size;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDto {
+public class SignupRequest {
 
     @NotNull
     @Size(min = 3, max = 50)
@@ -35,12 +33,12 @@ public class UserDto {
 
     private String profile_image;
 
-    public static UserDto from(User user) {
+    public static SignupRequest from(User user) {
         if (user == null) {
             return null;
         }
 
-        return UserDto.builder()
+        return SignupRequest.builder()
                 .email(user.getEmail())
                 .nickname(user.getNickname())
                 /*  .authorityDtoSet(user.getAuthorities().stream()

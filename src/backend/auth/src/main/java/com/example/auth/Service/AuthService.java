@@ -1,26 +1,20 @@
 package com.example.auth.Service;
 
-import com.example.auth.Dto.LoginDto;
+import com.example.auth.Dto.Request.LoginRequest;
 import com.example.auth.Entity.AccessToken;
 import com.example.auth.Entity.RefreshToken;
 import com.example.auth.Entity.User;
 import com.example.auth.Repository.AccessTokenRepository;
 import com.example.auth.Repository.RefreshTokenRepository;
 import com.example.auth.Repository.UserRepository;
-import com.example.auth.Util.SecurityUtil;
-import com.example.auth.Vo.DefaultResponse;
-import com.example.auth.Vo.ResponseMessage;
-import com.example.auth.Vo.StatusCode;
-import com.example.auth.Vo.TokenInfo;
+import com.example.auth.Dto.Response.LoginResponse;
 import com.example.auth.Security.TokenProvider;
 
-import com.example.auth.exception.DuplicateMemberException;
 import java.util.Optional;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -48,7 +42,7 @@ public class AuthService {
         this.accessTokenRepository=accessTokenRepository;
     }
 
-    public TokenInfo login(LoginDto loginDto) {
+    public LoginResponse login(LoginRequest loginDto) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginDto.getEmail(),
                         loginDto.getPassword());
@@ -59,7 +53,7 @@ public class AuthService {
         Optional<User> oneByEmail = userRepository.findOneByEmail(loginDto.getEmail());
         Long userId = oneByEmail.get().getUserId();
 
-        TokenInfo jwt = tokenProvider.createToken(authentication, userId);
+        LoginResponse jwt = tokenProvider.createToken(authentication, userId);
 
 
         RefreshToken refreshTokenInRedis = findRefreshToken(userId);

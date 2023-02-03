@@ -1,23 +1,11 @@
 package com.example.auth.Oauth2;
 
-import com.example.auth.Dto.LoginDto;
-import com.example.auth.Entity.RefreshToken;
 import com.example.auth.Entity.User;
 import com.example.auth.Repository.UserRepository;
-import com.example.auth.Service.AuthService;
-import com.example.auth.Service.UserService;
-import com.example.auth.Vo.TokenInfo;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collections;
-import java.util.Objects;
-import javax.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;

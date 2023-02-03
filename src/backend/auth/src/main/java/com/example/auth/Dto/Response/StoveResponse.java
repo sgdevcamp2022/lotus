@@ -1,4 +1,4 @@
-package com.example.auth.Vo;
+package com.example.auth.Dto.Response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class StoveInfo {
+public class StoveResponse {
     private String randomCode;
     private String memberNo;
 }

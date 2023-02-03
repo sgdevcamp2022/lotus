@@ -1,25 +1,13 @@
 package com.example.auth.Security;
 
-import com.example.auth.Entity.AccessToken;
 import com.example.auth.Repository.AccessTokenRepository;
-import com.example.auth.Vo.ResponseMessage;
-import com.example.auth.exception.DuplicateMemberException;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
+import com.example.auth.Dto.Response.ResponseMessage;
 import java.util.Base64;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.json.BasicJsonParser;
 import org.springframework.boot.json.JsonParser;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;

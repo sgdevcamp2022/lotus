@@ -7,7 +7,7 @@ import com.example.auth.Repository.AccessTokenRepository;
 import com.example.auth.Repository.RefreshTokenRepository;
 import com.example.auth.Repository.UserRepository;
 import com.example.auth.Security.TokenProvider;
-import com.example.auth.Vo.TokenInfo;
+import com.example.auth.Dto.Response.LoginResponse;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Objects;
@@ -17,7 +17,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -69,7 +68,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
 
         System.out.println("email = " + email);
 
-        TokenInfo jwt = login(authentication, email, provider);
+        LoginResponse jwt = login(authentication, email, provider);
 
      //   String uri = UriComponentsBuilder.fromUriString("http://localhost:8080/social")
         String uri = UriComponentsBuilder.fromUriString("http://localhost:3090/login")
@@ -84,7 +83,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
     }
 
 
-        private TokenInfo login(Authentication authentication, String email, String provider) {
+        private LoginResponse login(Authentication authentication, String email, String provider) {
 
        // SecurityContextHolder.getContext().setAuthentication(authentication);
 
@@ -93,7 +92,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
             Optional<User> oneByEmail = userRepository.findOneByEmailAndProvider(email,provider);
             Long userId = oneByEmail.get().getUserId();
 
-        TokenInfo jwt = tokenProvider.createToken(authentication,userId);
+        LoginResponse jwt = tokenProvider.createToken(authentication,userId);
         RefreshToken refreshTokenInRedis = findRefreshToken(userId);
 
         if (Objects.isNull(refreshTokenInRedis)) {    //redis에 refreshtoken 없으면 최초로그인

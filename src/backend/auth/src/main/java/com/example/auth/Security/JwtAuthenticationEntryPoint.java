@@ -1,13 +1,10 @@
 package com.example.auth.Security;
 
-import com.example.auth.Vo.DefaultResponse;
-import com.example.auth.Vo.ResponseMessage;
-import com.example.auth.Vo.StatusCode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.auth.Dto.Response.DefaultResponse;
+import com.example.auth.Dto.Response.ResponseMessage;
+import com.example.auth.Dto.Response.StatusCode;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import java.io.PrintWriter;
-import org.json.simple.JSONObject;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;

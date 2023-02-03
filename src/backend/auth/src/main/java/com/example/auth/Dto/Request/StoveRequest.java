@@ -1,4 +1,4 @@
-package com.example.auth.Dto;
+package com.example.auth.Dto.Request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class StoveDto {
+public class StoveRequest {
     private String stoveUrl;
     private String randomCode;
 }

@@ -1,22 +1,21 @@
 package com.example.auth.Controller;
 
-import com.example.auth.Dto.LoginDto;
-import com.example.auth.Dto.StoveDto;
+import com.example.auth.Dto.Request.LoginRequest;
+import com.example.auth.Dto.Request.StoveRequest;
+import com.example.auth.Dto.Request.SignupRequest;
 import com.example.auth.Entity.User;
 import com.example.auth.Lostark.LostarkAuthentication;
 import com.example.auth.Lostark.WebDriverUtil;
-import com.example.auth.Security.JwtFilter;
 import com.example.auth.Service.UserService;
-import com.example.auth.Vo.DefaultResponse;
-import com.example.auth.Vo.ResponseMessage;
-import com.example.auth.Vo.StatusCode;
-import com.example.auth.Vo.StoveInfo;
-import com.example.auth.Vo.TokenInfo;
+import com.example.auth.Dto.Response.DefaultResponse;
+import com.example.auth.Dto.Response.ResponseMessage;
+import com.example.auth.Dto.Response.StatusCode;
+import com.example.auth.Dto.Response.StoveResponse;
+import com.example.auth.Dto.Response.LoginResponse;
 import com.example.auth.Security.TokenProvider;
 import com.example.auth.Service.AuthService;
 import com.example.auth.Util.SecurityUtil;
 import com.fasterxml.jackson.databind.JsonNode;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,9 +56,18 @@ public class AuthController {
         this.lostarkAuthentication = lostarkAuthentication;
     }
 
+
+    @PostMapping("/signup")
+    public ResponseEntity<SignupRequest> signup(
+            @Valid @RequestBody SignupRequest signupRequest
+    ) {
+        System.out.println("userDto = " + signupRequest.getPassword());
+        return ResponseEntity.ok(userService.signup(signupRequest));
+    }
+
     @PostMapping("/login")
-    public DefaultResponse<TokenInfo> authorize(@Valid @RequestBody LoginDto loginDto) {
-        TokenInfo jwt = authService.login(loginDto);
+    public DefaultResponse<LoginResponse> authorize(@Valid @RequestBody LoginRequest loginDto) {
+        LoginResponse jwt = authService.login(loginDto);
         // authService.saveRedis(jwt.getRefreshToken(), jwt.getUsername());
 
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -196,7 +204,7 @@ public class AuthController {
 //    }
 
     @PostMapping("/stove")
-    public ResponseEntity<DefaultResponse> lostark(@Valid @RequestBody StoveDto stoveDto,
+    public ResponseEntity<DefaultResponse> lostark(@Valid @RequestBody StoveRequest stoveDto,
             @RequestHeader String authorization) {
         String accessToken = authorization.substring(7);
         Long userId = tokenProvider.getUserIdFromAccessToken(accessToken);
@@ -215,15 +223,15 @@ public class AuthController {
         }
         System.out.println("introductionInStove = " + introductionInStove);
 
-        StoveInfo stoveInfo = (StoveInfo) introductionInStove.getObject();
+        StoveResponse stoveResponse = (StoveResponse) introductionInStove.getObject();
         System.out.println("check1");
 
-        if (stoveInfo.getRandomCode().equals(stoveDto.getRandomCode())) {   //소개글과 랜덤코드가 일치하면
+        if (stoveResponse.getRandomCode().equals(stoveDto.getRandomCode())) {   //소개글과 랜덤코드가 일치하면
             System.out.println("check2");
-            userService.updateStoveNo(userId, stoveInfo.getMemberNo());     //회원테이블에 stoveno추가
+            userService.updateStoveNo(userId, stoveResponse.getMemberNo());     //회원테이블에 stoveno추가
 
             String encryptedMemberNo = lostarkAuthentication.getEncryptedMemberNo(
-                    stoveInfo.getMemberNo());
+                    stoveResponse.getMemberNo());
             System.out.println("encryptedMemberNo = " + encryptedMemberNo);
             String battleInfoRoomUrl =
                     "https://lostark.game.onstove.com//Profile/Member?id=" + encryptedMemberNo;

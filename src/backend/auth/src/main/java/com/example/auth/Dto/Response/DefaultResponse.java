@@ -1,4 +1,4 @@
-package com.example.auth.Vo;
+package com.example.auth.Dto.Response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package com.example.auth.Dto;
+package com.example.auth.Dto.Request;
 
 import lombok.*;
 
@@ -10,7 +10,7 @@ import javax.validation.constraints.Size;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginDto {
+public class LoginRequest {
 
     @NotNull
     @Size(min = 3, max = 50)

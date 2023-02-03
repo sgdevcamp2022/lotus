@@ -1,6 +1,6 @@
 package com.example.auth.Controller;
 
-import com.example.auth.Dto.UserDto;
+import com.example.auth.Dto.Request.SignupRequest;
 import com.example.auth.Entity.User;
 import com.example.auth.Security.TokenProvider;
 import com.example.auth.Service.UserService;
@@ -38,23 +38,23 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<UserDto> signup(
-            @Valid @RequestBody UserDto userDto
+    public ResponseEntity<SignupRequest> signup(
+            @Valid @RequestBody SignupRequest signupRequest
     ) {
-        System.out.println("userDto = " + userDto.getPassword());
-        return ResponseEntity.ok(userService.signup(userDto));
+        System.out.println("userDto = " + signupRequest.getPassword());
+        return ResponseEntity.ok(userService.signup(signupRequest));
     }
 
     @GetMapping("/user")
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    public ResponseEntity<UserDto> getMyUserInfo(HttpServletRequest request) {
+    public ResponseEntity<SignupRequest> getMyUserInfo(HttpServletRequest request) {
         return ResponseEntity.ok(userService.getMyUserWithAuthorities());
     }
 
 
     @GetMapping("/user/{username}")
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public ResponseEntity<UserDto> getUserInfo(@PathVariable String username) {
+    public ResponseEntity<SignupRequest> getUserInfo(@PathVariable String username) {
         return ResponseEntity.ok(userService.getUserWithAuthorities(username));
     }
 

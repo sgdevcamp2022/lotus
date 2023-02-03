@@ -1,15 +1,12 @@
 package com.example.auth.Security;
 
 import com.example.auth.Repository.AccessTokenRepository;
-import com.example.auth.Vo.ResponseMessage;
-import com.example.auth.Vo.TokenInfo;
+import com.example.auth.Dto.Response.ResponseMessage;
+import com.example.auth.Dto.Response.LoginResponse;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import java.io.IOException;
-import java.util.Base64;
-import java.util.Map;
-import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.json.simple.JSONObject;
@@ -17,8 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.json.BasicJsonParser;
-import org.springframework.boot.json.JsonParser;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -60,12 +55,12 @@ public class TokenProvider implements InitializingBean {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public TokenInfo createToken(Authentication authentication) {
+    public LoginResponse createToken(Authentication authentication) {
         String accessToken = createAccessToken(authentication);
         String refreshToken = createRefreshToken();
         String username = authentication.getName();
 
-        return TokenInfo.builder()
+        return LoginResponse.builder()
                 .grantType("Bearer")
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
@@ -73,12 +68,12 @@ public class TokenProvider implements InitializingBean {
                 .build();
 
     }
-    public TokenInfo createToken(Authentication authentication, Long userId) {
+    public LoginResponse createToken(Authentication authentication, Long userId) {
         String accessToken = createAccessToken(authentication, userId);
         String refreshToken = createRefreshToken();
         String username = authentication.getName();
 
-        return TokenInfo.builder()
+        return LoginResponse.builder()
                 .grantType("Bearer")
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
