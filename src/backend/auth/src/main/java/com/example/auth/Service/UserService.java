@@ -5,7 +5,7 @@ import com.example.auth.Dto.Request.SignupRequest;
 import com.example.auth.Entity.User;
 import com.example.auth.Oauth2.Provider;
 import com.example.auth.Repository.UserRepository;
-import com.example.auth.Security.TokenProvider;
+import com.example.auth.Jwt.TokenProvider;
 import com.example.auth.Util.SecurityUtil;
 import com.example.auth.Dto.Response.DefaultResponse;
 import com.example.auth.Dto.Response.ResponseMessage;

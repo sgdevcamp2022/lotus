@@ -1,4 +1,4 @@
-package com.example.auth.Security;
+package com.example.auth.Jwt;
 
 import com.example.auth.Dto.Response.DefaultResponse;
 import com.example.auth.Dto.Response.ResponseMessage;

@@ -1,9 +1,6 @@
 package com.example.auth.Lostark;
 
-import com.example.auth.Entity.RandomCode;
-import com.example.auth.Entity.RefreshToken;
-
-import com.example.auth.Security.TokenProvider;
+import com.example.auth.Jwt.TokenProvider;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonParser.NumberType;
@@ -21,14 +18,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;

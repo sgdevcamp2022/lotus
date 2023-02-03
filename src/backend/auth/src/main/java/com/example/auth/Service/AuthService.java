@@ -8,7 +8,7 @@ import com.example.auth.Repository.AccessTokenRepository;
 import com.example.auth.Repository.RefreshTokenRepository;
 import com.example.auth.Repository.UserRepository;
 import com.example.auth.Dto.Response.LoginResponse;
-import com.example.auth.Security.TokenProvider;
+import com.example.auth.Jwt.TokenProvider;
 
 import java.util.Optional;
 

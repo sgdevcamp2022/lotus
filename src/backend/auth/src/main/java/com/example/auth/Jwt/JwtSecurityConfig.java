@@ -1,4 +1,4 @@
-package com.example.auth.Security;
+package com.example.auth.Jwt;
 
 import com.example.auth.Repository.AccessTokenRepository;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;

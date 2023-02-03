@@ -2,18 +2,18 @@ package com.example.auth.Controller;
 
 import com.example.auth.Dto.Request.LoginRequest;
 import com.example.auth.Dto.Request.StoveRequest;
-import com.example.auth.Dto.Request.SignupRequest;
+import com.example.auth.Dto.Response.MyResponse;
 import com.example.auth.Entity.User;
 import com.example.auth.Lostark.LostarkAuthentication;
 import com.example.auth.Lostark.WebDriverUtil;
-import com.example.auth.Security.JwtFilter;
+import com.example.auth.Jwt.JwtFilter;
 import com.example.auth.Service.UserService;
 import com.example.auth.Dto.Response.DefaultResponse;
 import com.example.auth.Dto.Response.ResponseMessage;
 import com.example.auth.Dto.Response.StatusCode;
 import com.example.auth.Dto.Response.StoveResponse;
 import com.example.auth.Dto.Response.LoginResponse;
-import com.example.auth.Security.TokenProvider;
+import com.example.auth.Jwt.TokenProvider;
 import com.example.auth.Service.AuthService;
 import com.example.auth.Util.SecurityUtil;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -47,9 +47,8 @@ public class AuthController {
 
 
     public AuthController(TokenProvider tokenProvider,
-            AuthenticationManagerBuilder authenticationManagerBuilder,
-            AuthService authService, UserService userService,
-            LostarkAuthentication lostarkAuthentication) {
+            AuthenticationManagerBuilder authenticationManagerBuilder, AuthService authService,
+            UserService userService, LostarkAuthentication lostarkAuthentication) {
         this.tokenProvider = tokenProvider;
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.authService = authService;
@@ -58,11 +57,9 @@ public class AuthController {
     }
 
 
-
     @PostMapping("/login")
     public DefaultResponse<LoginResponse> authorize(@Valid @RequestBody LoginRequest loginDto) {
         LoginResponse jwt = authService.login(loginDto);
-
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
@@ -70,24 +67,19 @@ public class AuthController {
         Optional<String> currentUsername = SecurityUtil.getCurrentUsername();
         System.out.println("currentUsername = " + currentUsername);
 
-        return new DefaultResponse<>(StatusCode.BAD_REQUEST,ResponseMessage.LOGIN_SUCCESS,jwt);
+        return new DefaultResponse<>(StatusCode.BAD_REQUEST, ResponseMessage.LOGIN_SUCCESS, jwt);
     }
 
     @GetMapping("/logout")
-    public DefaultResponse<Object> logout(@RequestHeader("Authorization") String authorization){
+    public DefaultResponse<Object> logout(@RequestHeader("Authorization") String authorization) {
 
         String accessToken = authorization.substring(7);
         Long userIdFromAccessToken = tokenProvider.getUserIdFromAccessToken(accessToken);
-        authService.logout(accessToken, "refreshToken",userIdFromAccessToken);
+        authService.logout(accessToken, "refreshToken", userIdFromAccessToken);
 
-        return new DefaultResponse(StatusCode.OK,ResponseMessage.LOGOUT_SUCCESSS,null);
+        return new DefaultResponse(StatusCode.OK, ResponseMessage.LOGOUT_SUCCESSS, null);
     }
 
-    @PostMapping("/test")
-    public void test(@RequestHeader("Authorization") String authorization){
-        String accessToken = authorization.substring(7);
-        authService.test(accessToken);
-    }
 
 //    @PostMapping("/reissue")
 //    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
@@ -102,7 +94,7 @@ public class AuthController {
 
 
     @GetMapping("/my")
-    public User getUserFromJwt(@RequestHeader String authorization) {
+    public ResponseEntity<DefaultResponse> getUserFromJwt(@RequestHeader String authorization) {
 
         String accessToken = authorization.substring(7);
         Long userId = tokenProvider.getUserIdFromAccessToken(accessToken);
@@ -110,16 +102,18 @@ public class AuthController {
         System.out.println("principal = " + principal);
         Optional<User> userByUsername = userService.getUserByUserId(userId);
 
-
-        if(userByUsername.isEmpty()){
-
+        if (userByUsername.isEmpty()) {
+            DefaultResponse defaultResponse1 = DefaultResponse.builder().data(null)
+                    .code(StatusCode.NOT_FOUND).message(ResponseMessage.READ_USER_FAILURE).build();
         }
-
-        return userByUsername.get();
+        MyResponse myResponse = new MyResponse(userByUsername.get().getEmail(),
+                userByUsername.get().getNickname(), userByUsername.get().getAuth(),
+                userByUsername.get().getProvider(), userByUsername.get().getStove_no());
+        DefaultResponse<MyResponse> defaultresponse = new DefaultResponse<>(StatusCode.OK,
+                ResponseMessage.READ_USER_SUCCESS, myResponse);
+        ResponseEntity.ok().body(defaultresponse);
+        return new ResponseEntity<>(defaultresponse, HttpStatus.OK);
     }
-
-
-
 
 
     @PostMapping("/stove")
@@ -178,23 +172,17 @@ public class AuthController {
     }
 
 
-
-
-
     @GetMapping("/randomcode")
     public ResponseEntity<DefaultResponse> getRandomCode() {
         HttpHeaders httpHeaders = new HttpHeaders();
 
         String randomCode = lostarkAuthentication.generateRandomCode();
         System.out.println("randomCode = " + randomCode);
-        DefaultResponse<Object> defaultResponse = new DefaultResponse<>(StatusCode.OK, ResponseMessage.RANDOMCODE_SUCCESS,
-                randomCode);
+        DefaultResponse<Object> defaultResponse = new DefaultResponse<>(StatusCode.OK,
+                ResponseMessage.RANDOMCODE_SUCCESS, randomCode);
         ResponseEntity.ok().body(defaultResponse);
-        return new ResponseEntity<>(defaultResponse,HttpStatus.OK);
+        return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
     }
-
-
-
 
 
 }

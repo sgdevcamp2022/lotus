@@ -1,4 +1,4 @@
-package com.example.auth.Security;
+package com.example.auth.Jwt;
 
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;

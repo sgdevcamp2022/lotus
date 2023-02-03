@@ -6,7 +6,7 @@ import com.example.auth.Entity.User;
 import com.example.auth.Repository.AccessTokenRepository;
 import com.example.auth.Repository.RefreshTokenRepository;
 import com.example.auth.Repository.UserRepository;
-import com.example.auth.Security.TokenProvider;
+import com.example.auth.Jwt.TokenProvider;
 import com.example.auth.Dto.Response.LoginResponse;
 import java.io.IOException;
 import java.util.Map;
