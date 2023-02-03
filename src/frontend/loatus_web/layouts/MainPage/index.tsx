@@ -5,23 +5,10 @@ import { IUser, lostarkInfo } from '@typings/db';
 import fetcher from '@utils/fetcher';
 import { useCookies } from 'react-cookie';
 import { toast, ToastContainer } from 'react-toastify';
-import {
-  Button,
-  Card,
-  Form,
-  Col,
-  Container,
-  InputGroup,
-  Nav,
-  Navbar,
-  NavDropdown,
-  NavLink,
-  Row,
-  SplitButton,
-} from 'react-bootstrap';
+import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap';
 import gravatar from 'gravatar';
-import useInput from '@hooks/useInput';
 import LostarkAuth from '@components/LostarkAuth';
+import { Outlet } from 'react-router';
 
 export const MainPage = () => {
   const [cookie, setCookie] = useCookies(['accessToken']);
@@ -44,6 +31,7 @@ export const MainPage = () => {
           position: 'top-right',
         });
         //setCookie('accessToken', '');
+        mutate();
       })
       .catch((error) => {
         toast.error('로그아웃에 실패했습니다.', {
@@ -52,47 +40,19 @@ export const MainPage = () => {
       });
   }, []);
 
-  const onClickRegist = useCallback(() => {
-    axios
-      .post(
-        '/post/regist/',
-        {
-          title: 'test1',
-          content: 'content test',
-        },
-        {
-          headers: {
-            authorization: cookie.accessToken,
-          },
-        },
-      )
-      .then((response) => {
-        toast.success(response.data.message, {
-          position: 'top-right',
-        });
-        console.log(response.data);
-      })
-      .catch((error) => {
-        toast.error('실패', {
-          position: 'top-right',
-        });
-        console.log(error);
-      });
-  }, []);
-
   return (
     <div>
       <header role="banner">
-        <Navbar bg="light" expand="lg">
-          <Container>
-            <Navbar.Brand href={'/'}>Loatus</Navbar.Brand>
+        <Navbar bg="light" expand="lg" style={{ marginBottom: 20 }}>
+          <Container fluid>
+            <Navbar.Brand href={'/home'}>Loatus</Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="me-auto">
-                <Nav.Link href="/login">홈</Nav.Link>
+                <Nav.Link href="/home">홈</Nav.Link>
                 <Nav.Link href="/party">모집</Nav.Link>
                 <Nav.Link href="/community">커뮤니티</Nav.Link>
-                <Nav.Link href="/post">공지사항</Nav.Link>
+                <Nav.Link href="/notice">공지사항</Nav.Link>
               </Nav>
               <Nav>
                 {userData ? (
@@ -105,6 +65,8 @@ export const MainPage = () => {
                               ? userData?.profile_image
                               : gravatar.url(userData?.email, { s: '25', d: 'retro' })
                           }
+                          width={'25'}
+                          height={'25'}
                           alt={'avatar'}
                         />
                         &nbsp;{userData?.nickname}
@@ -112,13 +74,9 @@ export const MainPage = () => {
                     }
                     id={'userinfo'}
                   >
-                    <NavDropdown.Item eventKey={'mypage'} href={'/mypage'}>
-                      마이페이지
-                    </NavDropdown.Item>
+                    <NavDropdown.Item href={'/mypage'}>마이페이지</NavDropdown.Item>
                     <NavDropdown.Divider />
-                    <NavDropdown.Item eventKey={'logout'} onClick={onClickLogout}>
-                      로그아웃
-                    </NavDropdown.Item>
+                    <NavDropdown.Item onClick={onClickLogout}>로그아웃</NavDropdown.Item>
                   </NavDropdown>
                 ) : (
                   <Nav.Link href={'/login'}>로그인</Nav.Link>
@@ -129,15 +87,8 @@ export const MainPage = () => {
         </Navbar>
       </header>
       <main role="main">
-        {/*TODO 인증 완료 후 받아오는 userData에서 인증됨을 증명하는 수단 찾기*/}
         {userData && <LostarkAuth />}
-        <section>모집</section>
-        <section>오늘 할 일</section>
-        <section>공지</section>
-        <section>
-          <h1>기능테스트</h1>
-          <Button onClick={onClickRegist}>가입하기</Button>
-        </section>
+        <Outlet />
       </main>
 
       <ToastContainer />
