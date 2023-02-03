@@ -26,7 +26,7 @@ import org.springframework.web.filter.CorsFilter;
 public class SecurityConfig {
 
     private static final String[] PERMIT_URL_ARRAY = {
-            "/api/signup",
+            "/user/signup",
             "/auth/login",
             "/sns/**",
             "/login",

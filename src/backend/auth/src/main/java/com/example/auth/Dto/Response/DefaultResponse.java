@@ -11,7 +11,7 @@ public class DefaultResponse<T> {
 
     private int code;
     private String message;
-    private T object;
+    private T data;
 
 
 }

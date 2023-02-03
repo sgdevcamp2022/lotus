@@ -1,10 +1,16 @@
 package com.example.auth.Controller;
 
 import com.example.auth.Dto.Request.SignupRequest;
+import com.example.auth.Dto.Response.DefaultResponse;
+import com.example.auth.Dto.Response.ResponseMessage;
+import com.example.auth.Dto.Response.SignupResponse;
+import com.example.auth.Dto.Response.StatusCode;
 import com.example.auth.Entity.User;
 import com.example.auth.Security.TokenProvider;
 import com.example.auth.Service.UserService;
 import java.util.Optional;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +21,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/user")
 public class UserController {
 
     private final UserService userService;
@@ -26,24 +32,19 @@ public class UserController {
         this.userService = userService;
         this.tokenProvider=tokenProvider;
     }
-
-    @GetMapping("/hello")
-    public ResponseEntity<String> hello() {
-        return ResponseEntity.ok("hello");
-    }
-
-    @PostMapping("/test-redirect")
-    public void testRedirect(HttpServletResponse response) throws IOException {
-        response.sendRedirect("/api/user");
-    }
-
     @PostMapping("/signup")
-    public ResponseEntity<SignupRequest> signup(
+    public ResponseEntity<DefaultResponse> signup(
             @Valid @RequestBody SignupRequest signupRequest
     ) {
-        System.out.println("userDto = " + signupRequest.getPassword());
-        return ResponseEntity.ok(userService.signup(signupRequest));
+        SignupResponse signupResponse=new SignupResponse(signupRequest.getEmail(),signupRequest.getNickname());
+        DefaultResponse<SignupResponse> defaultresponse = new DefaultResponse<>(StatusCode.OK,
+                ResponseMessage.LOGIN_SUCCESS,signupResponse);
+
+        ResponseEntity.ok().body(defaultresponse);
+        return new ResponseEntity<>(defaultresponse, HttpStatus.OK);
     }
+
+
 
     @GetMapping("/user")
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
@@ -56,23 +57,6 @@ public class UserController {
     @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<SignupRequest> getUserInfo(@PathVariable String username) {
         return ResponseEntity.ok(userService.getUserWithAuthorities(username));
-    }
-
-    @GetMapping("/userman")
-    public User redisTest() {
-        Optional<User> userByUserId = userService.getUserByUserId(1L);
-        return userByUserId.get();
-    }
-
-    @PostMapping("/updateStove")
-    public void updateStove(@RequestHeader String authorization) {
-
-        String accessToken = authorization.substring(7);
-        Long userId = tokenProvider.getUserIdFromAccessToken(accessToken);
-
-
-
-        userService.updateStoveNo(userId,"14421423");
     }
 
 
