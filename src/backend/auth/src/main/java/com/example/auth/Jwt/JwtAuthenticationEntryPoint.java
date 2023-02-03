@@ -22,47 +22,42 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
             HttpServletResponse response,
             AuthenticationException authException) throws IOException {
 
-        String exception =(String)request.getAttribute("exception");
+        String exception = (String) request.getAttribute("exception");
 
-
-        if(exception.equals(ResponseMessage.WRONG_JWT)){
-            setResponse(response,ResponseMessage.WRONG_JWT);
-        }
-        else if(exception.equals(ResponseMessage.EXPIRED_JWT)){
-            setResponse(response,ResponseMessage.EXPIRED_JWT);
-        }
-        else if(exception.equals(ResponseMessage.UNSUPPORTED_JWT)){
-            setResponse(response,ResponseMessage.UNSUPPORTED_JWT);
-        }
-        else if(exception.equals(ResponseMessage.Illegal_JWT)){
-            setResponse(response,ResponseMessage.Illegal_JWT);
-        }
-        else if(exception.equals(ResponseMessage.NO_JWT)){
-            setResponse(response,ResponseMessage.NO_JWT);
-        }
-        else if(exception.equals(ResponseMessage.LOGOUT_JWT)){
-            setResponse(response,ResponseMessage.LOGOUT_JWT);
-        }
-        else{
+        if (exception.equals(ResponseMessage.WRONG_JWT)) {
+            setResponse(response, ResponseMessage.WRONG_JWT);
+        } else if (exception.equals(ResponseMessage.EXPIRED_JWT)) {
+            setResponse(response, ResponseMessage.EXPIRED_JWT);
+        } else if (exception.equals(ResponseMessage.UNSUPPORTED_JWT)) {
+            setResponse(response, ResponseMessage.UNSUPPORTED_JWT);
+        } else if (exception.equals(ResponseMessage.Illegal_JWT)) {
+            setResponse(response, ResponseMessage.Illegal_JWT);
+        } else if (exception.equals(ResponseMessage.NO_JWT)) {
+            setResponse(response, ResponseMessage.NO_JWT);
+        } else if (exception.equals(ResponseMessage.LOGOUT_JWT)) {
+            setResponse(response, ResponseMessage.LOGOUT_JWT);
+        } else {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         }
 
         // 유효한 자격증명을 제공하지 않고 접근하려 할때 401
-      // response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+        // response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
 
     }
 
 
     //한글 출력을 위해 getWriter() 사용
-    private void setResponse(HttpServletResponse response, String responseMessage) throws IOException {
+    private void setResponse(HttpServletResponse response, String responseMessage)
+            throws IOException {
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-        DefaultResponse defaultResponse=new DefaultResponse(StatusCode.UNAUTHORIZED, responseMessage, null);
-        Gson gson=new GsonBuilder()
+        DefaultResponse defaultResponse = new DefaultResponse(StatusCode.UNAUTHORIZED,
+                responseMessage, null);
+        Gson gson = new GsonBuilder()
                 .serializeNulls()
-                        .create();
-        response.getWriter().println(  gson.toJson(defaultResponse));
+                .create();
+        response.getWriter().println(gson.toJson(defaultResponse));
     }
 
 }

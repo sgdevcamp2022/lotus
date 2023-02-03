@@ -55,11 +55,11 @@ public class JwtFilter extends GenericFilterBean {
              * validate token-> 토큰 예외에 각 상황을 set해두고
              * jwt가 존재하지 않는경우는 no_jwt로 초기에 설정을 해둔것이다
              * */
-                Authentication authentication = tokenProvider.getAuthentication(jwt);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                logger.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}",
-                        authentication.getName(),
-                        requestURI);
+            Authentication authentication = tokenProvider.getAuthentication(jwt);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            logger.debug("Security Context에 '{}' 인증 정보를 저장했습니다, uri: {}",
+                    authentication.getName(),
+                    requestURI);
         } else {
             logger.debug("유효한 JWT 토큰이 없습니다, uri: {}", requestURI);
         }
@@ -93,15 +93,4 @@ public class JwtFilter extends GenericFilterBean {
         return id;
     }
 
-//    private Boolean checkAccessTokenExists(HttpServletRequest httpServletRequest, Long userId) {
-//
-//        if (accessTokenRepository.findAccessTokenByUserId(userId).orElse(null) != null) {
-//            httpServletRequest.setAttribute("exception", ResponseMessage.LOGOUT_JWT);
-//            return true;        //로그아웃상태
-//        } else {
-//            return false;       //로그아웃상태x
-//        }
-//
-//
-//    }
 }

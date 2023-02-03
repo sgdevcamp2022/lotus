@@ -27,7 +27,6 @@ public class SignupRequest {
     @Size(min = 3, max = 50)
     private String nickname;
 
-    //private Set<AuthorityDto> authorityDtoSet;
 
     private String auth;
 
@@ -41,9 +40,6 @@ public class SignupRequest {
         return SignupRequest.builder()
                 .email(user.getEmail())
                 .nickname(user.getNickname())
-                /*  .authorityDtoSet(user.getAuthorities().stream()
-                          .map(authority -> AuthorityDto.builder().authorityName(authority.getAuthorityName()).build())
-                          .collect(Collectors.toSet()))*/
                 .auth(user.getAuth())
                 .profile_image(user.getProfile_image())
                 .build();

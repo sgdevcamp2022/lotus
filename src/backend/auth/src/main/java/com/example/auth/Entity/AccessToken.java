@@ -10,7 +10,7 @@ import org.springframework.data.redis.core.TimeToLive;
 import org.springframework.data.redis.core.index.Indexed;
 
 @Getter
-@RedisHash(value="accesstoken")
+@RedisHash(value = "accesstoken")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

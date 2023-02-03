@@ -61,14 +61,14 @@ public class UserService {
     }
 
 
-
-
+    @Transactional(readOnly = true)
     public Optional<User> getUserByUsername(String email) {
 
         Optional<User> oneByUsername = userRepository.findOneByEmail(email);
         return oneByUsername;
     }
 
+    @Transactional(readOnly = true)
     public Optional<User> getUserByUserId(Long userId) {
 
         Optional<User> oneByUserId = userRepository.findOneByUserId(userId);
@@ -80,14 +80,6 @@ public class UserService {
         return SignupRequest.from(userRepository.findOneWithAuthoritiesByEmail(email).orElse(null));
     }
 
-    /*@Transactional(readOnly = true)
-    public UserDto getMyUserWithAuthorities() {
-        return UserDto.from(
-                SecurityUtil.getCurrentUsername()
-                        .flatMap(userRepository::findOneWithAuthoritiesByUsername)
-                        .orElseThrow(() -> new NotFoundMemberException("Member not found"))
-        );
-    }*/
 
     @Transactional(readOnly = true)
     public SignupRequest getMyUserWithAuthorities() {
@@ -99,12 +91,12 @@ public class UserService {
     }
 
     @Transactional
-    public DefaultResponse updateStoveNo(Long userId, String stoveNo){
+    public DefaultResponse updateStoveNo(Long userId, String stoveNo) {
         Optional<User> oneByUserId = userRepository.findOneByUserId(userId);
-        if(oneByUserId.isEmpty()){
-            return new DefaultResponse(StatusCode.STOVENO_ERROR, ResponseMessage.STOVE_NUMBER_FAILURE, null);
-        }
-        else{
+        if (oneByUserId.isEmpty()) {
+            return new DefaultResponse(StatusCode.STOVENO_ERROR,
+                    ResponseMessage.STOVE_NUMBER_FAILURE, null);
+        } else {
             User user = oneByUserId.get();
             user.setStove_no(stoveNo);
             userRepository.save(user);

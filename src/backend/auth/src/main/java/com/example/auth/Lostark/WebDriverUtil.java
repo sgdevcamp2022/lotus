@@ -17,7 +17,7 @@ public class WebDriverUtil {
 
     private WebDriver driver;
     public static String WEB_DRIVER_ID = "webdriver.chrome.driver"; // Properties 설정
-   // public static String WEB_DRIVER_PATH = "C:/dev/python/crawling/webdriver/chromedriver.exe"; // WebDriver 경로
+    // public static String WEB_DRIVER_PATH = "C:/dev/python/crawling/webdriver/chromedriver.exe"; // WebDriver 경로
     public static String WEB_DRIVER_PATH = "D:/Software/chromedriver/chromedriver.exe"; // WebDriver 경로
 
     public WebDriverUtil() {
@@ -44,29 +44,27 @@ public class WebDriverUtil {
     public DefaultResponse getIntroductionInStove(String url) {
 
         //url 형식이 다를때(길이가 안맞을떄)
-        if(url.length()<29){
-            DefaultResponse defaultResponse=new DefaultResponse(StatusCode.URL_ERROR,
-                    ResponseMessage.STOVE_URL_AGAIN,null);
+        if (url.length() < 29) {
+            DefaultResponse defaultResponse = new DefaultResponse(StatusCode.URL_ERROR,
+                    ResponseMessage.STOVE_URL_AGAIN, null);
             return defaultResponse;
         }
         String memberNo = url.substring(29);
 
-        try{
+        try {
             Integer.parseInt(memberNo);
-        } catch(NumberFormatException e){
-            DefaultResponse defaultResponse=new DefaultResponse(StatusCode.URL_ERROR,
-                    ResponseMessage.STOVE_URL_AGAIN,null);
+        } catch (NumberFormatException e) {
+            DefaultResponse defaultResponse = new DefaultResponse(StatusCode.URL_ERROR,
+                    ResponseMessage.STOVE_URL_AGAIN, null);
             return defaultResponse;
         }
 
-
-
         driver.get(url);
         driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);  // 페이지 불러오는 여유시간.
-        String xpath="//*[@id=\"navContent\"]/div/div[2]/section[1]/div[2]/p";
+        String xpath = "//*[@id=\"navContent\"]/div/div[2]/section[1]/div[2]/p";
         WebElement element = driver.findElement(By.xpath(xpath));
         System.out.println("element.getText() = " + element.getText());
-        String result=element.getText();
+        String result = element.getText();
         StoveResponse stoveResponse = new StoveResponse(result, memberNo);
         quitDriver();
         return new DefaultResponse(StatusCode.OK, ResponseMessage.STOVE_INTRODUCTION_SUCCESS,
@@ -77,10 +75,9 @@ public class WebDriverUtil {
         System.out.println("url = " + url);
         driver.get(url);
         driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);  // 페이지 불러오는 여유시간.
-        String xpath="//*[@id=\"lostark-wrapper\"]/div/main/div/div[1]/span[2]";
+        String xpath = "//*[@id=\"lostark-wrapper\"]/div/main/div/div[1]/span[2]";
         WebElement element = driver.findElement(By.xpath(xpath));
-        String result=element.getText();
-
+        String result = element.getText();
 
         quitDriver();
         return result;

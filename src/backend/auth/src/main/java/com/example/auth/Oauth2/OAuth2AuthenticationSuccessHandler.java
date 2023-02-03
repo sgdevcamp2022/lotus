@@ -46,23 +46,21 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
             throws IOException, ServletException {
 
         System.out.println("authentication = " + authentication);
-        OAuth2User oAuth2User=(OAuth2User)authentication.getPrincipal();
+        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
         System.out.println("oAuth2User = " + oAuth2User);
         Map<String, Object> attributes = oAuth2User.getAttributes();
         System.out.println("attributes = " + attributes);
-
-
 
         String[] path = httpServletRequest.getRequestURI().split("/");
         String provider = Provider.valueOf(path[path.length - 1].toUpperCase()).toString();
         String oauthId = authentication.getName();
         String email;
-        
-        if(provider.equals("KAKAO")){
-            Map<String, Object> kakao_account = (Map<String, Object>) attributes.get("kakao_account");
+
+        if (provider.equals("KAKAO")) {
+            Map<String, Object> kakao_account = (Map<String, Object>) attributes.get(
+                    "kakao_account");
             email = kakao_account.get("email").toString();
-        }
-        else{
+        } else {
             email = attributes.get("email").toString();
         }
 
@@ -70,7 +68,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
 
         LoginResponse jwt = login(authentication, email, provider);
 
-     //   String uri = UriComponentsBuilder.fromUriString("http://localhost:8080/social")
+        //   String uri = UriComponentsBuilder.fromUriString("http://localhost:8080/social")
         String uri = UriComponentsBuilder.fromUriString("http://localhost:3090/login")
                 .queryParam("provider", provider)
                 .queryParam("oauthId", oauthId)
@@ -83,16 +81,14 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
     }
 
 
-        private LoginResponse login(Authentication authentication, String email, String provider) {
+    private LoginResponse login(Authentication authentication, String email, String provider) {
 
-       // SecurityContextHolder.getContext().setAuthentication(authentication);
+        // SecurityContextHolder.getContext().setAuthentication(authentication);
 
+        Optional<User> oneByEmail = userRepository.findOneByEmailAndProvider(email, provider);
+        Long userId = oneByEmail.get().getUserId();
 
-
-            Optional<User> oneByEmail = userRepository.findOneByEmailAndProvider(email,provider);
-            Long userId = oneByEmail.get().getUserId();
-
-        LoginResponse jwt = tokenProvider.createToken(authentication,userId);
+        LoginResponse jwt = tokenProvider.createToken(authentication, userId);
         RefreshToken refreshTokenInRedis = findRefreshToken(userId);
 
         if (Objects.isNull(refreshTokenInRedis)) {    //redis에 refreshtoken 없으면 최초로그인
@@ -103,11 +99,11 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
             jwt.setRefreshToken(null);
         }
 
-            Optional<AccessToken> accessTokenByUserId = accessTokenRepository.findAccessTokenByUserId(
-                    userId);
-            if(accessTokenByUserId.isPresent()){  //로그아웃한 유저가 다시 로그인하면
-                accessTokenRepository.delete(accessTokenByUserId.get());    //redis에 남아있던 accesstoken 제거
-            }
+        Optional<AccessToken> accessTokenByUserId = accessTokenRepository.findAccessTokenByUserId(
+                userId);
+        if (accessTokenByUserId.isPresent()) {  //로그아웃한 유저가 다시 로그인하면
+            accessTokenRepository.delete(accessTokenByUserId.get());    //redis에 남아있던 accesstoken 제거
+        }
 
         return jwt;
     }

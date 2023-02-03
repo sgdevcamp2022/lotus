@@ -18,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -38,10 +39,11 @@ public class AuthService {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.tokenProvider = tokenProvider;
         this.refreshTokenRepository = refreshTokenRepository;
-        this.userRepository=userRepository;
-        this.accessTokenRepository=accessTokenRepository;
+        this.userRepository = userRepository;
+        this.accessTokenRepository = accessTokenRepository;
     }
 
+    @Transactional
     public LoginResponse login(LoginRequest loginDto) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginDto.getEmail(),
@@ -55,7 +57,6 @@ public class AuthService {
 
         LoginResponse jwt = tokenProvider.createToken(authentication, userId);
 
-
         RefreshToken refreshTokenInRedis = findRefreshToken(userId);
 
         if (Objects.isNull(refreshTokenInRedis)) {    //redis에 refreshtoken 없으면 최초로그인
@@ -68,7 +69,7 @@ public class AuthService {
 
         Optional<AccessToken> accessTokenByUserId = accessTokenRepository.findAccessTokenByUserId(
                 userId);
-        if(accessTokenByUserId.isPresent()){  //로그아웃한 유저가 다시 로그인하면
+        if (accessTokenByUserId.isPresent()) {  //로그아웃한 유저가 다시 로그인하면
             accessTokenRepository.delete(accessTokenByUserId.get());    //redis에 남아있던 accesstoken 제거
         }
 
@@ -76,30 +77,25 @@ public class AuthService {
     }
 
 
-    public void logout(String accessToken, String refreshToken, Long userId){
+    @Transactional
+    public void logout(String accessToken, String refreshToken, Long userId) {
         long remainMilliSeconds = tokenProvider.getRemainMilliSeconds(accessToken);
         System.out.println("remainMilliSeconds = " + remainMilliSeconds);
         System.out.println("refreshToken = " + refreshToken);
         RefreshToken refreshTokenByUserId = refreshTokenRepository.findRefreshTokenByUserId(userId);
         refreshTokenRepository.delete(refreshTokenByUserId);
 
-        AccessToken acccessTokenInRedis = new AccessToken(userId, accessToken, remainMilliSeconds / 1000);
+        AccessToken acccessTokenInRedis = new AccessToken(userId, accessToken,
+                remainMilliSeconds / 1000);
         Long expiration = acccessTokenInRedis.getExpiration();
         System.out.println("expiration = " + expiration);
 
-
-
         accessTokenRepository.save(acccessTokenInRedis);
     }
-    public void test(String accessToken){
-        Long userIdFromAccessToken = tokenProvider.getUserIdFromAccessToken(accessToken);
-        Optional<AccessToken> accessTokenByUserId = accessTokenRepository.findAccessTokenByUserId(
-                userIdFromAccessToken);
-
-    }
 
 
 
+    @Transactional(readOnly = true)
     public RefreshToken findRefreshToken(Long userId) {
         return refreshTokenRepository.findRefreshTokenByUserId(userId);
     }

@@ -39,10 +39,10 @@ public class LostarkAuthentication {
     }
 
 
-    public String generateRandomCode(){
+    public String generateRandomCode() {
         /*
-        * 랜덤 문자열 생성
-        * */
+         * 랜덤 문자열 생성
+         * */
         int leftLimit = 97; // letter 'a'
         int rightLimit = 122; // letter 'z'
         int targetStringLength = 80;
@@ -53,24 +53,15 @@ public class LostarkAuthentication {
                 .toString();
         System.out.println(generatedString);
 
-
-
         return generatedString;
     }
 
 
+    public String getEncryptedMemberNo(String memberNo) {
 
+        // String memberNo = url.substring(29);
 
-
-
-
-    public String getEncryptedMemberNo(String memberNo){
-
-
-
-       // String memberNo = url.substring(29);
-
-        String json="{"+"memberNo:"+memberNo +"}";
+        String json = "{" + "memberNo:" + memberNo + "}";
 
         JSONObject jsonObject = httpPostBodyConnection(
                 "https://lostark.game.onstove.com/board/IsCharacterList", json);
@@ -78,9 +69,9 @@ public class LostarkAuthentication {
         return jsonObject.get("encryptMemberNo").toString();
     }
 
-    public JsonNode getCharactersInLostark(String characterName){
+    public JsonNode getCharactersInLostark(String characterName) {
 
-        String json="{"+"memberNo:"+"hi" +"}";
+        String json = "{" + "memberNo:" + "hi" + "}";
         String encodedCharacterName;
         String url;
         try {
@@ -88,7 +79,8 @@ public class LostarkAuthentication {
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
-        url="https://developer-lostark.game.onstove.com/characters/"+encodedCharacterName+"/siblings";
+        url = "https://developer-lostark.game.onstove.com/characters/" + encodedCharacterName
+                + "/siblings";
         System.out.println("encodedCharacterName = " + encodedCharacterName);
 
         JsonNode jsonNode = httpGetConnection(
@@ -116,7 +108,7 @@ public class LostarkAuthentication {
 
         //메소드 호출 결과값을 반환하기 위한 변수
         String returnData = "";
-        JSONObject jsonObj=new JSONObject();
+        JSONObject jsonObj = new JSONObject();
 
         try {
             //파라미터로 들어온 url을 사용해 connection 실시
@@ -125,24 +117,24 @@ public class LostarkAuthentication {
 
             //http 요청에 필요한 타입 정의 실시
             conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/json; utf-8"); //post body json으로 던지기 위함
+            conn.setRequestProperty("Content-Type",
+                    "application/json; utf-8"); //post body json으로 던지기 위함
             conn.setRequestProperty("Accept", "application/json");
             conn.setDoOutput(true); //OutputStream을 사용해서 post body 데이터 전송
-            try (OutputStream os = conn.getOutputStream()){
+            try (OutputStream os = conn.getOutputStream()) {
                 byte request_data[] = ParamData.getBytes("utf-8");
                 os.write(request_data);
                 os.close();
-            }
-            catch(Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
             //http 요청 실시
             conn.connect();
-            System.out.println("http 요청 방식 : "+"POST BODY JSON");
-            System.out.println("http 요청 타입 : "+"application/json");
-            System.out.println("http 요청 주소 : "+UrlData);
-            System.out.println("http 요청 데이터 : "+ParamData);
+            System.out.println("http 요청 방식 : " + "POST BODY JSON");
+            System.out.println("http 요청 타입 : " + "application/json");
+            System.out.println("http 요청 주소 : " + UrlData);
+            System.out.println("http 요청 데이터 : " + ParamData);
             System.out.println("");
 
             //http 요청 후 응답 받은 데이터를 버퍼에 쌓는다
@@ -157,13 +149,12 @@ public class LostarkAuthentication {
 
             //http 요청 응답 코드 확인 실시
             String responseCode = String.valueOf(conn.getResponseCode());
-            System.out.println("http 응답 코드 : "+responseCode);
-            System.out.println("http 응답 데이터 : "+returnData);
+            System.out.println("http 응답 코드 : " + responseCode);
+            System.out.println("http 응답 데이터 : " + returnData);
 
             JSONParser parser = new JSONParser();
             Object obj = parser.parse(returnData);
             jsonObj = (JSONObject) obj;
-
 
 
         } catch (IOException | ParseException e) {
@@ -187,7 +178,7 @@ public class LostarkAuthentication {
 
         //http 요청 시 url 주소와 파라미터 데이터를 결합하기 위한 변수 선언
         String totalUrl = UrlData;
-     //   String totalUrl="https://developer-lostark.game.onstove.com/characters/%EB%85%B8%EB%A3%A8%EC%84%B8%ED%82%A4/siblings";
+        //   String totalUrl="https://developer-lostark.game.onstove.com/characters/%EB%85%B8%EB%A3%A8%EC%84%B8%ED%82%A4/siblings";
 
         //http 통신을 하기위한 객체 선언 실시
         URL url = null;
@@ -200,7 +191,7 @@ public class LostarkAuthentication {
 
         //메소드 호출 결과값을 반환하기 위한 변수
         String returnData = "";
-        JsonNode jsonNode=new JsonNode() {
+        JsonNode jsonNode = new JsonNode() {
             @Override
             public <T extends JsonNode> T deepCopy() {
                 return null;
@@ -309,7 +300,6 @@ public class LostarkAuthentication {
             }
         };
 
-
         try {
             //파라미터로 들어온 url을 사용해 connection 실시
             url = new URL(totalUrl);
@@ -319,26 +309,24 @@ public class LostarkAuthentication {
             //http 요청에 필요한 타입 정의 실시
             conn.setRequestProperty("Accept", "application/json");
             conn.setRequestMethod("GET");
-            conn.setRequestProperty("Authorization", "bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IktYMk40TkRDSTJ5NTA5NWpjTWk5TllqY2lyZyIsImtpZCI6IktYMk40TkRDSTJ5NTA5NWpjTWk5TllqY2lyZyJ9.eyJpc3MiOiJodHRwczovL2x1ZHkuZ2FtZS5vbnN0b3ZlLmNvbSIsImF1ZCI6Imh0dHBzOi8vbHVkeS5nYW1lLm9uc3RvdmUuY29tL3Jlc291cmNlcyIsImNsaWVudF9pZCI6IjEwMDAwMDAwMDAwMzkxNDAifQ.h1duCpF8FTw4aH00VTcIXKgvX3LCcAtT8HKUkEDNDdZxa33ZaY8RgphyL9jhFIPDE8dehxi_F3BFe8BUEWlmthYdOm0LcPL5EIJKiPktJ8MPwSRUQbfntCCkSj1EBM6RebXTQ0rmH_EviiPKuwKYOIq0U24I40d_dUBT6iV-5rT6m_JxFxZpSGgz226U6LdOCzoBD5V8Tq0-Nuxx2WaNTb57CjpiQuvt_Oo7oS0LJKcf5JOBRyzUR-JFTPayx3JvzqzRO0CwVTfhUqie3xcu0N2STAmmmH-KKkIQthc3pJRobXsRWfzYDHzsjWlyupeNtEqiPJC3XotoAzSQW0zkmA");
-
+            conn.setRequestProperty("Authorization",
+                    "bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IktYMk40TkRDSTJ5NTA5NWpjTWk5TllqY2lyZyIsImtpZCI6IktYMk40TkRDSTJ5NTA5NWpjTWk5TllqY2lyZyJ9.eyJpc3MiOiJodHRwczovL2x1ZHkuZ2FtZS5vbnN0b3ZlLmNvbSIsImF1ZCI6Imh0dHBzOi8vbHVkeS5nYW1lLm9uc3RvdmUuY29tL3Jlc291cmNlcyIsImNsaWVudF9pZCI6IjEwMDAwMDAwMDAwMzkxNDAifQ.h1duCpF8FTw4aH00VTcIXKgvX3LCcAtT8HKUkEDNDdZxa33ZaY8RgphyL9jhFIPDE8dehxi_F3BFe8BUEWlmthYdOm0LcPL5EIJKiPktJ8MPwSRUQbfntCCkSj1EBM6RebXTQ0rmH_EviiPKuwKYOIq0U24I40d_dUBT6iV-5rT6m_JxFxZpSGgz226U6LdOCzoBD5V8Tq0-Nuxx2WaNTb57CjpiQuvt_Oo7oS0LJKcf5JOBRyzUR-JFTPayx3JvzqzRO0CwVTfhUqie3xcu0N2STAmmmH-KKkIQthc3pJRobXsRWfzYDHzsjWlyupeNtEqiPJC3XotoAzSQW0zkmA");
 
             //http 요청 실시
             conn.connect();
-            System.out.println("http 요청 방식 : "+"GET");
-            System.out.println("http 요청 타입 : "+"application/json");
-            System.out.println("http 요청 주소 : "+UrlData);
-            System.out.println("http 요청 데이터 : "+ParamData);
+            System.out.println("http 요청 방식 : " + "GET");
+            System.out.println("http 요청 타입 : " + "application/json");
+            System.out.println("http 요청 주소 : " + UrlData);
+            System.out.println("http 요청 데이터 : " + ParamData);
             System.out.println("");
 
-            ObjectMapper mapper=new ObjectMapper();
+            ObjectMapper mapper = new ObjectMapper();
             jsonNode = mapper.readTree(conn.getInputStream());
-
 
             //http 요청 응답 코드 확인 실시
             String responseCode = String.valueOf(conn.getResponseCode());
-            System.out.println("http 응답 코드 : "+responseCode);
-            System.out.println("http 응답 데이터 : "+jsonNode);
-
+            System.out.println("http 응답 코드 : " + responseCode);
+            System.out.println("http 응답 데이터 : " + jsonNode);
 
 
         } catch (IOException e) {

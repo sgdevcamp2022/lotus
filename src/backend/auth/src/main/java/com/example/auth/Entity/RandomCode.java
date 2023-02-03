@@ -12,6 +12,7 @@ import org.springframework.data.redis.core.index.Indexed;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RandomCode {
+
     @Id
     private String id;
 
@@ -21,9 +22,8 @@ public class RandomCode {
     private String randomCode;
 
 
-
     public RandomCode(String randomCode, Long userId) {
-        this.userId=userId;
-        this.randomCode=randomCode;
+        this.userId = userId;
+        this.randomCode = randomCode;
     }
 }

@@ -98,53 +98,11 @@ public class SecurityConfig {
                 .failureHandler(oAuth2AuthenticationFailureHandler)
 
                 .and()
-                .apply(new JwtSecurityConfig(tokenProvider,accessTokenRepository));
+                .apply(new JwtSecurityConfig(tokenProvider, accessTokenRepository));
 
         return http.build();
     }
 
-//    @Bean
-//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-//        http
-//                .httpBasic().disable()
-//                .formLogin().disable()
-//                .csrf().disable()
-//
-//                .sessionManagement()
-//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//                .and()
-//               // .addFilter(corsconfig.corsFilter())
-//                .authorizeRequests().anyRequest().permitAll()
-//                .and()
-//                .oauth2Login()
-//                .userInfoEndpoint()
-//                .oidcUserService(customOidcUserService)
-//                .userService(customOAuth2AuthService)
-//                .and()
-//                .successHandler(oAuth2AuthenticationSuccessHandler)
-//                .failureHandler(oAuth2AuthenticationFailureHandler);
-//        return http.build();
-//    }
-
-//    @Bean
-//    public WebSecurityCustomizer webSecurityCustomizer() {
-//        return (web -> web.ignoring().antMatchers("/images/**", "/js/**", "/webjars/**"));
-//    }
-
-//    @Bean
-//    public CorsConfigurationSource corsConfigurationSource() {
-//        CorsConfiguration configuration = new CorsConfiguration();
-//
-//
-//        configuration.addAllowedHeader("*");
-//        configuration.addAllowedMethod("*");
-//        configuration.addAllowedOriginPattern("*");
-//        configuration.setAllowCredentials(true);
-//
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", configuration);
-//        return source;
-//    }
 
 }
 

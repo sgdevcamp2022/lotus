@@ -34,24 +34,24 @@ public class User {
     @Column(name = "auth", length = 50)
     private String auth;
 
-    @Column(name="profile_image", length=100)
+    @Column(name = "profile_image", length = 100)
     private String profile_image;
 
-    @Column(name="provider", length=10)
+    @Column(name = "provider", length = 10)
     private String provider;
 
-    @Column(name="stove_no", length=15)
+    @Column(name = "stove_no", length = 15)
     private String stove_no;
 
-//    @ManyToMany
+    //    @ManyToMany
 //    @JoinTable(
 //            name = "user_authority",
 //            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "user_id")},
 //            inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")})
 //    private Set<Authority> authorities;
-    public User update(String profile_image, String nickname){
-        this.profile_image=profile_image;
-        this.nickname=nickname;
+    public User update(String profile_image, String nickname) {
+        this.profile_image = profile_image;
+        this.nickname = nickname;
         return this;
     }
 }

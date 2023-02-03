@@ -19,7 +19,6 @@ public class ViewController {
             @RequestParam(value = "refreshToken", required = false) String refreshToken
     ) {
 
-
         model.addAttribute("provider", provider);
         model.addAttribute("oauthId", oauthId);
         model.addAttribute("grantType", grantType);

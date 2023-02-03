@@ -25,23 +25,24 @@ public class UserController {
 
     public UserController(UserService userService, TokenProvider tokenProvider) {
         this.userService = userService;
-        this.tokenProvider=tokenProvider;
+        this.tokenProvider = tokenProvider;
     }
+
     @PostMapping("/signup")
     public ResponseEntity<DefaultResponse> signup(
             @Valid @RequestBody SignupRequest signupRequest
     ) {
 
         userService.signup(signupRequest);
-        SignupResponse signupResponse=new SignupResponse(signupRequest.getEmail(),signupRequest.getNickname());
+        SignupResponse signupResponse = new SignupResponse(signupRequest.getEmail(),
+                signupRequest.getNickname());
         DefaultResponse<SignupResponse> defaultResponse = new DefaultResponse<>(StatusCode.OK,
-                ResponseMessage.LOGIN_SUCCESS,signupResponse);
+                ResponseMessage.LOGIN_SUCCESS, signupResponse);
 
         ResponseEntity.ok().body(defaultResponse);
 
         return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
     }
-
 
 
     @GetMapping("/user")

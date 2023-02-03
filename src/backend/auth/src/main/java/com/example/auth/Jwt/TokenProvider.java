@@ -46,7 +46,7 @@ public class TokenProvider implements InitializingBean {
         this.secret = secret;
         this.accessTokenValidityInMilliseconds = accessTokenValidityInSeconds * 1000;
         this.refreshTokenValidityInMilliseconds = refreshTokenValidityInSeconds * 1000;
-        this.accessTokenRepository=accessTokenRepository;
+        this.accessTokenRepository = accessTokenRepository;
     }
 
     @Override
@@ -68,6 +68,7 @@ public class TokenProvider implements InitializingBean {
                 .build();
 
     }
+
     public LoginResponse createToken(Authentication authentication, Long userId) {
         String accessToken = createAccessToken(authentication, userId);
         String refreshToken = createRefreshToken();
@@ -87,7 +88,6 @@ public class TokenProvider implements InitializingBean {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
-        
         long now = (new Date()).getTime();
         Date accessValidity = new Date(now + this.accessTokenValidityInMilliseconds);
 
@@ -107,14 +107,13 @@ public class TokenProvider implements InitializingBean {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
-
         long now = (new Date()).getTime();
         Date accessValidity = new Date(now + this.accessTokenValidityInMilliseconds);
 
         System.out.println("authentication.getPrincipal() = " + authentication.getPrincipal());
         String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())
-                .claim("id",userId)
+                .claim("id", userId)
                 .claim(AUTHORITIES_KEY, authorities)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .setExpiration(accessValidity)
@@ -144,7 +143,7 @@ public class TokenProvider implements InitializingBean {
                 .parseClaimsJws(token)
                 .getBody();
 
-        System.out.println("claims.getid"+claims.get("id"));
+        System.out.println("claims.getid" + claims.get("id"));
 
         Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
@@ -157,12 +156,13 @@ public class TokenProvider implements InitializingBean {
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 
-    public boolean validateToken(HttpServletRequest request,String token) {
+    public boolean validateToken(HttpServletRequest request, String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             Long userIdFromToken = getUserIdFromAccessToken(token);
 
-            if (accessTokenRepository.findAccessTokenByUserId(userIdFromToken).orElse(null) != null) {
+            if (accessTokenRepository.findAccessTokenByUserId(userIdFromToken).orElse(null)
+                    != null) {
                 logger.info("로그아웃한 사용자입니다.");
                 request.setAttribute("exception", ResponseMessage.LOGOUT_JWT);
                 return false;        //로그아웃상태
@@ -209,23 +209,11 @@ public class TokenProvider implements InitializingBean {
         return Long.parseLong(id);
     }
 
-    public long getRemainMilliSeconds(String accessToken){
+    public long getRemainMilliSeconds(String accessToken) {
         Date expiration = extractAllClaims(accessToken).getExpiration();
-        Date now=new Date();
-        return expiration.getTime()-now.getTime();
-       // return Long.parseLong(exp);
-    }
-
-    //한글 출력을 위해 getWriter() 사용
-    private void setResponse(HttpServletResponse response) throws IOException {
-        response.setContentType("application/json;charset=UTF-8");
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-
-        JSONObject responseJson = new JSONObject();
-        responseJson.put("message", "message");
-        responseJson.put("code", "code");
-
-        response.getWriter().print(responseJson);
+        Date now = new Date();
+        return expiration.getTime() - now.getTime();
+        // return Long.parseLong(exp);
     }
 
 

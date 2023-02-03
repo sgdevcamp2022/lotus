@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class StoveResponse {
+
     private String randomCode;
     private String memberNo;
 }

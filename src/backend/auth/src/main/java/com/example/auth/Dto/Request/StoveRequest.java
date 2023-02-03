@@ -12,6 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class StoveRequest {
+
     private String stoveUrl;
     private String randomCode;
 }

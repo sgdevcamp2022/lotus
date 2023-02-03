@@ -130,7 +130,7 @@ public class OAuth2Attributes {
                 .build();
     }
 
-    public User toEntity(){
+    public User toEntity() {
         return User.builder()
                 .nickname(nickname)
                 .email(email)

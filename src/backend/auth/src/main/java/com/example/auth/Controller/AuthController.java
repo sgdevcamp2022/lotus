@@ -80,7 +80,6 @@ public class AuthController {
         return new DefaultResponse(StatusCode.OK, ResponseMessage.LOGOUT_SUCCESSS, null);
     }
 
-
 //    @PostMapping("/reissue")
 //    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
 //    public void reissueAccessToken(@RequestHeader HttpHeaders headers) {
