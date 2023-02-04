@@ -28,6 +28,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
             setResponse(response, ResponseMessage.WRONG_JWT);
         } else if (exception.equals(ResponseMessage.EXPIRED_JWT)) {
             setResponse(response, ResponseMessage.EXPIRED_JWT);
+
         } else if (exception.equals(ResponseMessage.UNSUPPORTED_JWT)) {
             setResponse(response, ResponseMessage.UNSUPPORTED_JWT);
         } else if (exception.equals(ResponseMessage.Illegal_JWT)) {

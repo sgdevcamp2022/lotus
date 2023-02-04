@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -83,7 +84,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
 
     private LoginResponse login(Authentication authentication, String email, String provider) {
 
-        // SecurityContextHolder.getContext().setAuthentication(authentication);
+         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         Optional<User> oneByEmail = userRepository.findOneByEmailAndProvider(email, provider);
         Long userId = oneByEmail.get().getUserId();

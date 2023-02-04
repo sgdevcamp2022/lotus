@@ -17,6 +17,7 @@ import com.example.auth.Jwt.TokenProvider;
 import com.example.auth.Service.AuthService;
 import com.example.auth.Util.SecurityUtil;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -80,16 +81,17 @@ public class AuthController {
         return new DefaultResponse(StatusCode.OK, ResponseMessage.LOGOUT_SUCCESSS, null);
     }
 
-//    @PostMapping("/reissue")
-//    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-//    public void reissueAccessToken(@RequestHeader HttpHeaders headers) {
-//        String accessToken = headers.getFirst("authorization").substring(7);
-//        System.out.println("accessToken = " + accessToken);
-//        String refreshToken=headers.getFirst("refreshtoken");
-//        System.out.println("refreshToken = " + refreshToken);
-////        DefaultResponse response = authService.reissueAccessToken(
-////                headers.getFirst("refreshtoken"));
-//
+    @PostMapping("/reissue")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public ResponseEntity<DefaultResponse> reissueAccessToken(@RequestHeader HttpHeaders headers) {
+        String accessToken = headers.getFirst("authorization").substring(7);
+        System.out.println("accessToken = " + accessToken);
+        String refreshToken = headers.getFirst("refreshtoken");
+        System.out.println("refreshToken = " + refreshToken);
+        DefaultResponse defaultResponse = authService.reissueAccessToken(accessToken, refreshToken);
+        ResponseEntity.ok().body(defaultResponse);
+        return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
+    }
 
 
     @GetMapping("/my")
