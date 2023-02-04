@@ -68,7 +68,7 @@ public class AuthController {
         Optional<String> currentUsername = SecurityUtil.getCurrentUsername();
         System.out.println("currentUsername = " + currentUsername);
 
-        return new DefaultResponse<>(StatusCode.BAD_REQUEST, ResponseMessage.LOGIN_SUCCESS, jwt);
+        return new DefaultResponse<>(StatusCode.OK, ResponseMessage.LOGIN_SUCCESS, jwt);
     }
 
     @GetMapping("/logout")

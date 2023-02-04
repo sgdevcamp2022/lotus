@@ -43,6 +43,9 @@ public class User {
     @Column(name = "stove_no", length = 15)
     private String stove_no;
 
+    @Column(name = "character_name", length = 50)
+    private String character_name;
+
     //    @ManyToMany
 //    @JoinTable(
 //            name = "user_authority",

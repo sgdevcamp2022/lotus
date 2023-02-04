@@ -2,6 +2,7 @@ package com.example.auth.Service;
 
 import com.example.auth.Dto.Request.SignupRequest;
 
+import com.example.auth.Dto.Response.SignupResponse;
 import com.example.auth.Entity.User;
 import com.example.auth.Oauth2.Provider;
 import com.example.auth.Repository.UserRepository;
@@ -38,11 +39,34 @@ public class UserService {
     }
 
 
+//    @Transactional
+//    public SignupRequest signup(SignupRequest signupRequest) {
+//
+//        if (userRepository.findOneByEmail(signupRequest.getEmail()).orElse(null) != null) {
+//            throw new DuplicateMemberException("이미 가입되어 있는 유저입니다.");
+//        }
+//
+//        User user = User.builder()
+//                .email(signupRequest.getEmail())
+//                .password(passwordEncoder.encode(signupRequest.getPassword()))
+//                .nickname(signupRequest.getNickname())
+//                .profile_image(signupRequest.getProfile_image())
+//                .auth("ROLE_USER")
+//                .activated(true)
+//                .provider(Provider.LOCAL.toString())
+//                .build();
+//
+//        System.out.println(user.getPassword());
+//
+//        return SignupRequest.from(userRepository.save(user));
+//    }
+
+
     @Transactional
-    public SignupRequest signup(SignupRequest signupRequest) {
-        //  if (userRepository.findOneWithAuthoritiesByUsername(userDto.getUsername()).orElse(null) != null) {
+    public DefaultResponse signup(SignupRequest signupRequest) {
+
         if (userRepository.findOneByEmail(signupRequest.getEmail()).orElse(null) != null) {
-            throw new DuplicateMemberException("이미 가입되어 있는 유저입니다.");
+            return new DefaultResponse(StatusCode.BAD_REQUEST, ResponseMessage.SIGNUP_FAILURE, null);
         }
 
         User user = User.builder()
@@ -57,7 +81,10 @@ public class UserService {
 
         System.out.println(user.getPassword());
 
-        return SignupRequest.from(userRepository.save(user));
+        SignupRequest from = SignupRequest.from(userRepository.save(user));
+        SignupResponse signupResponse = new SignupResponse(from.getEmail(),
+                from.getNickname());
+        return new DefaultResponse(StatusCode.OK, ResponseMessage.SIGNUP_SUCCESSS, signupResponse);
     }
 
 
@@ -104,5 +131,23 @@ public class UserService {
         }
     }
 
+    @Transactional
+    public DefaultResponse updateMainCharacter(String characterName, String accessToken){
+        Long userId = tokenProvider.getUserIdFromAccessToken(accessToken);
+        Optional<User> oneByUserId = userRepository.findOneByUserId(userId);
+       if(oneByUserId.isPresent()){
+           User user = oneByUserId.get();
+           user.setCharacter_name(characterName);
+           userRepository.save(user);
+           return new DefaultResponse(StatusCode.OK, ResponseMessage.LOSTARK_MAINCHARACTER_SUCCESS, null);
+       }
+
+        else{
+            DefaultResponse<Object> objectDefaultResponse = new DefaultResponse<>(StatusCode.USER_NONEXISTENCE,
+                    ResponseMessage.READ_USER_FAILURE, null);
+            return objectDefaultResponse;
+        }
+
+    }
 
 }

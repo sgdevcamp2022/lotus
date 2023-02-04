@@ -1,5 +1,6 @@
 package com.example.auth.Controller;
 
+import com.example.auth.Dto.Request.MainCharacterRequest;
 import com.example.auth.Dto.Request.SignupRequest;
 import com.example.auth.Dto.Response.DefaultResponse;
 import com.example.auth.Dto.Response.ResponseMessage;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import org.springframework.web.servlet.function.EntityResponse;
 
 @RestController
 @RequestMapping("/user")
@@ -33,15 +35,31 @@ public class UserController {
             @Valid @RequestBody SignupRequest signupRequest
     ) {
 
-        userService.signup(signupRequest);
-        SignupResponse signupResponse = new SignupResponse(signupRequest.getEmail(),
-                signupRequest.getNickname());
-        DefaultResponse<SignupResponse> defaultResponse = new DefaultResponse<>(StatusCode.OK,
-                ResponseMessage.LOGIN_SUCCESS, signupResponse);
+        DefaultResponse signupResponse = userService.signup(signupRequest);
+        ResponseEntity.ok().body(signupResponse);
 
+        if(signupResponse.getCode()==400){
+            return new ResponseEntity<>(signupResponse, HttpStatus.BAD_REQUEST);
+        }
+
+
+        return new ResponseEntity<>(signupResponse, HttpStatus.OK);
+    }
+
+    @PostMapping("/charactername")
+    public ResponseEntity<DefaultResponse> setMainCharacter(@Valid @RequestBody
+            MainCharacterRequest mainCharacterRequest,
+            @RequestHeader String authorization){
+        String accessToken = authorization.substring(7);
+        DefaultResponse defaultResponse = userService.updateMainCharacter(
+                mainCharacterRequest.getCharacterName(),
+                accessToken);
         ResponseEntity.ok().body(defaultResponse);
+        if(defaultResponse.getCode()==StatusCode.USER_NONEXISTENCE){
+            return new ResponseEntity<>(defaultResponse, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(defaultResponse,HttpStatus.OK);
 
-        return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
     }
 
 
