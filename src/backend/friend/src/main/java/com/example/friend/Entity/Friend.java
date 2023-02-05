@@ -1,6 +1,8 @@
 package com.example.friend.Entity;
 
 import com.example.friend.Util.RequstTimeJsonConverter;
+import java.sql.Timestamp;
+import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -19,9 +21,16 @@ import lombok.NoArgsConstructor;
 public class Friend {
 
     @Id
-    private Long user_id;
+    @Column(name="user_id")
+    private Long userId;
     
-    @Convert(converter = RequstTimeJsonConverter.class)
-    private RequestTime requestTime;
+
+    private Timestamp requestTime;
+
+    private String requestList;
+    private String friendList;
+    private String blackList;
+
+
 
 }
