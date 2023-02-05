@@ -27,7 +27,9 @@ public class Friend {
     @Column(name = "user_id")
     private Long userId;
 
-    private Timestamp requestTime;
+    //private Timestamp requestTime;
+
+    private String requestTime;
 
 //    @Column(length = 255)
 //    @Convert(converter = RequestListJsonConverter.class)

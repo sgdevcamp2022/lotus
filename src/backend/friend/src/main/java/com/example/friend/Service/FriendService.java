@@ -6,12 +6,14 @@ import com.example.friend.Dto.Response.DefaultResponse;
 import com.example.friend.Dto.Response.ResponseMessage;
 import com.example.friend.Dto.Response.StatusCode;
 import com.example.friend.Entity.Friend;
-import com.example.friend.Entity.RequestList;
+
 import com.example.friend.Repository.FriendRepository;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Optional;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -32,52 +34,48 @@ public class FriendService {
 
     @Transactional
     public DefaultResponse saveRequest(RequestFriend requestFriend) {
-        System.out.println("requestFriend.getFromUserId() = " + requestFriend.getFromUserId());
+        Date now = new Date();
+//        SimpleDateFormat sdf1=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy년 MM월 dd일");
+        String nowTime = sdf.format(now);
 
         Optional<Friend> oneByUserId = friendRepository.findOneByUserId(
                 requestFriend.getFromUserId());
+
+        JSONObject requestJsonObject = new JSONObject();
+        requestJsonObject.put("id", requestFriend.getToUserId());
+        JSONObject timeJsonObject = new JSONObject();
+        timeJsonObject.put("time",nowTime);
+
+
         if(oneByUserId.isEmpty()){
-            org.json.simple.JSONArray jsonArray=new org.json.simple.JSONArray();
-            for(int i=1; i<=5; i++){
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("id", i);
-                jsonArray.add(jsonObject);
-            }
-
-
+            JSONArray jsonArray = new JSONArray();
+            JSONArray jsonArray2 = new JSONArray();
+            jsonArray.add(requestJsonObject);
+            jsonArray2.add(timeJsonObject);
             Friend friend=Friend.builder()
                     .userId(requestFriend.getFromUserId())
                     .requestList(jsonArray.toJSONString())
+                    .requestTime(jsonArray2.toJSONString())
                     .build();
             friendRepository.save(friend);
         }
         else{
             Friend friend = oneByUserId.get();
-            System.out.println("friend = " + friend);
             String requestList = friend.getRequestList();
-            System.out.println("requestList = " + requestList);
+            String requestTime = friend.getRequestTime();
             JSONParser jsonParser = new JSONParser();
             try {
-                JSONArray array = (JSONArray)jsonParser.parse(requestList);
-                System.out.println("array.get(0) = " + array.get(0));
-                System.out.println("array.get(1) = " + array.get(1));
+                JSONArray requestArray = (JSONArray)jsonParser.parse(requestList);
+                JSONArray timeArray = (JSONArray)jsonParser.parse(requestTime);
+                requestArray.add(requestJsonObject);
+                timeArray.add(timeJsonObject);
+                oneByUserId.get().setRequestList(requestArray.toJSONString());
+                oneByUserId.get().setRequestTime(timeArray.toJSONString());
             } catch (ParseException e) {
                 throw new RuntimeException(e);
             }
-            // return objectMapper.readValue(jsonString, RequestList.class);
-//            String s = requestListJsonConverter.convertToDatabaseColumn(requestList);
-//            System.out.println("s = " + s);
-            //  RequestList requestList = friend.getRequestList();
-          //  System.out.println("requestList = " + requestList);
-           // friendRepository.save(friend);
         }
-
-//        if(friendRepository.findOneByUserId(requestFriend.getFromUserId()).orElse(null) ==null){
-//            Friend friend=Friend.builder()
-//                    .userId(requestFriend.getFromUserId())
-//                    .build();
-//            friendRepository.save(friend);
-//        }
 
 return new DefaultResponse(StatusCode.OK, ResponseMessage.FRIEND_REQUEST_SUCCESS, null);
 
