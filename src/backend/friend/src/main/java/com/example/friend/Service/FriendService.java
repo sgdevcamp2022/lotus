@@ -41,7 +41,7 @@ public class FriendService {
     public DefaultResponse createFriendList(FriendRequest friendRequest) {
 
         Optional<Friend> oneByUserId = friendRepository.findOneByUserId(
-                friendRequest.getFromUserId());
+                friendRequest.getMyUserId());
 
         if (oneByUserId.isEmpty()) {
             JSONArray blackList = new JSONArray();
@@ -50,7 +50,7 @@ public class FriendService {
             JSONArray requestTime = new JSONArray();
 
             Friend friend = Friend.builder()
-                    .userId(friendRequest.getFromUserId())
+                    .userId(friendRequest.getMyUserId())
                     .blackList(blackList.toJSONString())
                     .friendList(friendList.toJSONString())
                     .requestList(requestList.toJSONString())
@@ -67,7 +67,7 @@ public class FriendService {
     public JSONArray getFriendIdList(FriendRequest friendRequest) {
 
         Optional<Friend> oneByUserId = friendRepository.findOneByUserId(
-                friendRequest.getFromUserId());
+                friendRequest.getMyUserId());
         Friend friend = oneByUserId.get();
         String friendList = friend.getFriendList();
         JSONParser jsonParser = new JSONParser();
@@ -126,10 +126,10 @@ public class FriendService {
         String nowTime = sdf.format(now);
 
         Optional<Friend> oneByUserId = friendRepository.findOneByUserId(
-                friendRequest.getFromUserId());
+                friendRequest.getToUserId());
 
         JSONObject requestJsonObject = new JSONObject();
-        requestJsonObject.put("id", friendRequest.getToUserId());
+        requestJsonObject.put("id", friendRequest.getMyUserId());
         JSONObject timeJsonObject = new JSONObject();
         timeJsonObject.put("time", nowTime);
 
@@ -156,7 +156,7 @@ public class FriendService {
     @Transactional
     public DefaultResponse refuseFriend(FriendRequest friendRequest) {
         Optional<Friend> oneByUserId = friendRepository.findOneByUserId(
-                friendRequest.getFromUserId());
+                friendRequest.getMyUserId());
         Friend friend = oneByUserId.get();
         String requestList = friend.getRequestList();
         String requestTime = friend.getRequestTime();
@@ -191,7 +191,7 @@ public class FriendService {
     @Transactional
     public DefaultResponse acceptFriend(FriendRequest friendRequest) {
         Optional<Friend> oneByUserId = friendRepository.findOneByUserId(
-                friendRequest.getFromUserId());
+                friendRequest.getMyUserId());
         Friend friend = oneByUserId.get();
         String requestList = friend.getRequestList();
         String requestTime = friend.getRequestTime();
@@ -232,7 +232,7 @@ public class FriendService {
     @Transactional
     public DefaultResponse deleteFriend(FriendRequest friendRequest) {
         Optional<Friend> oneByUserId = friendRepository.findOneByUserId(
-                friendRequest.getFromUserId());
+                friendRequest.getMyUserId());
         Friend friend = oneByUserId.get();
         String friendList = friend.getFriendList();
         JSONParser jsonParser = new JSONParser();
