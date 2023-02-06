@@ -27,3 +27,18 @@ export type lostarkInfo = {
   message: string;
   object: object[];
 };
+
+export type IPost = {
+  title: string;
+  author: IUser;
+  content: string;
+  published_date: Date;
+  like: IUser[];
+};
+
+export type IComment = {
+  post: IPost;
+  comment_author: IUser;
+  text: string;
+  created_at: Date;
+};
