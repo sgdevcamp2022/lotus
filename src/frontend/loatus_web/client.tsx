@@ -7,9 +7,7 @@ import { CookiesProvider } from 'react-cookie';
 
 render(
   <CookiesProvider>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <App />
   </CookiesProvider>,
   document.querySelector('#app'),
 );
