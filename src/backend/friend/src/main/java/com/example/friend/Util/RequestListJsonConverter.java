@@ -1,6 +1,6 @@
 package com.example.friend.Util;
 
-import com.example.friend.Entity.RequestList;
+
 import com.example.friend.Entity.RequestTime;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.persistence.AttributeConverter;

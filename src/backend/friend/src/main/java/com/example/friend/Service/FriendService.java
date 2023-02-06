@@ -1,7 +1,7 @@
 package com.example.friend.Service;
 
 
-import com.example.friend.Dto.Request.RequestFriend;
+import com.example.friend.Dto.Request.FriendRequest;
 import com.example.friend.Dto.Response.DefaultResponse;
 import com.example.friend.Dto.Response.ResponseMessage;
 import com.example.friend.Dto.Response.StatusCode;
@@ -9,9 +9,6 @@ import com.example.friend.Entity.Friend;
 
 import com.example.friend.Repository.FriendRepository;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
@@ -33,17 +30,17 @@ public class FriendService {
 
 
     @Transactional
-    public DefaultResponse saveRequest(RequestFriend requestFriend) {
+    public DefaultResponse saveRequest(FriendRequest friendRequest) {
         Date now = new Date();
 //        SimpleDateFormat sdf1=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         SimpleDateFormat sdf=new SimpleDateFormat("yyyy년 MM월 dd일");
         String nowTime = sdf.format(now);
 
         Optional<Friend> oneByUserId = friendRepository.findOneByUserId(
-                requestFriend.getFromUserId());
+                friendRequest.getFromUserId());
 
         JSONObject requestJsonObject = new JSONObject();
-        requestJsonObject.put("id", requestFriend.getToUserId());
+        requestJsonObject.put("id", friendRequest.getToUserId());
         JSONObject timeJsonObject = new JSONObject();
         timeJsonObject.put("time",nowTime);
 
@@ -54,7 +51,7 @@ public class FriendService {
             jsonArray.add(requestJsonObject);
             jsonArray2.add(timeJsonObject);
             Friend friend=Friend.builder()
-                    .userId(requestFriend.getFromUserId())
+                    .userId(friendRequest.getFromUserId())
                     .requestList(jsonArray.toJSONString())
                     .requestTime(jsonArray2.toJSONString())
                     .build();
@@ -81,5 +78,30 @@ return new DefaultResponse(StatusCode.OK, ResponseMessage.FRIEND_REQUEST_SUCCESS
 
     }
 
+    @Transactional
+    public DefaultResponse refuseFriend(FriendRequest friendRequest){
+        Optional<Friend> oneByUserId = friendRepository.findOneByUserId(
+                friendRequest.getFromUserId());
+        Friend friend = oneByUserId.get();
+        String requestList = friend.getRequestList();
+        JSONParser jsonParser = new JSONParser();
+        try {
+            JSONArray requestArray = (JSONArray)jsonParser.parse(requestList);
+            System.out.println("requestArray = " + requestArray);
+            JSONObject remove=new JSONObject();
+            for(Object object: requestArray){
+                JSONObject jsonObject = (JSONObject) object;
+                if(jsonObject.get("id")==friendRequest.getToUserId()){
+                    remove.put("id", jsonObject.get("id"));
+                }
+            }
+            requestArray.remove(remove);
+            oneByUserId.get().setRequestList(requestArray.toJSONString());
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        return new DefaultResponse(StatusCode.OK, ResponseMessage.FRIEND_REFUSE_SUCCESS, null);
+
+    }
 
 }

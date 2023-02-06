@@ -29,4 +29,5 @@ public class ResponseMessage {
 
     //friend
     public static final String FRIEND_REQUEST_SUCCESS = "친구요청 성공";
+    public static final String FRIEND_REFUSE_SUCCESS = "친구거절 성공";
 }
