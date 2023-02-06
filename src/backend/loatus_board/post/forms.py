@@ -8,6 +8,5 @@ class RegistForm(forms.ModelForm):
         fields = ['title', 'author', 'content']  # '__all__'
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control'}),
-            # 'author': forms.TextInput(attrs={'class': 'form-control'}),
             'content': forms.Textarea(attrs={'class': 'form-control', 'rows': 10}),
         }

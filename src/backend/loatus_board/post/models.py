@@ -6,13 +6,13 @@ class Post(models.Model):
     author=models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
     content=models.TextField(verbose_name='CONTENT')
     published_date=models.DateTimeField(auto_now=True, verbose_name='PUBLISH_DATE')
-
+    like = models.ManyToManyField(User, related_name='likes' ,blank=True)
     def __str__(self):
         return self.title
 
 class Comment(models.Model):
     post=models.ForeignKey(Post, on_delete=models.CASCADE)
-    user=models.CharField(max_length=100)
+    comment_author=models.ForeignKey(User, on_delete=models.CASCADE, related_name='comments')
     text=models.TextField(verbose_name='TEXT')
     created_at = models.DateTimeField(auto_now_add=True)
 
