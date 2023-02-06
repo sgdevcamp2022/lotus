@@ -4,9 +4,11 @@ const fetcher = ([url, token]: string[]) =>
   axios
     .get(url, {
       withCredentials: true,
-      headers: {
-        Authorization: 'Bearer ' + token,
-      },
+      headers: token
+        ? {
+            Authorization: 'Bearer ' + token,
+          }
+        : {},
     })
     .then((response) => response.data)
     .catch((error) => null);
