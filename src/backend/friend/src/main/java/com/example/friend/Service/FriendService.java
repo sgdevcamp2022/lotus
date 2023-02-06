@@ -3,6 +3,7 @@ package com.example.friend.Service;
 
 import com.example.friend.Dto.Request.FriendRequest;
 import com.example.friend.Dto.Response.DefaultResponse;
+import com.example.friend.Dto.Response.FriendListResponse;
 import com.example.friend.Dto.Response.ResponseMessage;
 import com.example.friend.Dto.Response.StatusCode;
 import com.example.friend.Entity.Friend;
@@ -80,7 +81,7 @@ public class FriendService {
     }
 
     @Transactional
-    public void getFriendList(FriendRequest friendRequest) {
+    public DefaultResponse getFriendList(FriendRequest friendRequest) {
 
         JSONArray friendIdList = getFriendIdList(friendRequest);
         System.out.println("friendIdList = " + friendIdList);
@@ -98,13 +99,21 @@ public class FriendService {
         System.out.println("list = " + list);
         List<User> byUserIds = userRepository.findByUserId(list);
         System.out.println("byUserIds.size() = " + byUserIds.size());
+        List<FriendListResponse> friendListResponses=new ArrayList<>();
         for(User user :byUserIds){
             System.out.println("user = " + user.getUserId());
             System.out.println("user = " + user);
             System.out.println("user.getNickname() = " + user.getNickname());
+            FriendListResponse friendListResponse=FriendListResponse.builder()
+                    .userId(user.getUserId())
+                    .characterName(user.getCharacter_name())
+                    .profileImage(user.getProfile_image())
+                    .nickname(user.getNickname())
+                    .build();
+            friendListResponses.add(friendListResponse);
         }
 
-
+        return new DefaultResponse<>(StatusCode.OK, ResponseMessage.FRIEND_LIST_SUCCESS, friendListResponses);
 
     }
 

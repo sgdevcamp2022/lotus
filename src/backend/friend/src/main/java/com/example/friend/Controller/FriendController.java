@@ -60,9 +60,9 @@ public class FriendController {
     }
 
     @PostMapping("/list")
-    public void getFriendList(@Valid @RequestBody FriendRequest friendRequest){
-        friendService.getFriendList(friendRequest);
-        //ResponseEntity.ok().body(defaultResponse);
-       // return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
+    public ResponseEntity<DefaultResponse> getFriendList(@Valid @RequestBody FriendRequest friendRequest){
+        DefaultResponse defaultResponse = friendService.getFriendList(friendRequest);
+        ResponseEntity.ok().body(defaultResponse);
+        return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
     }
 }
