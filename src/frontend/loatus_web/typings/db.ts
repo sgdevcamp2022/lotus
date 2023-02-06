@@ -1,7 +1,7 @@
-export type ILogin = {
+export type APIItem<T> = {
   code: number;
   message: string;
-  object: IToken | null;
+  data: T;
 };
 
 export type IToken = {
@@ -16,16 +16,19 @@ export type IUser = {
   auth: string;
   email: string;
   nickname: string;
-  password: string;
   profile_image: string;
   provider: string;
   userid: number;
+  stoveNo: string | null;
 };
 
 export type lostarkInfo = {
-  code: number;
-  message: string;
-  object: object[];
+  ServerName: string;
+  CharacterName: string;
+  CharacterLevel: number;
+  CharacterClassName: string;
+  ItemAvgLevel: string;
+  ItemMaxLevel: string;
 };
 
 export type IPost = {
