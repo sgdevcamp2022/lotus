@@ -90,7 +90,7 @@ const config: Configuration = {
         target: 'http://localhost:8080',
         changeOrigin: true,
       },
-      '/api/': {
+      '/user/': {
         target: 'http://localhost:8080',
         changeOrigin: true,
       },
