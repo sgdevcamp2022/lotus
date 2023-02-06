@@ -42,3 +42,18 @@ export type IComment = {
   text: string;
   created_at: Date;
 };
+
+export type DjangoUser = {
+  username: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  password: string;
+  groups: [];
+  user_permissions: [];
+  is_staff: boolean;
+  is_active: boolean;
+  is_superuser: boolean;
+  last_login: Date;
+  data_joined: Date;
+};
