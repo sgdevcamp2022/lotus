@@ -1,5 +1,4 @@
 import styled from '@emotion/styled';
-import { Form } from 'react-bootstrap';
 
 export const Header = styled.header`
   align-items: center;
@@ -110,4 +109,7 @@ export const SignIn = styled.div`
   -webkit-font-smoothing: antialiased;
   display: block;
   width: 400px;
+  & a {
+    text-decoration: none;
+  }
 `;

@@ -28,11 +28,10 @@ const Header = () => {
         toast.success(response.data.message, {
           position: 'top-right',
         });
-        //setCookie('accessToken', '');
         mutate();
       })
       .catch((error) => {
-        toast.error('로그아웃에 실패했습니다.', {
+        toast.error('오류가 발생했습니다.\n기술팀에 문의하세요!', {
           position: 'top-right',
         });
       });
@@ -47,7 +46,7 @@ const Header = () => {
             <Nav className="me-auto">
               <Nav.Link href="/">홈</Nav.Link>
               <Nav.Link href="/party">모집</Nav.Link>
-              <Nav.Link href="/community">커뮤니티</Nav.Link>
+              <Nav.Link href="/board/lists">커뮤니티</Nav.Link>
               <Nav.Link href="/notice">공지사항</Nav.Link>
             </Nav>
             <Nav>

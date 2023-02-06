@@ -4,7 +4,7 @@ import axios, { AxiosResponse } from 'axios';
 import { toast } from 'react-toastify';
 import useInput from '@hooks/useInput';
 import { useCookies } from 'react-cookie';
-import { lostarkInfo } from '@typings/db';
+import { APIItem, lostarkInfo } from '@typings/db';
 
 const LostarkAuth = () => {
   const [cookie, setCookie] = useCookies(['accessToken']);
@@ -18,8 +18,8 @@ const LostarkAuth = () => {
           Authorization: 'Bearer ' + cookie.accessToken,
         },
       })
-      .then((response) => {
-        setRandomCode(response.data);
+      .then((response: AxiosResponse<APIItem<string>>) => {
+        setRandomCode(response.data.data);
       })
       .catch((error) => {
         toast.error('인증번호를 불러올 수 없습니다.', {
@@ -59,14 +59,21 @@ const LostarkAuth = () => {
             withCredentials: true,
           },
         )
-        .then((response: AxiosResponse<lostarkInfo>) => {
-          //TODO 서버에서 캐릭터 정보 받아오기 만들어야 함.
-          toast.success(response.data.message, {
-            position: 'top-right',
-          });
+        .then((response: AxiosResponse<APIItem<lostarkInfo>>) => {
+          if (response.data.code === 200) {
+            toast.success(response.data.message, {
+              position: 'top-right',
+            });
+          } else {
+            toast.error(response.data.message, {
+              position: 'top-right',
+            });
+            return;
+          }
+          console.log(response.data.data);
         })
         .catch((error) => {
-          toast.error('인증이 완료되지 않았습니다', {
+          toast.error('오류가 발생했습니다.\n기술팀에 문의해주세요!', {
             position: 'top-right',
           });
         });
