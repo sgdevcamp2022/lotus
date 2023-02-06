@@ -29,6 +29,7 @@ export type lostarkInfo = {
 };
 
 export type IPost = {
+  id: number;
   title: string;
   author: IUser;
   content: string;

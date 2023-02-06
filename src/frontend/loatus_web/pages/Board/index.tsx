@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Button, Carousel, Col, Container, Form, InputGroup, Pagination, Row, Table } from 'react-bootstrap';
 
 const Community = () => {
+  const onClickRegist = useCallback(() => {}, []);
+
   return (
     <Container>
       <h3>게시판</h3>
