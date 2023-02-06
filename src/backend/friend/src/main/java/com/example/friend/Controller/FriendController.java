@@ -21,6 +21,14 @@ public class FriendController {
         this.friendService = friendService;
     }
 
+    @PostMapping("/create/list")
+    public ResponseEntity<DefaultResponse> createFriendList(@Valid @RequestBody FriendRequest friendRequest){
+        System.out.println("requestFriend = " + friendRequest);
+        DefaultResponse defaultResponse = friendService.createFriendList(friendRequest);
+        ResponseEntity.ok().body(defaultResponse);
+        return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
+    }
+
     @PostMapping("/request")
     public ResponseEntity<DefaultResponse> requestFriend(@Valid @RequestBody FriendRequest friendRequest){
         System.out.println("requestFriend = " + friendRequest);
@@ -35,5 +43,12 @@ public class FriendController {
         DefaultResponse defaultResponse = friendService.refuseFriend(friendRequest);
         ResponseEntity.ok().body(defaultResponse);
         return new ResponseEntity<>(defaultResponse,HttpStatus.OK);
+    }
+
+    @PostMapping("/accept")
+    public ResponseEntity<DefaultResponse> acceptFriend(@Valid @RequestBody FriendRequest friendRequest){
+        DefaultResponse defaultResponse = friendService.acceptFriend(friendRequest);
+        ResponseEntity.ok().body(defaultResponse);
+        return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
     }
 }
