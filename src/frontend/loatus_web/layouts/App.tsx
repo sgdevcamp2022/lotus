@@ -13,13 +13,13 @@ const App: FC = () => {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
-      <Route path="/" element={<MainPage />}>
-        <Route path={'home'} element={<Home />} />
+      <Route element={<MainPage />}>
+        <Route path={'/'} element={<Home />} />
         <Route path={'community'} element={<Community />} />
         <Route path={'party'} element={<Party />} />
         <Route path={'notice'} element={<Notice />} />
       </Route>
-      <Route path="*" element={<Navigate to={'/login'} replace />} />
+      <Route path="*" element={<Navigate to={'/'} replace />} />
     </Routes>
   );
 };
