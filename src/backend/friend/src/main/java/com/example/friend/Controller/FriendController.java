@@ -51,4 +51,11 @@ public class FriendController {
         ResponseEntity.ok().body(defaultResponse);
         return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
     }
+
+    @PostMapping("/delete")
+    public ResponseEntity<DefaultResponse> deleteFriend(@Valid @RequestBody FriendRequest friendRequest){
+        DefaultResponse defaultResponse = friendService.deleteFriend(friendRequest);
+        ResponseEntity.ok().body(defaultResponse);
+        return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
+    }
 }

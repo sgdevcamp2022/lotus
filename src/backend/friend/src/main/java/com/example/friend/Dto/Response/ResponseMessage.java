@@ -32,4 +32,5 @@ public class ResponseMessage {
     public static final String FRIEND_REQUEST_SUCCESS = "친구요청 성공";
     public static final String FRIEND_REFUSE_SUCCESS = "친구거절 성공";
     public static final String FRIEND_ACCEPT_SUCCESS = "친구수락 성공";
+    public static final String FRIEND_DELETE_SUCCESS = "친구삭제 성공";
 }

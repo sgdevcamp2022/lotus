@@ -182,4 +182,37 @@ return new DefaultResponse(StatusCode.OK, ResponseMessage.FRIEND_REQUEST_SUCCESS
 
     }
 
+
+
+    @Transactional
+    public DefaultResponse deleteFriend(FriendRequest friendRequest){
+        Optional<Friend> oneByUserId = friendRepository.findOneByUserId(
+                friendRequest.getFromUserId());
+        Friend friend = oneByUserId.get();
+        String friendList = friend.getFriendList();
+        JSONParser jsonParser = new JSONParser();
+        try {
+            JSONArray requestArray = (JSONArray)jsonParser.parse(friendList);
+            System.out.println("requestArray = " + requestArray);
+            int idx=-1;
+
+            for(int i=0; i<requestArray.size(); i++){
+                Object o = requestArray.get(i);
+                JSONObject o1 = (JSONObject) o;
+                if(o1.get("id")==friendRequest.getToUserId()){
+                    idx=i;
+                }
+            }
+
+            if(idx>=0){
+                requestArray.remove(idx);
+            }
+            oneByUserId.get().setFriendList(requestArray.toJSONString());
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        return new DefaultResponse(StatusCode.OK, ResponseMessage.FRIEND_DELETE_SUCCESS, null);
+
+    }
+
 }
