@@ -91,7 +91,7 @@ public class AuthController {
         DefaultResponse defaultResponse = authService.reissueAccessToken(accessToken, refreshToken);
         HttpHeaders httpHeaders = new HttpHeaders();
         if(defaultResponse.getCode()==309){
-            httpHeaders.setLocation(URI.create("http://localhost:3090/login"));
+           // httpHeaders.setLocation(URI.create("http://localhost:3090/login"));
             return new ResponseEntity<>(defaultResponse, httpHeaders,
                     HttpStatus.BAD_REQUEST);
         }

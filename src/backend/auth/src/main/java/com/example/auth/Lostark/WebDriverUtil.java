@@ -19,6 +19,7 @@ public class WebDriverUtil {
     public static String WEB_DRIVER_ID = "webdriver.chrome.driver"; // Properties 설정
     // public static String WEB_DRIVER_PATH = "C:/dev/python/crawling/webdriver/chromedriver.exe"; // WebDriver 경로
     public static String WEB_DRIVER_PATH = "D:/Software/chromedriver/chromedriver.exe"; // WebDriver 경로
+   // public static String WEB_DRIVER_PATH = "../../resources/chromdriver/chromedriver.exe"; // WebDriver 경로
 
     public WebDriverUtil() {
         chrome();
