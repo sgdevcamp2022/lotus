@@ -164,6 +164,7 @@ def comment_post(request):
         payload = jwt.decode(access_token, 'SECRET', algorithms='HS256')
         u = User.objects.get(id=payload['id'])
         #test auth
+
         body =  json.loads(request.body.decode('utf-8'))
         cur_user_id=u.id
         cur_post_id=body["post"]
@@ -174,66 +175,44 @@ def comment_post(request):
         cur_post_json = serializers.serialize("json", cur_post)
         res_post_json=json.loads(cur_post_json)
         
-        # cur_post[0].comments=None
-        # print(cur_post[0].comments)
-        # cur_post[0].save()
-        # return JsonResponse({"hello":"hello"})
+        cur_post[0].comments=None
+        print(cur_post[0].comments)
+        cur_post[0].save()
+        return JsonResponse({"hello":"hello"})
         
         if cur_post[0].comments is None:
-            # comment_list=list()
-            # comment_list.append(dict({cur_user_id: cur_user_comment}))
-            # # comment_dict=dict(comment_list)
-            # res_post_json[0]["fields"]["comments"]=comment_list
-
-            comment_json_object={
-                'cur_user_id': cur_user_id,
-                'cur_user_comment': cur_user_comment,
-                'cur_post_id': cur_post_id,
-            }
-            comment_json_str=json.dumps(comment_json_object)
-            
-            cur_post[0].comments=json.loads(comment_json_str)
-            cur_post[0].save()
-            res_post_json[0]["fields"]["comments"]=cur_post[0].comments
-        else:
-            print(cur_post[0].comments)
             comment_json_object={
                 "cur_user_id": cur_user_id,
                 "cur_user_comment": cur_user_comment,
                 "cur_post_id": cur_post_id,
             }
-            comment_json_str=json.dumps(comment_json_object)
-            print(cur_post[0].comments)
-            print(comment_json_str)
-            cur_post[0].comments+=', '
-            cur_post[0].comments+=comment_json_str
+
+            comment_list=list()
+            comment_list.append(comment_json_object)
+            cur_post[0].comments=comment_json_object
             cur_post[0].save()
-            print(cur_post[0].comments)
-            res_post_json[0]["fields"]["comments"]=json.loads(cur_post[0].comments)
-            print(cur_post[0].comments[-1])
-            # cur_post[0].comments+
-            # cur_comment_dict=eval(cur_post[0].comments)
-            # print(cur_comment_dict[0])
-            # print(type(cur_comment_dict[0]))
+
+            res_post_json[0]["fields"]["comments"]=comment_list
+            
+            
+        else:
+            comment_json_object={
+                "cur_user_id": cur_user_id,
+                "cur_user_comment": cur_user_comment,
+                "cur_post_id": cur_post_id,
+            }
+            
+            comment_json_str=json.dumps(comment_json_object)
+            cur_post[0].comments+="\n"+comment_json_str
+            cur_post[0].save()
+            comments_split=cur_post[0].comments.split("\n")
+            comment_list=list()
+            for i in range(len(comments_split)):
+                cur_dict=eval(comments_split[i])
+                comment_list.append(cur_dict)
+            print(comment_list)
+            res_post_json[0]["fields"]["comments"]=comment_list
 
             
-            
-            # cur_comment_list.append(dict_cur_post)
-            # print(cur_comment_list[0][10])
-            
-            # cur_comment_list.append((cur_user_id, cur_user_comment))
-            # print(cur_comment_list)
-            # print(dict(cur_comment_list))
-            # print(cur_comment_list)
-            # cur_comment_dict=dict(cur_comment_list)
-            # res_post_json[0]["fields"]["comments"]=cur_comment_dict
-
-            # cur_post[0].comments=cur_comment_list
-            # cur_post[0].save()
-            # print(cur_post[0].comments)
-            # res_post_json[0]["fields"]["comments"]=cur_post[0].comments
-            # print(res_post_json[0]["fields"]["comments"] is None)
-            # print("not none")            
-        # return JsonResponse(cur_post[0].comments)
         
         return JsonResponse({'status': 200, "message": "comments in post", "data": res_post_json})                        
