@@ -24,7 +24,7 @@ const PostWrite = () => {
       e.preventDefault();
       axios
         .post(
-          '/post/regist',
+          '/post/regist/',
           {
             title,
             content,

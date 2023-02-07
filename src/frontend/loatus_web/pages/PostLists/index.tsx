@@ -10,7 +10,7 @@ import useToken from '@utils/useToken';
 
 const PostLists = () => {
   const [accessToken] = useToken();
-  const { data: PostData, error, mutate } = useSWR<IPost[] | null>(['/post'], fetcher);
+  const { data: PostData, error, mutate } = useSWR<IPost[] | null>(['/post/'], fetcher);
 
   return (
     <>
