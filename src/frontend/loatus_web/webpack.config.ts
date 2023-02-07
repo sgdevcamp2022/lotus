@@ -10,9 +10,10 @@ interface Configuration extends WebpackConfiguration {
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
+const baseUrl = 'http://118.67.143.125:8080';
 
 const config: Configuration = {
-  name: 'sleact', //여기를 바꾸면 됨
+  name: 'Loatus', //여기를 바꾸면 됨
   mode: isDevelopment ? 'development' : 'production',
   devtool: !isDevelopment ? 'hidden-source-map' : 'eval',
   resolve: {
@@ -87,11 +88,11 @@ const config: Configuration = {
         changeOrigin: true,
       },
       '/auth/': {
-        target: 'http://localhost:8080',
+        target: baseUrl,
         changeOrigin: true,
       },
       '/user/': {
-        target: 'http://localhost:8080',
+        target: baseUrl,
         changeOrigin: true,
       },
       '/post/': {
