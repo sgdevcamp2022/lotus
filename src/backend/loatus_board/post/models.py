@@ -7,6 +7,7 @@ class Post(models.Model):
     content=models.TextField(verbose_name='CONTENT')
     published_date=models.DateTimeField(auto_now=True, verbose_name='PUBLISH_DATE')
     like = models.ManyToManyField(User, related_name='likes' ,blank=True)
+    comments=models.TextField(verbose_name='comment')
     def __str__(self):
         return self.title
 

@@ -9,17 +9,20 @@ from django.contrib.auth.models import User
 import json,jwt
 from django.http import JsonResponse 
 import requests, json
+from django.core import serializers
 # Create your views here.
 
 def index(request):
-    page=request.GET.get('page', '1')
     board_list=Post.objects.all().order_by('-id')
-
-    paginator=Paginator(board_list, 10)
-    page_obj=paginator.get_page(page)
-
-    context={'board_list': page_obj}
-    return render(request, 'post/index.html', context)
+    print(type(board_list))
+    board_list_json = serializers.serialize("json", board_list)
+    print(board_list_json)
+    
+    return JsonResponse({"code": 200, "message": "All Posts look successful", "data": board_list_json})                        
+    # paginator=Paginator(board_list, 10)
+    # page_obj=paginator.get_page(page)
+    # context={'board_list': page_obj}
+    # return render(request, 'post/index.html', context)
 
 def test_user_create(request):
     if request.method == "POST":
@@ -83,6 +86,7 @@ def regist(request):
         
         # return JsonResponse({'message': "hello1"})
         new_post=Post.objects.create(author=u, title=body["title"], content=body["content"])
+        # print(new_post)
         return JsonResponse({'message': new_post.id})    
         # return JsonResponse({'message': new_post.title})
         
@@ -93,7 +97,9 @@ def regist(request):
 
 def detail(request, pk):
     board_list=get_object_or_404(Post, id=pk)
-    print(board_list.like.all())
+    # print(board_list.like.all())
+    print(board_list.id)
+    print(board_list.pk)
     return JsonResponse({'status': 'ok'})                        
     # comments=Comment.objects.filter(post=pk)
     # if request.method=='POST':
@@ -150,3 +156,84 @@ def like_post(request, pk):
             post.like.add(u)
         print(post.like.all())
     return JsonResponse({'status': 'ok'})                        
+
+def comment_post(request):
+    if request.method == 'POST':
+        #test auth
+        access_token=request.headers.get('Authorization', None)
+        payload = jwt.decode(access_token, 'SECRET', algorithms='HS256')
+        u = User.objects.get(id=payload['id'])
+        #test auth
+        body =  json.loads(request.body.decode('utf-8'))
+        cur_user_id=u.id
+        cur_post_id=body["post"]
+        cur_user_comment=body["text"]
+
+        cur_post=Post.objects.filter(id=cur_post_id)
+        # cur_post=get_object_or_404(Post, id=cur_post_id)
+        cur_post_json = serializers.serialize("json", cur_post)
+        res_post_json=json.loads(cur_post_json)
+        
+        # cur_post[0].comments=None
+        # print(cur_post[0].comments)
+        # cur_post[0].save()
+        # return JsonResponse({"hello":"hello"})
+        
+        if cur_post[0].comments is None:
+            # comment_list=list()
+            # comment_list.append(dict({cur_user_id: cur_user_comment}))
+            # # comment_dict=dict(comment_list)
+            # res_post_json[0]["fields"]["comments"]=comment_list
+
+            comment_json_object={
+                'cur_user_id': cur_user_id,
+                'cur_user_comment': cur_user_comment,
+                'cur_post_id': cur_post_id,
+            }
+            comment_json_str=json.dumps(comment_json_object)
+            
+            cur_post[0].comments=json.loads(comment_json_str)
+            cur_post[0].save()
+            res_post_json[0]["fields"]["comments"]=cur_post[0].comments
+        else:
+            print(cur_post[0].comments)
+            comment_json_object={
+                "cur_user_id": cur_user_id,
+                "cur_user_comment": cur_user_comment,
+                "cur_post_id": cur_post_id,
+            }
+            comment_json_str=json.dumps(comment_json_object)
+            print(cur_post[0].comments)
+            print(comment_json_str)
+            cur_post[0].comments+=', '
+            cur_post[0].comments+=comment_json_str
+            cur_post[0].save()
+            print(cur_post[0].comments)
+            res_post_json[0]["fields"]["comments"]=json.loads(cur_post[0].comments)
+            print(cur_post[0].comments[-1])
+            # cur_post[0].comments+
+            # cur_comment_dict=eval(cur_post[0].comments)
+            # print(cur_comment_dict[0])
+            # print(type(cur_comment_dict[0]))
+
+            
+            
+            # cur_comment_list.append(dict_cur_post)
+            # print(cur_comment_list[0][10])
+            
+            # cur_comment_list.append((cur_user_id, cur_user_comment))
+            # print(cur_comment_list)
+            # print(dict(cur_comment_list))
+            # print(cur_comment_list)
+            # cur_comment_dict=dict(cur_comment_list)
+            # res_post_json[0]["fields"]["comments"]=cur_comment_dict
+
+            # cur_post[0].comments=cur_comment_list
+            # cur_post[0].save()
+            # print(cur_post[0].comments)
+            # res_post_json[0]["fields"]["comments"]=cur_post[0].comments
+            # print(res_post_json[0]["fields"]["comments"] is None)
+            # print("not none")            
+        # return JsonResponse(cur_post[0].comments)
+        
+        return JsonResponse({'status': 200, "message": "comments in post", "data": res_post_json})                        
