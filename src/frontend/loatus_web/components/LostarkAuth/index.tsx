@@ -1,13 +1,13 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { Button, Card, Col, Container, Form, InputGroup, Row } from 'react-bootstrap';
 import axios, { AxiosResponse } from 'axios';
 import { toast } from 'react-toastify';
 import useInput from '@hooks/useInput';
-import { useCookies } from 'react-cookie';
-import { APIItem, lostarkInfo } from '@typings/db';
+import { APIItem, IUser, lostarkInfo } from '@typings/db';
+import useToken from '@utils/useToken';
 
 const LostarkAuth = () => {
-  const [cookie, setCookie] = useCookies(['accessToken']);
+  const [accessToken] = useToken();
   const [randomCode, setRandomCode] = useState('');
   const [stoveUrl, onChangeStoveUrl, setStoveUrl] = useInput('');
   useEffect(() => {
@@ -15,7 +15,7 @@ const LostarkAuth = () => {
       .get('/auth/randomcode', {
         withCredentials: true,
         headers: {
-          Authorization: 'Bearer ' + cookie.accessToken,
+          Authorization: 'Bearer ' + accessToken,
         },
       })
       .then((response: AxiosResponse<APIItem<string>>) => {
@@ -54,7 +54,7 @@ const LostarkAuth = () => {
           },
           {
             headers: {
-              Authorization: 'Bearer ' + cookie.accessToken,
+              Authorization: 'Bearer ' + accessToken,
             },
             withCredentials: true,
           },
@@ -89,7 +89,7 @@ const LostarkAuth = () => {
             <Card.Body>
               <Card.Title>스토브 로그인</Card.Title>
               <Card.Text>
-                <p>스토브 사이트에 로그인 해 주세요!</p>
+                스토브 사이트에 로그인 해 주세요!
                 <Button onClick={() => window.open('https://www.onstove.com/')}>스토브 가기</Button>
               </Card.Text>
             </Card.Body>

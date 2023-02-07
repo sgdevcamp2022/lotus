@@ -1,6 +1,5 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useContext, useState } from 'react';
 import { Button, Form, Nav } from 'react-bootstrap';
-import { useCookies } from 'react-cookie';
 import useInput from '@hooks/useInput';
 import useSWR from 'swr';
 import { APIItem, IUser } from '@typings/db';
@@ -8,14 +7,15 @@ import fetcher from '@utils/fetcher';
 import { toast } from 'react-toastify';
 import { Navigate } from 'react-router-dom';
 import axios from 'axios';
+import useToken from '@utils/useToken';
 
 const PostWrite = () => {
-  const [cookie, setCookie] = useCookies(['accessToken']);
+  const [accessToken] = useToken();
   const {
     data: userData,
     error,
     mutate,
-  } = useSWR<APIItem<IUser> | null>(cookie.accessToken ? ['/auth/my', cookie.accessToken] : null, fetcher);
+  } = useSWR<IUser | null>(accessToken ? ['/auth/my', accessToken] : null, fetcher);
   const [title, onChangeTitle, setTitle] = useInput('');
   const [content, onChangeContent, setContent] = useInput('');
   const [postSuccess, setPostSuccess] = useState(false);
@@ -32,7 +32,7 @@ const PostWrite = () => {
           {
             withCredentials: true,
             headers: {
-              Authorization: 'Bearer ' + cookie.accessToken,
+              Authorization: 'Bearer ' + accessToken,
             },
           },
         )

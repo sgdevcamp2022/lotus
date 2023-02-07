@@ -10,7 +10,7 @@ const fetcher = ([url, token]: string[]) =>
           }
         : {},
     })
-    .then((response) => response.data)
+    .then((response) => response.data.data)
     .catch((error) => null);
 
 export default fetcher;

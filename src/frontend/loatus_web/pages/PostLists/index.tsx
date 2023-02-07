@@ -1,15 +1,15 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Button, Carousel, Col, Form, InputGroup, Pagination, Row, Table } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
-import { IPost } from '@typings/db';
+import { APIItem, IPost, IUser } from '@typings/db';
 import makedate from '@utils/makedate';
 import axios from 'axios';
-import { useCookies } from 'react-cookie';
+import useToken from '@utils/useToken';
 
 const PostLists = () => {
-  const [cookie, setCookie] = useCookies(['accessToken']);
+  const [accessToken] = useToken();
   const { data: PostData, error, mutate } = useSWR<IPost[] | null>(['/post'], fetcher);
 
   return (
@@ -71,7 +71,7 @@ const PostLists = () => {
                         axios
                           .delete(`/post/delete/${post.id}`, {
                             headers: {
-                              Authorization: 'Bearer ' + cookie.accessToken,
+                              Authorization: 'Bearer ' + accessToken,
                             },
                           })
                           .then((response) => {

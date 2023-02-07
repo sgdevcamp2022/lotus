@@ -1,26 +1,29 @@
 import React, { useCallback } from 'react';
 import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap';
 import gravatar from 'gravatar';
-import { useCookies } from 'react-cookie';
 import useSWR from 'swr';
-import { IUser } from '@typings/db';
+import { APIItem, IUser } from '@typings/db';
 import fetcher from '@utils/fetcher';
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import useToken from '@utils/useToken';
+import { Link } from 'react-router-dom';
+import { HeaderNavLink } from '@components/Header/styles';
 
 const Header = () => {
-  const [cookie, setCookie] = useCookies(['accessToken']);
+  const [accessToken] = useToken();
   const {
     data: userData,
     error,
     mutate,
-  } = useSWR<IUser | undefined | null>(cookie.accessToken ? ['/auth/my', cookie.accessToken] : null, fetcher);
+  } = useSWR<IUser | null>(accessToken ? ['/auth/my', accessToken] : null, fetcher);
+  console.log(accessToken);
 
   const onClickLogout = useCallback(() => {
     axios
       .get('/auth/logout', {
         headers: {
-          Authorization: 'Bearer ' + cookie.accessToken,
+          Authorization: 'Bearer ' + accessToken,
         },
         withCredentials: true,
       })
@@ -40,14 +43,24 @@ const Header = () => {
     <header role="banner">
       <Navbar bg="light" expand="lg" style={{ marginBottom: 20 }}>
         <Container fluid>
-          <Navbar.Brand href={'/home'}>Loatus</Navbar.Brand>
+          <Navbar.Brand>
+            <Link to={'/'}>Loatus</Link>
+          </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
-              <Nav.Link href="/">홈</Nav.Link>
-              <Nav.Link href="/party">모집</Nav.Link>
-              <Nav.Link href="/board/lists">커뮤니티</Nav.Link>
-              <Nav.Link href="/notice">공지사항</Nav.Link>
+              <HeaderNavLink>
+                <Link to={'/'}>홈</Link>
+              </HeaderNavLink>
+              <HeaderNavLink>
+                <Link to={'/party'}>모집</Link>
+              </HeaderNavLink>
+              <HeaderNavLink>
+                <Link to={'/board/lists'}>커뮤니티</Link>
+              </HeaderNavLink>
+              <HeaderNavLink>
+                <Link to={'/notice'}>공지사항</Link>
+              </HeaderNavLink>
             </Nav>
             <Nav>
               {userData ? (
@@ -74,7 +87,9 @@ const Header = () => {
                   <NavDropdown.Item onClick={onClickLogout}>로그아웃</NavDropdown.Item>
                 </NavDropdown>
               ) : (
-                <Nav.Link href={'/login'}>로그인</Nav.Link>
+                <HeaderNavLink>
+                  <Link to={'/login'}>로그인</Link>
+                </HeaderNavLink>
               )}
             </Nav>
           </Navbar.Collapse>

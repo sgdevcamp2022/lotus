@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import useInput from '@hooks/useInput';
 import axios, { AxiosResponse } from 'axios';
 import { Button, Header, Horizon, Hr, Input, Page, PageHead, Root, SignIn } from '@pages/Login/styles';
@@ -11,22 +11,23 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Form } from 'react-bootstrap';
+import useToken from '@utils/useToken';
 
 const Login = () => {
-  const [cookie, setCookie] = useCookies(['accessToken']);
   const [refreshToken, setRefreshToken] = useCookies(['refreshToken']);
+  const [accessToken, setAccessToken] = useToken();
   const [email, onChangeEmail, setEmail] = useInput('');
   const [password, onChangePassword, setPassword] = useInput('');
   const {
     data: userData,
     error,
     mutate,
-  } = useSWR<APIItem<IUser> | null>(cookie.accessToken ? ['/auth/my', cookie.accessToken] : null, fetcher);
+  } = useSWR<IUser | null>(accessToken ? ['/auth/my', accessToken] : null, fetcher);
   const [params, setParams] = useSearchParams();
 
   useEffect(() => {
     if (params.get('accessToken')) {
-      setCookie('accessToken', params.get('accessToken'));
+      setAccessToken(params.get('accessToken'));
     }
   }, []);
 
@@ -55,7 +56,7 @@ const Login = () => {
             });
             return;
           }
-          setCookie('accessToken', response?.data.data.accessToken, { path: '/' });
+          setAccessToken(response?.data.data.accessToken);
           setRefreshToken('refreshToken', response?.data.data.refreshToken, { path: '/' });
           setEmail('');
           mutate();
