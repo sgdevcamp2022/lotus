@@ -22,6 +22,7 @@ public class SecurityConfig {
     private static final String[] PERMIT_URL_ARRAY = {
             "/user/signup",
             "/auth/login",
+            "/auth/reissue",
             "/sns/**",
             "/login",
             /* swagger v2 */

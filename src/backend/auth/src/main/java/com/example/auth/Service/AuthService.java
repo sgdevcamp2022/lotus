@@ -128,8 +128,9 @@ public class AuthService {
     }
 
     public DefaultResponse reissueAccessToken(String accessTokenInHeaders, String refreshTokenInHeaders) {
-        Long userId = tokenProvider.getUserIdFromAccessToken(accessTokenInHeaders);
-        RefreshToken refreshTokenInRedis = findRefreshToken(userId);
+
+        RefreshToken refreshTokenInRedis = refreshTokenRepository.findRefreshTokenByRefreshToken(
+                refreshTokenInHeaders);
 
         if (Objects.isNull(refreshTokenInRedis)) {    //refreshtoken이 만료됐을때 로그인 요청
             return new DefaultResponse(StatusCode.RE_LOGIN, ResponseMessage.LOGIN_AGAIN, null);
@@ -144,6 +145,7 @@ public class AuthService {
             } else {
                 final Authentication authentication = SecurityContextHolder.getContext()
                         .getAuthentication();
+                Long userId = refreshTokenInRedis.getUserId();
                 String accessToken = tokenProvider.createAccessToken(authentication,userId);
                 return new DefaultResponse(StatusCode.OK, ResponseMessage.TOKEN_REISSUE,
                         accessToken);

@@ -17,6 +17,7 @@ import com.example.auth.Jwt.TokenProvider;
 import com.example.auth.Service.AuthService;
 import com.example.auth.Util.SecurityUtil;
 import com.fasterxml.jackson.databind.JsonNode;
+import java.net.URI;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -82,15 +83,21 @@ public class AuthController {
     }
 
     @PostMapping("/reissue")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<DefaultResponse> reissueAccessToken(@RequestHeader HttpHeaders headers) {
         String accessToken = headers.getFirst("authorization").substring(7);
         System.out.println("accessToken = " + accessToken);
         String refreshToken = headers.getFirst("refreshtoken");
         System.out.println("refreshToken = " + refreshToken);
         DefaultResponse defaultResponse = authService.reissueAccessToken(accessToken, refreshToken);
-        ResponseEntity.ok().body(defaultResponse);
-        return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
+        HttpHeaders httpHeaders = new HttpHeaders();
+        if(defaultResponse.getCode()==309){
+            httpHeaders.setLocation(URI.create("http://localhost:3090/login"));
+            return new ResponseEntity<>(defaultResponse, httpHeaders,
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(defaultResponse, httpHeaders,
+                HttpStatus.OK);
     }
 
 
