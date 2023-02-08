@@ -39,6 +39,29 @@ public class FriendService {
                     .build();
             friendRepository.save(friend);
 
+    }
+
+    @Transactional
+    public void createFriendListSns(Long userId) {
+
+        Optional<Friend> oneByUserId = friendRepository.findOneByUserId(userId);
+
+        if(oneByUserId.isEmpty()){
+
+            JSONArray blackList = new JSONArray();
+            JSONArray friendList = new JSONArray();
+            JSONArray requestList = new JSONArray();
+            JSONArray requestTime = new JSONArray();
+
+            Friend friend = Friend.builder()
+                    .userId(userId)
+                    .blackList(blackList.toJSONString())
+                    .friendList(friendList.toJSONString())
+                    .requestList(requestList.toJSONString())
+                    .requestTime(requestTime.toJSONString())
+                    .build();
+            friendRepository.save(friend);
+        }
 
     }
 

@@ -47,7 +47,7 @@ public class CustomOAuth2AuthService implements OAuth2UserService<OAuth2UserRequ
         User user = saveOrUpdate(attributes);
         Optional<User> oneByEmailAndProvider = userRepository.findOneByEmailAndProvider(
                 user.getEmail(), user.getProvider());
-        friendService.createFriendList(oneByEmailAndProvider.get().getUserId());
+        friendService.createFriendListSns(oneByEmailAndProvider.get().getUserId());
 
         System.out.println("user.getEmail() = " + user.getEmail());
         System.out.println("user.getProvider() = " + user.getProvider());
