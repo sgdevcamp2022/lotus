@@ -17,8 +17,11 @@ def index(request):
     print(type(board_list))
     board_list_json = serializers.serialize("json", board_list)
     print(board_list_json)
+
+    res_post_json=json.loads(board_list_json)
+    return JsonResponse({"code": 200, "message": "All Posts", "data": res_post_json})                        
     
-    return JsonResponse({"code": 200, "message": "All Posts look successful", "data": board_list_json})                        
+    # return JsonResponse({"code": 200, "message": "All Posts look successful", "data": board_list_json})                        
     # paginator=Paginator(board_list, 10)
     # page_obj=paginator.get_page(page)
     # context={'board_list': page_obj}
@@ -66,6 +69,7 @@ def regist(request):
             
             # not test
             # access_token=request.headers.get('Authorization', None)
+            # ac=access_token
             # user_info=requests.get("http://192.168.195.15:8080/auth/my", headers={'Authorization': "Bearer "+ac})
             # json_user_info=json.loads(user_info.content.decode('utf-8'))
             # not test
@@ -87,20 +91,22 @@ def regist(request):
         # return JsonResponse({'message': "hello1"})
         new_post=Post.objects.create(author=u, title=body["title"], content=body["content"])
         # print(new_post)
-        return JsonResponse({'message': new_post.id})    
+        # return JsonResponse({'message': new_post.id})    
+        return JsonResponse({"code": 200, "message": "New Post Regist!", "data": new_post.id})                        
         # return JsonResponse({'message': new_post.title})
         
         # return render(request, 'post/regist_form.html', context)
     
-    return JsonResponse({'message': "error"})
+    return JsonResponse({"code": 405, "message": "Please POST", "data": None})                        
     
 
 def detail(request, pk):
     board_list=get_object_or_404(Post, id=pk)
     # print(board_list.like.all())
-    print(board_list.id)
-    print(board_list.pk)
+    # print(board_list.id)
+    # print(board_list.pk)
     return JsonResponse({'status': 'ok'})                        
+
     # comments=Comment.objects.filter(post=pk)
     # if request.method=='POST':
     #     comment=Comment()
@@ -119,25 +125,31 @@ def edit(request, pk):
         
     body =  json.loads(request.body.decode('utf-8'))
     
-    post = get_object_or_404(Post, id=pk)
+    post=Post.objects.get(id=pk)
+    if u.id is not post.author.id:
+        return JsonResponse({"code": 401, "message": "Current User is not Authenticated", "data": None})                            
+    
+    
     post.title=body["title"]
     post.content=body["content"]
-    return JsonResponse({"message": post.title})
+    post.save()
 
-    if request.method == 'POST':
-        form = RegistForm(request.POST, instance=post)
-        if form.is_valid():
-            post = form.save()
-            return redirect('post:index')
-    else:
-        form = RegistForm(instance=post)
-    context = {'form': form}
-    return render(request, 'post/edit.html', context)
+    post_filter=Post.objects.filter(id=pk)
+    cur_post_json = serializers.serialize("json", post_filter)             
+    res_post_json=json.loads(cur_post_json)
+    return JsonResponse({"code": 200, "message": "Post Edited", "data": res_post_json})                        
+
 
 def delete(request, pk):
+    access_token=request.headers.get('Authorization', None)
+    payload = jwt.decode(access_token, 'SECRET', algorithms='HS256')
+    u = User.objects.get(id=payload['id'])
     post=get_object_or_404(Post, id=pk)    
+    if u.id is not post.author.id:
+        return JsonResponse({"code": 401, "message": "Current User is not Authenticated", "data": None})                            
+
     post.delete()
-    return JsonResponse({"message": "It is Deleted"})
+    return JsonResponse({"code": 200, "message": "Post Deleted", "data": None})                        
     # return redirect('post:index')
 
 def like_post(request, pk):
@@ -150,12 +162,19 @@ def like_post(request, pk):
         u = User.objects.get(id=payload['id'])
         #test auth
         print(post.like.all())
+
+
         if u in post.like.all():
             post.like.remove(u)
+            cur_post_json = serializers.serialize("json", post.like.all())
+            res_post_json=json.loads(cur_post_json)
+            return JsonResponse({"code": 200, "message": "Post Like removed", "data": res_post_json})                        
         else:
             post.like.add(u)
-        print(post.like.all())
-    return JsonResponse({'status': 'ok'})                        
+            cur_post_json = serializers.serialize("json", post.like.all())
+            res_post_json=json.loads(cur_post_json)
+            return JsonResponse({"code": 200, "message": "Post Like Added", "data": res_post_json})                        
+    return JsonResponse({"code": 405, "message": "Please GET", "data": None})                        
 
 def comment_post(request):
     if request.method == 'POST':
@@ -171,21 +190,21 @@ def comment_post(request):
         cur_user_comment=body["text"]
 
         cur_post=Post.objects.filter(id=cur_post_id)
-        # cur_post=get_object_or_404(Post, id=cur_post_id)
         cur_post_json = serializers.serialize("json", cur_post)
         res_post_json=json.loads(cur_post_json)
         
-        cur_post[0].comments=None
-        print(cur_post[0].comments)
-        cur_post[0].save()
-        return JsonResponse({"hello":"hello"})
-        
-        if cur_post[0].comments is None:
-            comment_json_object={
+        # cur_post[0].comments=None
+        # print(cur_post[0].comments)
+        # cur_post[0].save()
+        # return JsonResponse({"hello":"hello"})
+        comment_json_object={
                 "cur_user_id": cur_user_id,
                 "cur_user_comment": cur_user_comment,
                 "cur_post_id": cur_post_id,
             }
+        
+        if cur_post[0].comments is None:
+            
 
             comment_list=list()
             comment_list.append(comment_json_object)
@@ -196,12 +215,6 @@ def comment_post(request):
             
             
         else:
-            comment_json_object={
-                "cur_user_id": cur_user_id,
-                "cur_user_comment": cur_user_comment,
-                "cur_post_id": cur_post_id,
-            }
-            
             comment_json_str=json.dumps(comment_json_object)
             cur_post[0].comments+="\n"+comment_json_str
             cur_post[0].save()
