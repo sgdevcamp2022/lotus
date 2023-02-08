@@ -13,7 +13,7 @@ const useTokenAxios = (
     (error) => {
       axios
         .post(
-          '/auth/reissue/',
+          '/auth/reissue',
           {},
           {
             withCredentials: true,
@@ -24,13 +24,12 @@ const useTokenAxios = (
           },
         )
         .then((res) => {
-          //TODO: 디버그 콘솔 출력 제거
-          console.log('엑세스 토큰 재발급');
           setAccessToken(res.data.data);
         })
         .catch((error) => error);
     },
   );
+  return tokenAxios;
 };
 
 export default useTokenAxios;
