@@ -6,8 +6,11 @@ import com.example.auth.Dto.Response.DefaultResponse;
 import com.example.auth.Dto.Response.ResponseMessage;
 import com.example.auth.Dto.Response.SignupResponse;
 import com.example.auth.Dto.Response.StatusCode;
+import com.example.auth.Entity.User;
 import com.example.auth.Jwt.TokenProvider;
+import com.example.auth.Service.FriendService;
 import com.example.auth.Service.UserService;
+import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,11 +27,16 @@ public class UserController {
     private final UserService userService;
 
     private final TokenProvider tokenProvider;
+    private final FriendService friendService;
 
-    public UserController(UserService userService, TokenProvider tokenProvider) {
+    public UserController(UserService userService, TokenProvider tokenProvider,
+            FriendService friendService) {
         this.userService = userService;
         this.tokenProvider = tokenProvider;
+        this.friendService = friendService;
     }
+
+
 
     @PostMapping("/signup")
     public ResponseEntity<DefaultResponse> signup(
@@ -36,6 +44,10 @@ public class UserController {
     ) {
 
         DefaultResponse signupResponse = userService.signup(signupRequest);
+        SignupResponse data =(SignupResponse)signupResponse.getData();
+        String email = data.getEmail();
+        Optional<User> userByEmail = userService.getUserByEmail(email);
+        friendService.createFriendList(userByEmail.get().getUserId());
         ResponseEntity.ok().body(signupResponse);
 
         if(signupResponse.getCode()==400){

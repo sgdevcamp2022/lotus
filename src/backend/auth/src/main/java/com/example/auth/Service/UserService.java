@@ -103,6 +103,12 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
+    public Optional<User> getUserByEmail(String email) {
+        Optional<User> oneByUserId = userRepository.findOneByEmail(email);
+        return oneByUserId;
+    }
+
+    @Transactional(readOnly = true)
     public SignupRequest getUserWithAuthorities(String email) {
         return SignupRequest.from(userRepository.findOneWithAuthoritiesByEmail(email).orElse(null));
     }

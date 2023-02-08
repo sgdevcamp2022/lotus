@@ -2,7 +2,9 @@ package com.example.auth.Oauth2;
 
 import com.example.auth.Entity.User;
 import com.example.auth.Repository.UserRepository;
+import com.example.auth.Service.FriendService;
 import java.util.Collections;
+import java.util.Optional;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -19,11 +21,14 @@ import org.springframework.stereotype.Service;
 public class CustomOAuth2AuthService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
     private final UserRepository userRepository;
+    private final FriendService friendService;
 
-
-    public CustomOAuth2AuthService(UserRepository userRepository) {
+    public CustomOAuth2AuthService(UserRepository userRepository, FriendService friendService) {
         this.userRepository = userRepository;
+        this.friendService = friendService;
     }
+
+
 
 
     @SneakyThrows
@@ -40,6 +45,9 @@ public class CustomOAuth2AuthService implements OAuth2UserService<OAuth2UserRequ
                 oAuth2User.getAttributes());
 
         User user = saveOrUpdate(attributes);
+        Optional<User> oneByEmailAndProvider = userRepository.findOneByEmailAndProvider(
+                user.getEmail(), user.getProvider());
+        friendService.createFriendList(oneByEmailAndProvider.get().getUserId());
 
         System.out.println("user.getEmail() = " + user.getEmail());
         System.out.println("user.getProvider() = " + user.getProvider());
@@ -57,6 +65,8 @@ public class CustomOAuth2AuthService implements OAuth2UserService<OAuth2UserRequ
                         attributes.getProvider().toString())
                 .map(u -> u.update(attributes.getPicture(), attributes.getNickname()))
                 .orElse(attributes.toEntity());
+
+
 
         return userRepository.save(user);
     }
