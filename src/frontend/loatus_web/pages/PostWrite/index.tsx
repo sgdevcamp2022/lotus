@@ -7,22 +7,22 @@ import fetcher from '@utils/fetcher';
 import { toast } from 'react-toastify';
 import { Navigate } from 'react-router-dom';
 import axios from 'axios';
-import useToken from '@utils/useToken';
+import useToken from '@hooks/useToken';
+import useSWRRetry from '@hooks/useSWRRetry';
+import { useCookies } from 'react-cookie';
+import useTokenAxios from '@hooks/useTokenAxios';
 
 const PostWrite = () => {
-  const [accessToken] = useToken();
-  const {
-    data: userData,
-    error,
-    mutate,
-  } = useSWR<IUser | null>(accessToken ? ['/auth/my', accessToken] : null, fetcher);
+  const [accessToken, setAccessToken] = useToken();
+  const [token] = useCookies(['refreshToken']);
+  const { data: userData, error, mutate } = useSWRRetry('/auth/my', accessToken, setAccessToken, token.refreshToken);
   const [title, onChangeTitle, setTitle] = useInput('');
   const [content, onChangeContent, setContent] = useInput('');
   const [postSuccess, setPostSuccess] = useState(false);
   const onSubmitPost = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      axios
+      useTokenAxios(accessToken, setAccessToken, token.refreshToken)
         .post(
           '/post/regist/',
           {

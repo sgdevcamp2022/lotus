@@ -1,21 +1,16 @@
-import React, { useContext } from 'react';
-import useSWR from 'swr';
-import { APIItem, IUser } from '@typings/db';
-import fetcher from '@utils/fetcher';
-import { useCookies } from 'react-cookie';
+import React from 'react';
 import { ToastContainer } from 'react-toastify';
 import LostarkAuth from '@components/LostarkAuth';
 import { Outlet } from 'react-router';
 import Header from '@components/Header';
-import useToken from '@utils/useToken';
+import useToken from '@hooks/useToken';
+import useSWRRetry from '@hooks/useSWRRetry';
+import { useCookies } from 'react-cookie';
 
-export const MainPage = () => {
-  const [accessToken] = useToken();
-  const {
-    data: userData,
-    error,
-    mutate,
-  } = useSWR<IUser | null>(accessToken ? ['/auth/my', accessToken] : null, fetcher);
+const MainPage = () => {
+  const [accessToken, setAccessToken] = useToken();
+  const [token] = useCookies(['refreshToken']);
+  const { data: userData, error, mutate } = useSWRRetry('/auth/my', accessToken, setAccessToken, token.refreshToken);
 
   return (
     <div>
@@ -28,3 +23,5 @@ export const MainPage = () => {
     </div>
   );
 };
+
+export default MainPage;

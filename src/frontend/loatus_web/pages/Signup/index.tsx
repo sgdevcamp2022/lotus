@@ -8,7 +8,7 @@ import { APIItem, IUser } from '@typings/db';
 import fetcher from '@utils/fetcher';
 import { toast, ToastContainer } from 'react-toastify';
 import { Form } from 'react-bootstrap';
-import useToken from '@utils/useToken';
+import useToken from '@hooks/useToken';
 
 const Signup = () => {
   const [email, onChangeEmail, setEmail] = useInput('');

@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import useInput from '@hooks/useInput';
 import axios, { AxiosResponse } from 'axios';
 import { Button, Header, Horizon, Hr, Input, Page, PageHead, Root, SignIn } from '@pages/Login/styles';
@@ -8,23 +8,16 @@ import useSWR from 'swr';
 import { useCookies } from 'react-cookie';
 import fetcher from '@utils/fetcher';
 import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import { Form } from 'react-bootstrap';
-import useToken from '@utils/useToken';
+import useToken from '@hooks/useToken';
 
 const Login = () => {
-  const [refreshToken, setRefreshToken] = useCookies(['refreshToken']);
+  const [token, setToken] = useCookies(['refreshToken']);
   const [accessToken, setAccessToken] = useToken();
   const [email, onChangeEmail, setEmail] = useInput('');
   const [password, onChangePassword, setPassword] = useInput('');
-  const {
-    data: userData,
-    error,
-    mutate,
-  } = useSWR<IUser | null>(accessToken ? ['/auth/my', accessToken] : null, fetcher);
+  const { data: userData, error, mutate } = useSWR<IUser>(accessToken ? ['/auth/my', accessToken] : null, fetcher);
   const [params, setParams] = useSearchParams();
-
   useEffect(() => {
     if (params.get('accessToken')) {
       setAccessToken(params.get('accessToken'));
@@ -32,9 +25,9 @@ const Login = () => {
   }, []);
 
   const onSubmitLogin = useCallback(
-    (e: React.FormEvent<HTMLFormElement>) => {
+    async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      axios
+      await axios
         .post(
           `/auth/login`,
           {
@@ -56,9 +49,9 @@ const Login = () => {
             });
             return;
           }
-          setAccessToken(response?.data.data.accessToken);
-          setRefreshToken('refreshToken', response?.data.data.refreshToken, { path: '/' });
+          setToken('refreshToken', response?.data.data.refreshToken, { path: '/' });
           setEmail('');
+          setAccessToken(response?.data.data.accessToken);
           mutate();
         })
         .catch((error) => {

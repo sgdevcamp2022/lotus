@@ -1,23 +1,30 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Button, Card, Col, Container, Form, InputGroup, Row } from 'react-bootstrap';
 import axios, { AxiosResponse } from 'axios';
 import { toast } from 'react-toastify';
 import useInput from '@hooks/useInput';
 import { APIItem, IUser, lostarkInfo } from '@typings/db';
-import useToken from '@utils/useToken';
+import useToken from '@hooks/useToken';
+import useTokenAxios from '@hooks/useTokenAxios';
+import { useCookies } from 'react-cookie';
 
 const LostarkAuth = () => {
-  const [accessToken] = useToken();
+  const [accessToken, setAccessToken] = useToken();
+  const [token, setToken] = useCookies(['refreshToken']);
   const [randomCode, setRandomCode] = useState('');
   const [stoveUrl, onChangeStoveUrl, setStoveUrl] = useInput('');
+  const config = useMemo(
+    () => ({
+      withCredentials: true,
+      headers: {
+        Authorization: 'Bearer ' + accessToken,
+      },
+    }),
+    [accessToken],
+  );
   useEffect(() => {
-    axios
-      .get('/auth/randomcode', {
-        withCredentials: true,
-        headers: {
-          Authorization: 'Bearer ' + accessToken,
-        },
-      })
+    useTokenAxios(accessToken, setAccessToken, token.refreshToken)
+      .get('/auth/randomcode', config)
       .then((response: AxiosResponse<APIItem<string>>) => {
         setRandomCode(response.data.data);
       })
@@ -25,7 +32,6 @@ const LostarkAuth = () => {
         toast.error('인증번호를 불러올 수 없습니다.', {
           position: 'top-right',
         });
-        console.dir(error);
       });
   }, []);
 
@@ -45,19 +51,14 @@ const LostarkAuth = () => {
   const onSubmitAuthInfo = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      axios
+      useTokenAxios(accessToken, setAccessToken, token.refreshToken)
         .post(
           '/auth/stove',
           {
             randomCode,
             stoveUrl,
           },
-          {
-            headers: {
-              Authorization: 'Bearer ' + accessToken,
-            },
-            withCredentials: true,
-          },
+          config,
         )
         .then((response: AxiosResponse<APIItem<lostarkInfo>>) => {
           if (response.data.code === 200) {

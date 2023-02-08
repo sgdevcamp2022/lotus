@@ -1,23 +1,19 @@
 import React, { useCallback } from 'react';
 import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap';
 import gravatar from 'gravatar';
-import useSWR from 'swr';
-import { APIItem, IUser } from '@typings/db';
-import fetcher from '@utils/fetcher';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import useToken from '@utils/useToken';
+import useToken from '@hooks/useToken';
 import { Link } from 'react-router-dom';
 import { HeaderNavLink } from '@components/Header/styles';
+import { useCookies } from 'react-cookie';
+import useSWRRetry from '@hooks/useSWRRetry';
 
 const Header = () => {
-  const [accessToken] = useToken();
-  const {
-    data: userData,
-    error,
-    mutate,
-  } = useSWR<IUser | null>(accessToken ? ['/auth/my', accessToken] : null, fetcher);
-  console.log(accessToken);
+  const [accessToken, setAccessToken] = useToken();
+  const [token] = useCookies(['refreshToken']);
+
+  const { data: userData, error, mutate } = useSWRRetry('/auth/my', accessToken, setAccessToken, token.refreshToken);
 
   const onClickLogout = useCallback(() => {
     axios
@@ -31,7 +27,7 @@ const Header = () => {
         toast.success(response.data.message, {
           position: 'top-right',
         });
-        mutate();
+        mutate(null);
       })
       .catch((error) => {
         toast.error('오류가 발생했습니다.\n기술팀에 문의하세요!', {

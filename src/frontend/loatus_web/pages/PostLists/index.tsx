@@ -6,7 +6,7 @@ import fetcher from '@utils/fetcher';
 import { APIItem, IPost, IUser } from '@typings/db';
 import makedate from '@utils/makedate';
 import axios from 'axios';
-import useToken from '@utils/useToken';
+import useToken from '@hooks/useToken';
 
 const PostLists = () => {
   const [accessToken] = useToken();
