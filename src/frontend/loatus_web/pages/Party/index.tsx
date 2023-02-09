@@ -27,19 +27,31 @@ const menuItem = (itemLevel: number, expeditionLevel: number, raidTime: Date) =>
     <span>쿠크레이드</span>
   </div>,
   <div className={'partyking'}>방패막기 가로쉬</div>,
-  <ItemLevel>{itemLevel}</ItemLevel>,
-  <Expedition>{expeditionLevel}</Expedition>,
+  <ItemLevel>
+    <small>Lv</small>
+    {itemLevel}
+  </ItemLevel>,
+  <Expedition>
+    {expeditionLevel} / {expeditionLevel}
+  </Expedition>,
   <RaidTime>{dayjs(raidTime).format('HH:mm A')}</RaidTime>,
   <Memo>안녕하세요? 쿠크 코 만지고 오실 분</Memo>,
   <RaidTime>{dayjs(raidTime).format('HH:mm A')}</RaidTime>,
-  <Button onClick={() => alert('ihihhi')}>신청하기</Button>,
+  <Button
+    onClick={(event) => {
+      event.stopPropagation();
+      alert('ihihhi');
+    }}
+  >
+    신청하기
+  </Button>,
 ];
 
 const Party = () => {
   const [showPartyModal, setShowPartyModal] = useState(false);
   const [partyInfo, setPartyInfo] = useState(0);
-  const toggleShowPartyModal = useCallback((partId: number) => {
-    setPartyInfo(partId);
+  const toggleShowPartyModal = useCallback(() => {
+    setPartyInfo(1);
     setShowPartyModal((prev) => !prev);
   }, []);
 
@@ -47,7 +59,7 @@ const Party = () => {
 
   return (
     <div style={{ overflowX: 'auto', overflowY: 'hidden', paddingBottom: '7rem' }}>
-      <Modal show={showPartyModal} onHide={handleClose} backdrop={'static'} keyboard={true}>
+      <Modal centered show={showPartyModal} onHide={handleClose} backdrop={'static'} keyboard={false}>
         <Modal.Header closeButton>
           <Modal.Title>{partyInfo}</Modal.Title>
         </Modal.Header>
@@ -74,7 +86,7 @@ const Party = () => {
         </div>
         <Lists>
           <li>
-            <div className={'MulCollapse-wrapper'} onClick={() => toggleShowPartyModal(1)}>
+            <div className={'MulCollapse-wrapper'} onClick={toggleShowPartyModal}>
               {menuItem(832, 4, new Date()).map((menu, key) => (
                 <div className={'partner'} key={key}>
                   {menu}

@@ -44,6 +44,8 @@ export const Lists = styled.ul`
     transition-duration: 300ms;
     & div.MulCollapse-wrapper {
       display: flex;
+      justify-content: center;
+      align-content: center;
       width: 100%;
 
       & div.partner {
@@ -52,6 +54,7 @@ export const Lists = styled.ul`
         padding: 0.5rem 0.5rem 0.625rem 0.625rem;
         font-size: 15px;
         text-align: center;
+        margin: auto;
       }
     }
   }
