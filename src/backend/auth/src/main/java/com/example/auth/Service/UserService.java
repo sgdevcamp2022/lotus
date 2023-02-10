@@ -82,6 +82,7 @@ public class UserService {
         System.out.println(user.getPassword());
 
         SignupRequest from = SignupRequest.from(userRepository.save(user));
+        System.out.println("from = " + from);
         SignupResponse signupResponse = new SignupResponse(from.getEmail(),
                 from.getNickname());
         return new DefaultResponse(StatusCode.OK, ResponseMessage.SIGNUP_SUCCESSS, signupResponse);

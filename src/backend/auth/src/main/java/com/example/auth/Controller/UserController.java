@@ -45,14 +45,15 @@ public class UserController {
 
         DefaultResponse signupResponse = userService.signup(signupRequest);
         SignupResponse data =(SignupResponse)signupResponse.getData();
+        if(signupResponse.getCode()==400){
+            return new ResponseEntity<>(signupResponse, HttpStatus.BAD_REQUEST);
+        }
         String email = data.getEmail();
         Optional<User> userByEmail = userService.getUserByEmail(email);
         friendService.createFriendList(userByEmail.get().getUserId());
         ResponseEntity.ok().body(signupResponse);
 
-        if(signupResponse.getCode()==400){
-            return new ResponseEntity<>(signupResponse, HttpStatus.BAD_REQUEST);
-        }
+
 
 
         return new ResponseEntity<>(signupResponse, HttpStatus.OK);
