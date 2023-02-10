@@ -114,7 +114,8 @@ public class AuthController {
             DefaultResponse defaultResponse1 = DefaultResponse.builder().data(null)
                     .code(StatusCode.NOT_FOUND).message(ResponseMessage.READ_USER_FAILURE).build();
         }
-        MyResponse myResponse = new MyResponse(userByUsername.get().getEmail(),
+        MyResponse myResponse = new MyResponse(userByUsername.get().getUserId(),
+                userByUsername.get().getEmail(),
                 userByUsername.get().getNickname(), userByUsername.get().getAuth(),
                 userByUsername.get().getProvider(), userByUsername.get().getStove_no());
         DefaultResponse<MyResponse> defaultresponse = new DefaultResponse<>(StatusCode.OK,

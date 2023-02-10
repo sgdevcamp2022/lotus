@@ -6,8 +6,9 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
+@Builder
 public class MyResponse {
-
+    private Long userId;
     private String email;
     private String nickname;
     private String auth;
