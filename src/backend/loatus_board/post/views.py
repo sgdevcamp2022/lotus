@@ -10,22 +10,26 @@ import json,jwt
 from django.http import JsonResponse 
 import requests, json
 from django.core import serializers
+from math import ceil
 # Create your views here.
 
-def index(request):
-    board_list=Post.objects.all().order_by('-id')
-    print(type(board_list))
-    board_list_json = serializers.serialize("json", board_list)
-    print(board_list_json)
+auth_url="http://"+"3.39.191.83:8080"
 
+def index(request):
+    
+    page = int(request.GET.get("page", 1) or 1)
+    page_size = 10
+    limit = int(page_size * page)
+    offset = int(limit - page_size)
+    board_list=Post.objects.all().order_by('-id')[offset:limit]
+    page_count = ceil(Post.objects.count() / page_size)
+    board_list_json = serializers.serialize("json", board_list)
     res_post_json=json.loads(board_list_json)
+    
+    
     return JsonResponse({"code": 200, "message": "All Posts", "data": res_post_json})                        
     
-    # return JsonResponse({"code": 200, "message": "All Posts look successful", "data": board_list_json})                        
-    # paginator=Paginator(board_list, 10)
-    # page_obj=paginator.get_page(page)
-    # context={'board_list': page_obj}
-    # return render(request, 'post/index.html', context)
+    
 
 def test_user_create(request):
     if request.method == "POST":
@@ -68,15 +72,33 @@ def regist(request):
         try:
             
             # not test
-            # access_token=request.headers.get('Authorization', None)
-            # ac=access_token
-            # user_info=requests.get("http://192.168.195.15:8080/auth/my", headers={'Authorization': "Bearer "+ac})
-            # json_user_info=json.loads(user_info.content.decode('utf-8'))
-            # not test
-
             access_token=request.headers.get('Authorization', None)
-            payload = jwt.decode(access_token, 'SECRET', algorithms='HS256')
-            u = User.objects.get(id=payload['id'])
+            ac=access_token
+            print(ac)
+            user_info=requests.get(auth_url+"/auth/my", headers={'Authorization': ac})
+            print(user_info)
+            print(type(user_info))
+            json_user_info=json.loads(user_info.content.decode('utf-8'))
+            # print(json_user_info["data"]['email'])
+            # print(json_user_info["data"]["nickname"])
+            # print(json_user_info)
+            user_email=json_user_info["data"]["email"]
+            user_nickname=json_user_info["data"]["nickname"]
+            
+            print(User.objects.filter(username=user_nickname).exists())
+            if User.objects.filter(username=user_nickname).exists() is False:
+                print("flag")
+                user = User.objects.create_user(username=user_nickname, email=user_email)
+            print(User.objects.filter(username=user_nickname))
+            # not test
+            # return JsonResponse({"code": 200, "message": "New Post Regist!", "data": json_user_info})                        
+            # return JsonResponse({"code": 200, "message": "New Post Regist!", "data": "hello"})                        
+
+            # access_token=request.headers.get('Authorization', None)
+            # payload = jwt.decode(access_token, 'SECRET', algorithms='HS256')
+            u = User.objects.get(username=user_nickname)
+            print(u)
+            # return JsonResponse({"code": 200, "message": "New Post Regist!", "data": "hello"})                        
             
             body =  json.loads(request.body.decode('utf-8'))
             
@@ -119,9 +141,20 @@ def detail(request, pk):
     # return render(request, 'post/detail.html', context)
 
 def edit(request, pk):
+    # access_token=request.headers.get('Authorization', None)
+    # payload = jwt.decode(access_token, 'SECRET', algorithms='HS256')
+    # u = User.objects.get(id=payload['id'])
+    
     access_token=request.headers.get('Authorization', None)
-    payload = jwt.decode(access_token, 'SECRET', algorithms='HS256')
-    u = User.objects.get(id=payload['id'])
+    ac=access_token
+    user_info=requests.get(auth_url+"/auth/my", headers={'Authorization': ac})
+    json_user_info=json.loads(user_info.content.decode('utf-8'))
+    # print(json_user_info["data"]['email'])
+    # print(json_user_info["data"]["nickname"])
+    # print(json_user_info)
+    user_nickname=json_user_info["data"]["nickname"]
+    u=User.objects.get(username=user_nickname)
+    
         
     body =  json.loads(request.body.decode('utf-8'))
     
@@ -141,9 +174,18 @@ def edit(request, pk):
 
 
 def delete(request, pk):
+    # access_token=request.headers.get('Authorization', None)
+    # payload = jwt.decode(access_token, 'SECRET', algorithms='HS256')
+    # u = User.objects.get(id=payload['id'])
+    
     access_token=request.headers.get('Authorization', None)
-    payload = jwt.decode(access_token, 'SECRET', algorithms='HS256')
-    u = User.objects.get(id=payload['id'])
+    ac=access_token
+    user_info=requests.get(auth_url+"/auth/my", headers={'Authorization': ac})
+    
+    json_user_info=json.loads(user_info.content.decode('utf-8'))
+    user_nickname=json_user_info["data"]["nickname"]
+    u=User.objects.get(username=user_nickname)
+    
     post=get_object_or_404(Post, id=pk)    
     if u.id is not post.author.id:
         return JsonResponse({"code": 401, "message": "Current User is not Authenticated", "data": None})                            
@@ -157,10 +199,20 @@ def like_post(request, pk):
         post=get_object_or_404(Post, id=pk)
 
         #test auth
-        access_token=request.headers.get('Authorization', None)
-        payload = jwt.decode(access_token, 'SECRET', algorithms='HS256')
-        u = User.objects.get(id=payload['id'])
+        # access_token=request.headers.get('Authorization', None)
+        # payload = jwt.decode(access_token, 'SECRET', algorithms='HS256')
+        # u = User.objects.get(id=payload['id'])
         #test auth
+        
+        access_token=request.headers.get('Authorization', None)
+        ac=access_token
+        user_info=requests.get(auth_url+"/auth/my", headers={'Authorization': ac})
+    
+        json_user_info=json.loads(user_info.content.decode('utf-8'))
+        user_nickname=json_user_info["data"]["nickname"]
+        u=User.objects.get(username=user_nickname)
+        
+        
         print(post.like.all())
 
 
@@ -178,11 +230,15 @@ def like_post(request, pk):
 
 def comment_post(request):
     if request.method == 'POST':
-        #test auth
+        
         access_token=request.headers.get('Authorization', None)
-        payload = jwt.decode(access_token, 'SECRET', algorithms='HS256')
-        u = User.objects.get(id=payload['id'])
-        #test auth
+        ac=access_token
+        user_info=requests.get(auth_url+"/auth/my", headers={'Authorization': ac})
+    
+        json_user_info=json.loads(user_info.content.decode('utf-8'))
+        user_nickname=json_user_info["data"]["nickname"]
+        u=User.objects.get(username=user_nickname)
+        
 
         body =  json.loads(request.body.decode('utf-8'))
         cur_user_id=u.id
@@ -196,12 +252,13 @@ def comment_post(request):
         # cur_post[0].comments=None
         # print(cur_post[0].comments)
         # cur_post[0].save()
-        # return JsonResponse({"hello":"hello"})
+        
         comment_json_object={
                 "cur_user_id": cur_user_id,
                 "cur_user_comment": cur_user_comment,
                 "cur_post_id": cur_post_id,
             }
+        
         
         if cur_post[0].comments is None:
             
@@ -215,17 +272,38 @@ def comment_post(request):
             
             
         else:
+            
             comment_json_str=json.dumps(comment_json_object)
-            cur_post[0].comments+="\n"+comment_json_str
-            cur_post[0].save()
+            print(comment_json_str)
+            print(type(comment_json_str))
+            
+            if cur_post[0].comments is "":
+                cur_post[0].comments=comment_json_str
+                cur_post[0].save()
+            else:
+                cur_post[0].comments+="\n"+comment_json_str
+                cur_post[0].save()
+            
+            
+            print(cur_post[0].comments)
             comments_split=cur_post[0].comments.split("\n")
             comment_list=list()
-            for i in range(len(comments_split)):
-                cur_dict=eval(comments_split[i])
-                comment_list.append(cur_dict)
-            print(comment_list)
-            res_post_json[0]["fields"]["comments"]=comment_list
-
+            print(len(comments_split))
             
-        
-        return JsonResponse({'status': 200, "message": "comments in post", "data": res_post_json})                        
+            
+            
+            for i in range(len(comments_split)):
+                print(comments_split[0])
+                print(type(comments_split[0]))
+                cur_str=comments_split[i]
+                cur_dict=eval(cur_str)
+                comment_list.append(cur_dict)
+            print(comment_list)    
+            res_post_json[0]["fields"]["comments"]=comment_list
+            # return JsonResponse({"status": 200, "message": "comments in post", "data": "rkskek"})
+        return JsonResponse({"status": 200, "message": "comments in post", "data": res_post_json})
+
+
+
+
+
