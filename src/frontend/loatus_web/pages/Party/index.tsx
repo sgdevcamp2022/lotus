@@ -19,13 +19,9 @@ const menuText = [
   '카드',
 ];
 
-const menuText2 = ['레이드', '파티장', '평균 아이템 레벨', '모집 인원', '시간', '메모', '등록시간', ' '];
+const menuText2 = ['파티장', '평균 아이템 레벨', '모집 인원', '시간', '메모', '등록시간', ' '];
 
 const menuItem = (itemLevel: number, expeditionLevel: number, raidTime: Date) => [
-  <div>
-    <img src={'https://i.ytimg.com/vi/wdPqzj6LfoM/maxresdefault.jpg'} alt={'레이드 이름'} width={'100%'} />
-    <span>쿠크레이드</span>
-  </div>,
   <div className={'partyking'}>방패막기 가로쉬</div>,
   <ItemLevel>
     <small>Lv</small>
