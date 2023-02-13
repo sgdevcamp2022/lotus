@@ -32,12 +32,14 @@ export type lostarkInfo = {
 };
 
 export type IPost = {
-  id: number;
-  title: string;
-  author: IUser;
-  content: string;
-  published_date: Date;
-  like: IUser[];
+  pk: number;
+  fields: {
+    title: string;
+    author: number;
+    content: string;
+    published_date: Date;
+    like: number[];
+  };
 };
 
 export type IComment = {
