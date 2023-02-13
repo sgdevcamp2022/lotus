@@ -35,10 +35,10 @@ export type IPost = {
   pk: number;
   fields: {
     title: string;
-    author: number;
+    author: string;
     content: string;
     published_date: Date;
-    like: number[];
+    like: string[];
   };
 };
 

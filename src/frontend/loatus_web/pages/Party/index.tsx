@@ -2,7 +2,9 @@ import React, { useCallback, useState } from 'react';
 import { Expedition, ItemLevel, Lists, Memo, PartyContainer, RaidTime } from '@pages/Party/styles';
 import { Button, Modal } from 'react-bootstrap';
 import dayjs from 'dayjs';
-
+import List from '@mui/material/List';
+import { Avatar, IconButton, ListItem, ListItemAvatar, ListItemText, Typography } from '@mui/material';
+import CommentIcon from '@mui/icons-material/Comment';
 const menuText = [
   ' ',
   '아이템 레벨',
@@ -54,45 +56,329 @@ const Party = () => {
   const handleClose = useCallback(() => setShowPartyModal(false), []);
 
   return (
-    <div style={{ overflowX: 'auto', overflowY: 'hidden', paddingBottom: '7rem' }}>
-      <Modal centered show={showPartyModal} onHide={handleClose} backdrop={'static'} keyboard={false}>
-        <Modal.Header closeButton>
-          <Modal.Title>{partyInfo}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>야이 떄끼야</Modal.Body>
-        <Modal.Footer>
-          <Button
-            variant={'secondary'}
-            onClick={(event) => {
-              event.stopPropagation();
-              handleClose();
-            }}
-          >
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
-      <PartyContainer className={'w-full'}>
-        <div className={'menubar'}>
-          {menuText2.map((menu, key) => (
-            <span className={'text-3xs'} key={key}>
-              {menu}
-            </span>
-          ))}
-        </div>
-        <Lists>
-          <li>
-            <div className={'MulCollapse-wrapper'} onClick={toggleShowPartyModal}>
-              {menuItem(832, 4, new Date()).map((menu, key) => (
-                <div className={'partner'} key={key}>
-                  {menu}
-                </div>
-              ))}
-            </div>
-          </li>
-        </Lists>
-      </PartyContainer>
+    <div style={{ display: 'flex' }}>
+      <List sx={{ width: '100%', maxWidth: 352, bgcolor: 'background.paper' }}>
+        <ListItem
+          alignItems="flex-start"
+          secondaryAction={
+            <IconButton edge={'end'} aria-label={'comments'}>
+              <CommentIcon />
+            </IconButton>
+          }
+        >
+          <ListItemAvatar>
+            <Avatar alt="username" src="user.profile" />
+          </ListItemAvatar>
+          <ListItemText
+            primary={<React.Fragment>글 제목 {'4/4'}</React.Fragment>}
+            secondary={
+              <React.Fragment>
+                <Typography sx={{ display: 'inline' }} component="span" variant="body2" color="text.primary">
+                  {'파티장'}
+                </Typography>
+                <Typography variant={'body2'}>{'\n글내용ㅋ'}</Typography>
+                <Typography>{'작성시간'}</Typography>
+              </React.Fragment>
+            }
+          />
+        </ListItem>
+        <ListItem
+          alignItems="flex-start"
+          secondaryAction={
+            <IconButton edge={'end'} aria-label={'comments'}>
+              <CommentIcon />
+            </IconButton>
+          }
+        >
+          <ListItemAvatar>
+            <Avatar alt="username" src="user.profile" />
+          </ListItemAvatar>
+          <ListItemText
+            primary="글 제목"
+            secondary={
+              <React.Fragment>
+                <Typography sx={{ display: 'inline' }} component="span" variant="body2" color="text.primary">
+                  {'파티장'}
+                </Typography>
+                {'글내용'}
+              </React.Fragment>
+            }
+          ></ListItemText>
+        </ListItem>
+        <ListItem
+          alignItems="flex-start"
+          secondaryAction={
+            <IconButton edge={'end'} aria-label={'comments'}>
+              <CommentIcon />
+            </IconButton>
+          }
+        >
+          <ListItemAvatar>
+            <Avatar alt="username" src="user.profile" />
+          </ListItemAvatar>
+          <ListItemText
+            primary="글 제목"
+            secondary={
+              <React.Fragment>
+                <Typography sx={{ display: 'inline' }} component="span" variant="body2" color="text.primary">
+                  {'파티장'}
+                </Typography>
+                {'글내용'}
+              </React.Fragment>
+            }
+          ></ListItemText>
+        </ListItem>
+        <ListItem
+          alignItems="flex-start"
+          secondaryAction={
+            <IconButton edge={'end'} aria-label={'comments'}>
+              <CommentIcon />
+            </IconButton>
+          }
+        >
+          <ListItemAvatar>
+            <Avatar alt="username" src="user.profile" />
+          </ListItemAvatar>
+          <ListItemText
+            primary="글 제목"
+            secondary={
+              <React.Fragment>
+                <Typography sx={{ display: 'inline' }} component="span" variant="body2" color="text.primary">
+                  {'파티장'}
+                </Typography>
+                {'글내용'}
+              </React.Fragment>
+            }
+          ></ListItemText>
+        </ListItem>
+        <ListItem
+          alignItems="flex-start"
+          secondaryAction={
+            <IconButton edge={'end'} aria-label={'comments'}>
+              <CommentIcon />
+            </IconButton>
+          }
+        >
+          <ListItemAvatar>
+            <Avatar alt="username" src="user.profile" />
+          </ListItemAvatar>
+          <ListItemText
+            primary="글 제목"
+            secondary={
+              <React.Fragment>
+                <Typography sx={{ display: 'inline' }} component="span" variant="body2" color="text.primary">
+                  {'파티장'}
+                </Typography>
+                {'글내용'}
+              </React.Fragment>
+            }
+          ></ListItemText>
+        </ListItem>
+        <ListItem
+          alignItems="flex-start"
+          secondaryAction={
+            <IconButton edge={'end'} aria-label={'comments'}>
+              <CommentIcon />
+            </IconButton>
+          }
+        >
+          <ListItemAvatar>
+            <Avatar alt="username" src="user.profile" />
+          </ListItemAvatar>
+          <ListItemText
+            primary="글 제목"
+            secondary={
+              <React.Fragment>
+                <Typography sx={{ display: 'inline' }} component="span" variant="body2" color="text.primary">
+                  {'파티장'}
+                </Typography>
+                {'글내용'}
+              </React.Fragment>
+            }
+          ></ListItemText>
+        </ListItem>
+      </List>
+      <List sx={{ width: '100%', maxWidth: 352, bgcolor: 'background.paper' }}>
+        <ListItem
+          alignItems="flex-start"
+          secondaryAction={
+            <IconButton edge={'end'} aria-label={'comments'}>
+              <CommentIcon />
+            </IconButton>
+          }
+        >
+          <ListItemAvatar>
+            <Avatar alt="username" src="user.profile" />
+          </ListItemAvatar>
+          <ListItemText
+            primary="글 제목"
+            secondary={
+              <React.Fragment>
+                <Typography sx={{ display: 'inline' }} component="span" variant="body2" color="text.primary">
+                  {'파티장'}
+                </Typography>
+                {'글내용'}
+              </React.Fragment>
+            }
+          ></ListItemText>
+        </ListItem>
+        <ListItem
+          alignItems="flex-start"
+          secondaryAction={
+            <IconButton edge={'end'} aria-label={'comments'}>
+              <CommentIcon />
+            </IconButton>
+          }
+        >
+          <ListItemAvatar>
+            <Avatar alt="username" src="user.profile" />
+          </ListItemAvatar>
+          <ListItemText
+            primary="글 제목"
+            secondary={
+              <React.Fragment>
+                <Typography sx={{ display: 'inline' }} component="span" variant="body2" color="text.primary">
+                  {'파티장'}
+                </Typography>
+                {'글내용'}
+              </React.Fragment>
+            }
+          ></ListItemText>
+        </ListItem>
+        <ListItem
+          alignItems="flex-start"
+          secondaryAction={
+            <IconButton edge={'end'} aria-label={'comments'}>
+              <CommentIcon />
+            </IconButton>
+          }
+        >
+          <ListItemAvatar>
+            <Avatar alt="username" src="user.profile" />
+          </ListItemAvatar>
+          <ListItemText
+            primary="글 제목"
+            secondary={
+              <React.Fragment>
+                <Typography sx={{ display: 'inline' }} component="span" variant="body2" color="text.primary">
+                  {'파티장'}
+                </Typography>
+                {'글내용'}
+              </React.Fragment>
+            }
+          ></ListItemText>
+        </ListItem>
+        <ListItem
+          alignItems="flex-start"
+          secondaryAction={
+            <IconButton edge={'end'} aria-label={'comments'}>
+              <CommentIcon />
+            </IconButton>
+          }
+        >
+          <ListItemAvatar>
+            <Avatar alt="username" src="user.profile" />
+          </ListItemAvatar>
+          <ListItemText
+            primary="글 제목"
+            secondary={
+              <React.Fragment>
+                <Typography sx={{ display: 'inline' }} component="span" variant="body2" color="text.primary">
+                  {'파티장'}
+                </Typography>
+                {'글내용'}
+              </React.Fragment>
+            }
+          ></ListItemText>
+        </ListItem>
+        <ListItem
+          alignItems="flex-start"
+          secondaryAction={
+            <IconButton edge={'end'} aria-label={'comments'}>
+              <CommentIcon />
+            </IconButton>
+          }
+        >
+          <ListItemAvatar>
+            <Avatar alt="username" src="user.profile" />
+          </ListItemAvatar>
+          <ListItemText
+            primary="글 제목"
+            secondary={
+              <React.Fragment>
+                <Typography sx={{ display: 'inline' }} component="span" variant="body2" color="text.primary">
+                  {'파티장'}
+                </Typography>
+                {'글내용'}
+              </React.Fragment>
+            }
+          ></ListItemText>
+        </ListItem>
+        <ListItem
+          alignItems="flex-start"
+          secondaryAction={
+            <IconButton edge={'end'} aria-label={'comments'}>
+              <CommentIcon />
+            </IconButton>
+          }
+        >
+          <ListItemAvatar>
+            <Avatar alt="username" src="user.profile" />
+          </ListItemAvatar>
+          <ListItemText
+            primary="글 제목"
+            secondary={
+              <React.Fragment>
+                <Typography sx={{ display: 'inline' }} component="span" variant="body2" color="text.primary">
+                  {'파티장'}
+                </Typography>
+                {'글내용'}
+              </React.Fragment>
+            }
+          ></ListItemText>
+        </ListItem>
+      </List>
     </div>
+
+    // <div style={{ overflowX: 'auto', overflowY: 'hidden', paddingBottom: '7rem' }}>
+    //   <Modal centered show={showPartyModal} onHide={handleClose} backdrop={'static'} keyboard={false}>
+    //     <Modal.Header closeButton>
+    //       <Modal.Title>{partyInfo}</Modal.Title>
+    //     </Modal.Header>
+    //     <Modal.Body>야이 떄끼야</Modal.Body>
+    //     <Modal.Footer>
+    //       <Button
+    //         variant={'secondary'}
+    //         onClick={(event) => {
+    //           event.stopPropagation();
+    //           handleClose();
+    //         }}
+    //       >
+    //         Close
+    //       </Button>
+    //     </Modal.Footer>
+    //   </Modal>
+    //   <PartyContainer className={'w-full'}>
+    //     <div className={'menubar'}>
+    //       {menuText2.map((menu, key) => (
+    //         <span className={'text-3xs'} key={key}>
+    //           {menu}
+    //         </span>
+    //       ))}
+    //     </div>
+    //     <Lists>
+    //       <li>
+    //         <div className={'MulCollapse-wrapper'} onClick={toggleShowPartyModal}>
+    //           {menuItem(832, 4, new Date()).map((menu, key) => (
+    //             <div className={'partner'} key={key}>
+    //               {menu}
+    //             </div>
+    //           ))}
+    //         </div>
+    //       </li>
+    //     </Lists>
+    //   </PartyContainer>
+    // </div>
   );
 };
 

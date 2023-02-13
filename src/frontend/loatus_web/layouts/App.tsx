@@ -3,7 +3,7 @@ import { Routes, Route, Navigate, BrowserRouter } from 'react-router-dom';
 const MainPage = loadable(() => import('@layouts//MainPage'));
 const Login = loadable(() => import('@pages/Login'));
 const Signup = loadable(() => import('@pages/Signup'));
-const Board = loadable(() => import('@layouts/Board'));
+const Board = loadable(() => import('@layouts/../pages/Board'));
 const Party = loadable(() => import('@pages/Party'));
 const Home = loadable(() => import('@pages/Home'));
 const Notice = loadable(() => import('@pages/Notice'));

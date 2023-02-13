@@ -73,7 +73,7 @@ const Login = () => {
       <Header>
         <div className="left-col"></div>
         <div className="center-col">
-          <h1 style={{ textAlign: 'center' }}>Loatus</h1>
+          <h1 style={{ textAlign: 'center', fontFamily: 'Noto Sans KR, sans-serif' }}>LOATUS</h1>
         </div>
         <div className="right-col">
           <div
