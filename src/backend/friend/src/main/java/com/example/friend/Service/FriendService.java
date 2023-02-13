@@ -36,7 +36,6 @@ public class FriendService {
     }
 
 
-
     @Transactional
     public DefaultResponse createFriendList(FriendRequest friendRequest) {
 
@@ -120,6 +119,7 @@ public class FriendService {
 
     @Transactional
     public DefaultResponse saveRequest(FriendRequest friendRequest) {
+        System.out.println("friendRequest = " + friendRequest);
         Date now = new Date();
 //        SimpleDateFormat sdf1=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy년 MM월 dd일");

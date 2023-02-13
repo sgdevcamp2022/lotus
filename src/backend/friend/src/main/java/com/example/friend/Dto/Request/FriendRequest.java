@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FriendRequest {
-    @NotNull
+
     private Long myUserId;
     @NotNull
     private Long toUserId;
