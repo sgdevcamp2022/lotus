@@ -5,6 +5,7 @@ import com.example.auth.Dto.Response.DefaultResponse;
 import com.example.auth.Dto.Response.ResponseMessage;
 import com.example.auth.Dto.Response.StatusCode;
 import com.example.auth.Dto.Response.StoveResponse;
+import com.example.auth.Entity.User;
 import com.example.auth.Jwt.TokenProvider;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -27,6 +28,10 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Base64.Decoder;
+import java.util.Base64.Encoder;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -48,21 +53,40 @@ public class LostarkAuthentication {
     }
 
 
-    public String generateRandomCode() {
+    public String generateRandomCode(User user) {
         /*
          * 랜덤 문자열 생성
          * */
-        int leftLimit = 97; // letter 'a'
-        int rightLimit = 122; // letter 'z'
-        int targetStringLength = 80;
-        Random random = new Random();
-        String generatedString = random.ints(leftLimit, rightLimit + 1)
-                .limit(targetStringLength)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString();
-        System.out.println(generatedString);
+//        int leftLimit = 97; // letter 'a'
+//        int rightLimit = 122; // letter 'z'
+//        int targetStringLength = 80;
+//        Random random = new Random();
+//        String generatedString = random.ints(leftLimit, rightLimit + 1)
+//                .limit(targetStringLength)
+//                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+//                .toString();
+//        System.out.println(generatedString);
+        String randomCode="";
+        Encoder encode = Base64.getEncoder();
+        Decoder decode = Base64.getDecoder();
+        try {
+            byte encodeData[] = encode.encode(user.getNickname().getBytes()); //인코딩 객체 선언
+            System.out.println("인코딩(암호화) 바이트 : "+ Arrays.toString(encodeData));
+            System.out.println("인코딩(암호화) 문자열 : "+new String(encodeData));
+            System.out.println("");
 
-        return generatedString;
+            byte decodeData[] = decode.decode(encodeData); //디코딩 객체 선언
+            System.out.println("디코딩(복호화) 바이트 : "+Arrays.toString(decodeData));
+            System.out.println("디코딩(복호화) 문자열 : "+new String(decodeData));
+            randomCode=new String(encodeData);
+        }
+        catch(Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return randomCode;
+
+
     }
 
     public DefaultResponse getIntroductionInStove(StoveRequest stoveRequest){

@@ -210,6 +210,11 @@ public class TokenProvider implements InitializingBean {
         return Long.parseLong(id);
     }
 
+    public String getUserEmailFromAccessToken(String accessToken) {
+        String sub = extractAllClaims(accessToken).get("sub").toString();
+        return sub;
+    }
+
     public long getRemainMilliSeconds(String accessToken) {
         Date expiration = extractAllClaims(accessToken).getExpiration();
         Date now = new Date();

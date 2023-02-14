@@ -220,10 +220,14 @@ public class AuthController {
 
 
     @GetMapping("/randomcode")
-    public ResponseEntity<DefaultResponse> getRandomCode() {
+    public ResponseEntity<DefaultResponse> getRandomCode(@RequestHeader String authorization) {
+        String accessToken = authorization.substring(7);
+        Long userIdFromAccessToken = tokenProvider.getUserIdFromAccessToken(accessToken);
+        Optional<User> userByUserId = userService.getUserByUserId(userIdFromAccessToken);
+
         HttpHeaders httpHeaders = new HttpHeaders();
 
-        String randomCode = lostarkAuthentication.generateRandomCode();
+        String randomCode = lostarkAuthentication.generateRandomCode(userByUserId.get());
         System.out.println("randomCode = " + randomCode);
         DefaultResponse<Object> defaultResponse = new DefaultResponse<>(StatusCode.OK,
                 ResponseMessage.RANDOMCODE_SUCCESS, randomCode);
