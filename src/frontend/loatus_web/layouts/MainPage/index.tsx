@@ -17,7 +17,8 @@ const MainPage = () => {
     palette: {
       mode: 'dark',
       primary: {
-        main: '#1976d2',
+        main: '#525252',
+        contrastText: '#000000',
       },
     },
   });
@@ -26,7 +27,7 @@ const MainPage = () => {
     <div>
       <ThemeProvider theme={darkTheme}>
         <Header />
-        <Grid container spacing={2} style={{ paddingTop: '7rem' }}>
+        <Grid container spacing={2} style={{ paddingTop: '4rem' }}>
           <Grid xs display={'flex'} justifyContent={'center'} alignItems={'center'}>
             <main role="main">
               {userData && <LostarkAuth />}
