@@ -7,8 +7,10 @@ import lombok.Data;
 @Builder
 @Data
 @AllArgsConstructor
-public class RequestDto {
+public class RequestMessage {
+
     private String targetToken;
     private String title;
     private String body;
+    private String nickname;
 }
