@@ -13,4 +13,5 @@ public class RequestMessage {
     private String title;
     private String body;
     private String nickname;
+    private RequestType requestType;
 }
