@@ -8,7 +8,7 @@ character_name varchar(50),
 email varchar(50) NOT NULL,
 nickname varchar(50),
 password varchar(100),
-profile_image varchar(100),
+profile_image LONGTEXT,
 provider varchar(10),
 stove_no varchar(15),
 
