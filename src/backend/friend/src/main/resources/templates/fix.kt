@@ -1,4 +1,4 @@
 package templates
 
-class `fix]` {
+class `fix` {
 }
