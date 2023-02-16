@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FriendRequest {
+public class FriendDto {
 
-    //private Long myUserId;
+    private Long myUserId;
     @NotNull
     private Long toUserId;
 }
