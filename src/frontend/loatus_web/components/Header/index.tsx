@@ -19,6 +19,7 @@ import { useCallback } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
+import gravatar from 'gravatar';
 
 const pages = [
   { name: '파티', param: '/party' },
@@ -108,7 +109,10 @@ function Header() {
               <>
                 <Tooltip title="Open settings">
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                    <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                    <Avatar
+                      alt={userData.nickname}
+                      src={userData.stoveNo || gravatar.url(userData.email, { s: '25', d: 'retro' })}
+                    />
                   </IconButton>
                 </Tooltip>
                 <Menu
@@ -129,6 +133,9 @@ function Header() {
                 >
                   <MenuItem component={Link} to="/mypage" onClick={handleCloseUserMenu}>
                     <Typography textAlign="center">프로필</Typography>
+                  </MenuItem>
+                  <MenuItem component={Link} to="/auth" onClick={handleCloseUserMenu}>
+                    <Typography textAlign="center">인증</Typography>
                   </MenuItem>
                   <MenuItem onClick={onClickLogout}>
                     <Typography textAlign="center">로그아웃</Typography>

@@ -15,7 +15,6 @@ const MainPage = () => {
   const { data: userData, error, mutate } = useSWRRetry('/auth/my', accessToken, setAccessToken, token.refreshToken);
   const darkTheme = createTheme({
     palette: {
-      mode: 'dark',
       primary: {
         main: '#525252',
         contrastText: '#000000',
@@ -30,7 +29,6 @@ const MainPage = () => {
         <Grid container spacing={2} style={{ paddingTop: '4rem' }}>
           <Grid xs display={'flex'} justifyContent={'center'} alignItems={'center'}>
             <main role="main">
-              {userData && <LostarkAuth />}
               <Outlet />
             </main>
           </Grid>

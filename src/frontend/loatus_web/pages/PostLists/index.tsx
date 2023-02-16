@@ -24,11 +24,16 @@ import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 import Box from '@mui/material/Box';
+import { toast } from 'react-toastify';
 
 const PostLists = () => {
   const [accessToken] = useToken();
   const [params, setParams] = useSearchParams();
-  const { data: PostData, error, mutate } = useSWR<IPost[]>([`/post/?page=${params.get('page') || 1}`], fetcher);
+  const {
+    data: PostData,
+    error,
+    mutate,
+  } = useSWR<{ post: IPost[]; total: number }>([`/post/?page=${params.get('page') || 1}`], fetcher);
 
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setParams(`page=${value}`);
@@ -36,7 +41,7 @@ const PostLists = () => {
 
   const onClickDelete = useCallback((post: IPost) => {
     axios
-      .delete(`/post/delete/${post.pk}`, {
+      .delete(`/post/delete/${post.pk}/`, {
         headers: {
           Authorization: 'Bearer ' + accessToken,
         },
@@ -49,7 +54,24 @@ const PostLists = () => {
 
   const onClickEdit = useCallback(async (post: IPost) => {
     //모달 실행 후 입력 받기
-    await axios.post(`/post/edit/${post.pk}`, {});
+    await axios
+      .post(
+        `/post/edit/${post.pk}/`,
+        {
+          title: '바뀌나요',
+          content: '안바뀌나요',
+        },
+        {
+          headers: {
+            Authorization: 'Bearer ' + accessToken,
+          },
+        },
+      )
+      .then((response) => {
+        toast.info(response.data.message);
+        mutate();
+      })
+      .catch((error) => {});
   }, []);
 
   return (
@@ -113,11 +135,11 @@ const PostLists = () => {
         </thead>
         <tbody>
           {PostData ? (
-            PostData.map((post, key) => {
+            PostData.post.map((post, key) => {
               return (
                 <tr>
                   <td>{key}</td>
-                  <td>{post.fields.title}</td>
+                  <td style={{ width: '200px' }}>{post.fields.title}</td>
                   <td>{post.fields.author}</td>
                   <td>{post.fields.content}</td>
                   <td>{makedate(post.fields.published_date)}</td>
@@ -141,18 +163,21 @@ const PostLists = () => {
           )}
         </tbody>
       </Table>
-      <Pagination
-        sx={{ justifyContent: 'center', display: 'flex' }}
-        count={5}
-        page={Number(params.get('page'))}
-        onChange={handleChange}
-        variant={'outlined'}
-        color={'primary'}
-        shape={'rounded'}
-        renderItem={(item) => (
-          <PaginationItem component={Link} to={`/board/lists?page=${item.page}`} {...item} sx={{ color: 'black' }} />
-        )}
-      />
+      {PostData && (
+        <Pagination
+          sx={{ justifyContent: 'center', display: 'flex' }}
+          count={Math.trunc(PostData.total / 10) + (PostData.total % 10 && 1)}
+          page={Number(params.get('page'))}
+          onChange={handleChange}
+          variant={'outlined'}
+          color={'primary'}
+          shape={'rounded'}
+          defaultPage={0}
+          renderItem={(item) => (
+            <PaginationItem component={Link} to={`/board/lists?page=${item.page}`} {...item} sx={{ color: 'black' }} />
+          )}
+        />
+      )}
     </div>
   );
 };

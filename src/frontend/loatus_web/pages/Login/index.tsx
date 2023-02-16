@@ -10,17 +10,21 @@ import fetcher from '@utils/fetcher';
 import { toast, ToastContainer } from 'react-toastify';
 import { Form } from 'react-bootstrap';
 import useToken from '@hooks/useToken';
+import useSWRRetry from '@hooks/useSWRRetry';
 
 const Login = () => {
   const [token, setToken] = useCookies(['refreshToken']);
   const [accessToken, setAccessToken] = useToken();
   const [email, onChangeEmail, setEmail] = useInput('');
   const [password, onChangePassword, setPassword] = useInput('');
-  const { data: userData, error, mutate } = useSWR<IUser>(accessToken ? ['/auth/my', accessToken] : null, fetcher);
+  const { data: userData, error, mutate } = useSWRRetry('/auth/my', accessToken, setAccessToken, token.refreshToken);
   const [params, setParams] = useSearchParams();
   useEffect(() => {
     if (params.get('accessToken')) {
       setAccessToken(params.get('accessToken'));
+    }
+    if (params.get('refreshToken')) {
+      setToken('refreshToken', params.get('refreshToken'));
     }
   }, []);
 
@@ -92,13 +96,13 @@ const Login = () => {
       <Page>
         <PageHead>이메일로 로그인해 보세요.</PageHead>
         <SignIn>
-          <a href={'http://localhost:8080/oauth2/authorization/naver'}>
+          <a href={'http://15.164.192.183:8080/oauth2/authorization/naver'}>
             <Button>네이버를 사용하여 로그인</Button>
           </a>
-          <a href={'http://localhost:8080/oauth2/authorization/kakao'}>
+          <a href={'http://15.164.192.183:8080/oauth2/authorization/kakao'}>
             <Button>카카오를 사용하여 로그인</Button>
           </a>
-          <a href={'http://localhost:8080/oauth2/authorization/google'}>
+          <a href={'http://15.164.192.183:8080/oauth2/authorization/google'}>
             <Button>구글을 사용하여 로그인</Button>
           </a>
           <Horizon>

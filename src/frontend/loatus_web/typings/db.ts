@@ -12,11 +12,9 @@ export type IToken = {
 };
 
 export type IUser = {
-  activated: boolean;
   auth: string;
   email: string;
   nickname: string;
-  profile_image: string;
   provider: string;
   userid: number;
   stoveNo: string | null;
