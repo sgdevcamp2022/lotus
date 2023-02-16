@@ -47,3 +47,7 @@ VALUES(new.user_id, "[]", "[]", "[]", "[]");
 END$$
 
 
+INSERT INTO friend(user_id, request_time, request_list, friend_list, black_list)
+VALUES(1, '[]','[]','[]','[]');
+INSERT INTO friend(user_id, request_time, request_list, friend_list, black_list)
+VALUES(2, '[]','[]','[]','[]')
