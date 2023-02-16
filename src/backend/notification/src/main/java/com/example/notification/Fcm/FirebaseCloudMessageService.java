@@ -14,6 +14,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -23,6 +24,7 @@ public class FirebaseCloudMessageService {
     private final String API_URL = "https://fcm.googleapis.com/v1/projects/loatus-e0e8d/messages:send";
     private final ObjectMapper objectMapper;
 
+    @Async
     public void sendMessageTo(String targetToken, String title, String body) throws IOException {
         String message = makeMessage(targetToken, title, body);
 
