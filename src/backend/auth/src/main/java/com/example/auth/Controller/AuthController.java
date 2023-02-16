@@ -18,6 +18,9 @@ import com.example.auth.Jwt.TokenProvider;
 import com.example.auth.Service.AuthService;
 import com.example.auth.Util.SecurityUtil;
 import com.fasterxml.jackson.databind.JsonNode;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URI;
@@ -78,6 +81,7 @@ public class AuthController {
     }
 
     @GetMapping("/logout")
+    @Operation(description = "response data null로 반환됨")
     public DefaultResponse<Object> logout(@RequestHeader("Authorization") String authorization) {
 
         String accessToken = authorization.substring(7);
@@ -88,6 +92,7 @@ public class AuthController {
     }
 
     @PostMapping("/reissue")
+    @Operation(description = "헤더에 accesstoken과 refreshtoken담아야함")
     public ResponseEntity<DefaultResponse> reissueAccessToken(@RequestHeader HttpHeaders headers) {
         String accessToken = headers.getFirst("authorization").substring(7);
         System.out.println("accessToken = " + accessToken);
@@ -107,7 +112,7 @@ public class AuthController {
 
 
     @GetMapping("/my")
-    public ResponseEntity<DefaultResponse> getUserFromJwt(@RequestHeader String authorization) {
+    public ResponseEntity<DefaultResponse<MyResponse>> getUserFromJwt(@RequestHeader String authorization) {
 
         String accessToken = authorization.substring(7);
         Long userId = tokenProvider.getUserIdFromAccessToken(accessToken);
@@ -194,6 +199,14 @@ public class AuthController {
 //    }
 
     @PostMapping("/stove")
+    @Operation(description = "response data 예시  {\n"
+            + "    \"ServerName\": \"니나브\",\n"
+            + "    \"CharacterName\": \"조안녕hi\",\n"
+            + "    \"CharacterLevel\": 45,\n"
+            + "    \"CharacterClassName\": \"바드\",\n"
+            + "    \"ItemAvgLevel\": \"209.17\",\n"
+            + "    \"ItemMaxLevel\": \"209.17\"\n"
+            + "  }")
     public ResponseEntity<DefaultResponse> lostark(@Valid @RequestBody StoveRequest stoveRequest,
             @RequestHeader String authorization) {
         String accessToken = authorization.substring(7);

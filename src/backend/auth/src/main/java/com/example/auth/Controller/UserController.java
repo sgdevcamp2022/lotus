@@ -12,6 +12,7 @@ import com.example.auth.Lostark.LostarkAuthentication;
 import com.example.auth.Service.FriendService;
 import com.example.auth.Service.UserService;
 import com.fasterxml.jackson.databind.JsonNode;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,7 +45,7 @@ public class UserController {
 
 
     @PostMapping("/signup")
-    public ResponseEntity<DefaultResponse> signup(
+    public ResponseEntity<DefaultResponse<SignupRequest>> signup(
             @Valid @RequestBody SignupRequest signupRequest
     ) {
 
@@ -65,6 +66,7 @@ public class UserController {
     }
 
     @PostMapping("/charactername")
+    @Operation(description = "response data null로 반환됨")
     public ResponseEntity<DefaultResponse> setMainCharacter(@Valid @RequestBody
             MainCharacterRequest mainCharacterRequest,
             @RequestHeader String authorization){

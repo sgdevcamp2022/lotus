@@ -1,9 +1,11 @@
 package com.example.auth.Dto.Response;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.context.annotation.Description;
 
 @Data
 @AllArgsConstructor
