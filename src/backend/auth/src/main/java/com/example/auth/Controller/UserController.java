@@ -8,8 +8,10 @@ import com.example.auth.Dto.Response.SignupResponse;
 import com.example.auth.Dto.Response.StatusCode;
 import com.example.auth.Entity.User;
 import com.example.auth.Jwt.TokenProvider;
+import com.example.auth.Lostark.LostarkAuthentication;
 import com.example.auth.Service.FriendService;
 import com.example.auth.Service.UserService;
+import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,12 +30,15 @@ public class UserController {
 
     private final TokenProvider tokenProvider;
     private final FriendService friendService;
+    private final LostarkAuthentication lostarkAuthentication;
+
 
     public UserController(UserService userService, TokenProvider tokenProvider,
-            FriendService friendService) {
+            FriendService friendService, LostarkAuthentication lostarkAuthentication) {
         this.userService = userService;
         this.tokenProvider = tokenProvider;
         this.friendService = friendService;
+        this.lostarkAuthentication=lostarkAuthentication;
     }
 
 
@@ -64,8 +69,19 @@ public class UserController {
             MainCharacterRequest mainCharacterRequest,
             @RequestHeader String authorization){
         String accessToken = authorization.substring(7);
+        String profileImageInLostark = lostarkAuthentication.getProfileImageInLostark(
+                mainCharacterRequest.getCharacterName());
+
+        System.out.println("profileImageInLostark = " + profileImageInLostark);
+        if(profileImageInLostark!=null && !profileImageInLostark.isEmpty() && profileImageInLostark.equals("사용자 존재x")){
+            DefaultResponse defaultResponse=new DefaultResponse(StatusCode.BAD_REQUEST,ResponseMessage.LOSTARK_MAINCHARACTER_SUCCESS,null);
+            return new ResponseEntity<>(defaultResponse,HttpStatus.BAD_REQUEST);
+        }
+
+
         DefaultResponse defaultResponse = userService.updateMainCharacter(
                 mainCharacterRequest.getCharacterName(),
+                profileImageInLostark,
                 accessToken);
         ResponseEntity.ok().body(defaultResponse);
         if(defaultResponse.getCode()==StatusCode.USER_NONEXISTENCE){

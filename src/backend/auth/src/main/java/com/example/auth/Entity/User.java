@@ -34,7 +34,7 @@ public class User {
     @Column(name = "auth", length = 50)
     private String auth;
 
-    @Column(name = "profile_image", length = 100)
+    @Lob
     private String profile_image;
 
     @Column(name = "provider", length = 10)

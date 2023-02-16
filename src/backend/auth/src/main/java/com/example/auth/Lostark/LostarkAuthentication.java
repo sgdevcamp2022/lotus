@@ -40,6 +40,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -169,6 +170,40 @@ public class LostarkAuthentication {
         System.out.println("jsonNode = " + jsonNode);
         System.out.println(jsonNode.get(0).get("ServerName"));
         return jsonNode;
+    }
+
+    public String getProfileImageInLostark(String characterName) {
+
+
+        String json = "lostark";
+        String encodedCharacterName;
+        String url;
+        String profileUrl=null;
+        try {
+            encodedCharacterName = URLEncoder.encode(characterName, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+        url = "https://developer-lostark.game.onstove.com/armories/characters/" + encodedCharacterName
+                + "/profiles";
+        System.out.println("encodedCharacterName = " + encodedCharacterName);
+
+        JsonNode jsonNode = httpGetConnection(
+                url, json);
+        System.out.println("jsonNode = " + jsonNode);
+        if(jsonNode.isEmpty()){
+            return "사용자 존재x";
+        }
+
+        JsonNode jsonNode1 = jsonNode.get("CharacterImage");
+        System.out.println("jsonNode1 = " + jsonNode1);
+       if(jsonNode1!=null){
+            System.out.println("check2");
+            profileUrl = jsonNode1.toString();
+            profileUrl = profileUrl.replaceAll("\"", "");
+        }
+
+        return profileUrl;
     }
 
 

@@ -26,4 +26,5 @@ public class ResponseMessage {
     public static final String Illegal_JWT = "잘못된 JWT 토큰입니다";
     public static final String NO_JWT = "JWT 토큰이 존재하지 않거나 계정정보가 틀렸습니다";
     public static final String LOGOUT_JWT = "로그아웃한 사용자 입니다.";
+    public static final String CHARACTER_NON_EXISTENCE="캐릭터가 존재하지 않습니다.";
 }

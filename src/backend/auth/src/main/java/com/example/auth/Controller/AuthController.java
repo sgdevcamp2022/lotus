@@ -119,10 +119,19 @@ public class AuthController {
             DefaultResponse defaultResponse1 = DefaultResponse.builder().data(null)
                     .code(StatusCode.NOT_FOUND).message(ResponseMessage.READ_USER_FAILURE).build();
         }
-        MyResponse myResponse = new MyResponse(userByUsername.get().getUserId(),
-                userByUsername.get().getEmail(),
-                userByUsername.get().getNickname(), userByUsername.get().getAuth(),
-                userByUsername.get().getProvider(), userByUsername.get().getStove_no());
+//        MyResponse myResponse = new MyResponse(userByUsername.get().getUserId(),
+//                userByUsername.get().getEmail(),
+//                userByUsername.get().getNickname(), userByUsername.get().getAuth(),
+//                userByUsername.get().getProvider(), userByUsername.get().getStove_no());
+        MyResponse myResponse= MyResponse.builder()
+                .userId(userByUsername.get().getUserId())
+                .profileImage(userByUsername.get().getProfile_image())
+                .stoveNo(userByUsername.get().getStove_no())
+                .auth(userByUsername.get().getAuth())
+                .nickname(userByUsername.get().getNickname())
+                .characterName(userByUsername.get().getCharacter_name())
+                .email(userByUsername.get().getEmail())
+                .build();
         DefaultResponse<MyResponse> defaultresponse = new DefaultResponse<>(StatusCode.OK,
                 ResponseMessage.READ_USER_SUCCESS, myResponse);
         ResponseEntity.ok().body(defaultresponse);
@@ -203,6 +212,8 @@ public class AuthController {
             }
         }
 
+
+
         String encryptedMemberNo = lostarkAuthentication.getEncryptedMemberNo(
                 introductionInStove.getData().toString());
 
@@ -213,6 +224,7 @@ public class AuthController {
         jsonNodeDefaultResponse.setCode(StatusCode.OK);
         jsonNodeDefaultResponse.setMessage(ResponseMessage.STOVE_LOSTARK_SUCCESS);
 
+        userService.updateStoveNo(userId, introductionInStove.getData().toString());
         return new ResponseEntity<>(jsonNodeDefaultResponse, httpHeaders, HttpStatus.OK);
 
 
