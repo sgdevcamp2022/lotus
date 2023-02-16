@@ -91,7 +91,7 @@ public class AuthController {
         return new DefaultResponse(StatusCode.OK, ResponseMessage.LOGOUT_SUCCESSS, null);
     }
 
-    @PostMapping("/reissue")
+    @PostMapping("/reissue")//
     @Operation(description = "헤더에 accesstoken과 refreshtoken담아야함")
     public ResponseEntity<DefaultResponse> reissueAccessToken(@RequestHeader HttpHeaders headers) {
         String accessToken = headers.getFirst("authorization").substring(7);

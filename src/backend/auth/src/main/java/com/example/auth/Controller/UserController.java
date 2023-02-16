@@ -56,7 +56,7 @@ public class UserController {
         }
         String email = data.getEmail();
         Optional<User> userByEmail = userService.getUserByEmail(email);
-       // friendService.createFriendList(userByEmail.get().getUserId());
+        friendService.createFriendList(userByEmail.get().getUserId());
         ResponseEntity.ok().body(signupResponse);
 
 
