@@ -20,35 +20,78 @@ public class NotificationController {
         this.firebaseCloudMessageService = firebaseCloudMessageService;
     }
 
-    @PostMapping("/send")
-    public ResponseEntity pushMessage(@RequestBody RequestMessage requestMessage)
+//    @PostMapping("/send")
+//    public ResponseEntity pushMessage(@RequestBody RequestMessage requestMessage)
+//            throws IOException {
+//
+//        if(requestMessage.getRequestType().equals(RequestType.COMMENT)){
+//            firebaseCloudMessageService.sendMessageTo(
+//                    requestMessage.getTargetToken(),
+//                    requestMessage.getTitle(),
+//                    "새 댓글이 달렸어요: "+requestMessage.getBody());
+//        }
+//        else if(requestMessage.getRequestType().equals(RequestType.FRIEND_REQUEST)){
+//            firebaseCloudMessageService.sendMessageTo(
+//                    requestMessage.getTargetToken(),
+//                    requestMessage.getTitle(),
+//                    requestMessage.getNickname()+"님이 친구요청을 하셨어요");
+//        }
+//        else if(requestMessage.getRequestType().equals(RequestType.FRIEND_ACCEPT)){
+//            firebaseCloudMessageService.sendMessageTo(
+//                    requestMessage.getTargetToken(),
+//                    requestMessage.getTitle(),
+//                    requestMessage.getNickname()+"님이 친구수락을 하셨어요");
+//        }
+//
+//
+//
+//
+//        return ResponseEntity.ok().build();
+//    }
+
+
+    @PostMapping("/comment")
+    public ResponseEntity pushComment(@RequestBody RequestMessage requestMessage)
             throws IOException {
 
-        if(requestMessage.getRequestType().equals(RequestType.COMMENT)){
-            firebaseCloudMessageService.sendMessageTo(
-                    requestMessage.getTargetToken(),
-                    requestMessage.getTitle(),
-                    "새 댓글이 달렸어요: "+requestMessage.getBody());
-        }
-        else if(requestMessage.getRequestType().equals(RequestType.FRIEND_REQUEST)){
-            firebaseCloudMessageService.sendMessageTo(
-                    requestMessage.getTargetToken(),
-                    requestMessage.getTitle(),
-                    requestMessage.getNickname()+"님이 친구요청을 하셨어요");
-        }
-        else if(requestMessage.getRequestType().equals(RequestType.FRIEND_ACCEPT)){
-            firebaseCloudMessageService.sendMessageTo(
-                    requestMessage.getTargetToken(),
-                    requestMessage.getTitle(),
-                    requestMessage.getNickname()+"님이 친구수락을 하셨어요");
-        }
-
-
-
+        firebaseCloudMessageService.sendMessageTo(
+                requestMessage.getTargetToken(),
+                requestMessage.getTitle(),
+                "새 댓글이 달렸어요: " + requestMessage.getBody());
 
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/friend/request")
+    public ResponseEntity pushFriendRequest(@RequestBody RequestMessage requestMessage)
+            throws IOException {
+
+        firebaseCloudMessageService.sendMessageTo(
+                requestMessage.getTargetToken(),
+                requestMessage.getTitle(),
+                requestMessage.getNickname() + "님이 친구요청을 하셨어요");
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/friend/accept")
+    public ResponseEntity pushFriendAccept(@RequestBody RequestMessage requestMessage)
+            throws IOException {
+
+        firebaseCloudMessageService.sendMessageTo(
+                requestMessage.getTargetToken(),
+                requestMessage.getTitle(),
+                requestMessage.getNickname() + "님이 친구수락을 하셨어요");
+
+        return ResponseEntity.ok().build();
+    }
+
+
+//    @PostMapping("/lostark/event")
+//    public ResponseEntity pushMessage(@RequestBody RequestMessage requestMessage)
+//            throws IOException {
+//
+//    }
 
 
 }
