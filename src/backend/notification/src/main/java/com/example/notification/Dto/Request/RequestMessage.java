@@ -12,6 +12,6 @@ public class RequestMessage {
     private String targetToken;
     private String title;
     private String body;
-    private String nickname;
+    private String characterName;
     //private RequestType requestType;
 }
