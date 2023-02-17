@@ -28,6 +28,9 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	implementation 'com.google.firebase:firebase-admin:6.8.1'
 	implementation group: 'com.squareup.okhttp3', name: 'okhttp', version: '4.2.2'
+	implementation 'org.json:json:20190722'
+	implementation 'com.googlecode.json-simple:json-simple:1.1.1'
+	implementation 'com.google.code.gson:gson:2.8.6'
 }
 
 tasks.named('test') {

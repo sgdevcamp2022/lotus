@@ -1,12 +1,13 @@
 package com.example.notification.Controller;
 
 import com.example.notification.Dto.Request.RequestMessage;
-import com.example.notification.Dto.Request.RequestType;
 import com.example.notification.Fcm.FirebaseCloudMessageService;
+import com.example.notification.Lostark.CallApi;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.v3.oas.annotations.Operation;
 import java.io.IOException;
+import javax.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,9 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class NotificationController {
 
     private final FirebaseCloudMessageService firebaseCloudMessageService;
+    private final CallApi callApi;
 
-    public NotificationController(FirebaseCloudMessageService firebaseCloudMessageService) {
+    public NotificationController(FirebaseCloudMessageService firebaseCloudMessageService,
+            CallApi callApi) {
         this.firebaseCloudMessageService = firebaseCloudMessageService;
+        this.callApi = callApi;
     }
 
 //    @PostMapping("/send")
@@ -61,7 +65,7 @@ public class NotificationController {
             @ApiImplicitParam(name = "title", value = "제목", required = false, dataType = "string", defaultValue="loatus"),
     })
     @Operation(description = "알림 예시) 새 댓글이 달렸어요: 댓댓아라잌댓")
-    public ResponseEntity pushComment(@RequestBody RequestMessage requestMessage)
+    public ResponseEntity pushComment(@RequestBody @Valid RequestMessage requestMessage)
             throws IOException {
 
         firebaseCloudMessageService.sendMessageTo(
@@ -80,7 +84,7 @@ public class NotificationController {
             @ApiImplicitParam(name = "title", value = "제목", required = false, dataType = "string", defaultValue="loatus"),
     })
     @Operation(description = "알림 예시) 조안녕안녕님이 친구요청을 하셨어요")
-    public ResponseEntity pushFriendRequest(@RequestBody RequestMessage requestMessage)
+    public ResponseEntity pushFriendRequest(@RequestBody @Valid RequestMessage requestMessage)
             throws IOException {
 
         firebaseCloudMessageService.sendMessageTo(
@@ -99,7 +103,7 @@ public class NotificationController {
             @ApiImplicitParam(name = "title", value = "제목", required = false, dataType = "string", defaultValue="loatus"),
     })
     @Operation(description = "알림 예시) 조안녕안녕님이 친구수락을 하셨어요")
-    public ResponseEntity pushFriendAccept(@RequestBody RequestMessage requestMessage)
+    public ResponseEntity pushFriendAccept(@RequestBody @Valid RequestMessage requestMessage)
             throws IOException {
 
         firebaseCloudMessageService.sendMessageTo(
@@ -109,6 +113,42 @@ public class NotificationController {
 
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/send")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "body", value = "내용", required = true),
+            @ApiImplicitParam(name = "characterName", value = "안쓰입니다", required = false, dataType = "string"),
+            @ApiImplicitParam(name = "targetToken", value = "보내고 싶은 기기", required = true, dataType = "string"),
+            @ApiImplicitParam(name = "title", value = "제목", required = true, dataType = "string", defaultValue="loatus"),
+    })
+    @Operation(description = "알림 예시) body내용 그대로")
+    public ResponseEntity pushSend(@RequestBody @Valid RequestMessage requestMessage)
+            throws IOException {
+
+        firebaseCloudMessageService.sendMessageTo(
+                requestMessage.getTargetToken(),
+                requestMessage.getTitle(),
+                requestMessage.getBody());
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/lostark/notice")
+    @Operation(description = "로스트아크 가장 최신 공지 알림")
+    public ResponseEntity pushLostarkNotice(@RequestBody @Valid RequestMessage requestMessage)
+            throws IOException {
+
+        String notice = callApi.loadNotice();
+
+        firebaseCloudMessageService.sendMessageTo(
+                requestMessage.getTargetToken(),
+                notice,
+                "자세한 건 홈페이지에서 확인하세요!");
+
+        return ResponseEntity.ok().build();
+    }
+
+
 
 
 //    @PostMapping("/lostark/event")

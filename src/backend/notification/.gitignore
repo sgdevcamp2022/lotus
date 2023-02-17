@@ -16,7 +16,7 @@ build/
 bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
-
+src/main/resources/firebase/firebase_service_key.json
 ### IntelliJ IDEA ###
 .idea
 *.iws
