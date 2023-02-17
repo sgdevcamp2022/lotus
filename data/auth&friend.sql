@@ -1,4 +1,4 @@
-USE auth;
+USE lotus;
 
 CREATE TABLE user (
 user_id bigint AUTO_INCREMENT,
@@ -8,7 +8,7 @@ character_name varchar(50),
 email varchar(50) NOT NULL,
 nickname varchar(50),
 password varchar(100),
-profile_image varchar(100),
+profile_image LONGTEXT,
 provider varchar(10),
 stove_no varchar(15),
 
@@ -22,10 +22,10 @@ VALUES('admin', '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi', 
 
 CREATE TABLE `friend` (
   `user_id` BIGINT NOT NULL,
-  `request_time` JSON NULL,
-  `request_list` JSON NULL,
-  `friend_list` JSON NULL,
-  `black_list` JSON NULL,
+  `request_time` LONGTEXT NULL,
+  `request_list` LONGTEXT NULL,
+  `friend_list` LONGTEXT NULL,
+  `black_list` LONGTEXT NULL,
   PRIMARY KEY (`user_id`),
     FOREIGN KEY (`user_id`)
     REFERENCES `user` (`user_id`)
@@ -35,6 +35,7 @@ CREATE TABLE `friend` (
 /* 오류나면 root계정으로 로그인 후
 set global log_bin_trust_function_creators=1; 실행해주기 */
     
+/* 안쓰는거
 DELIMITER $$
     CREATE TRIGGER insert_friend
     AFTER INSERT
@@ -42,9 +43,12 @@ DELIMITER $$
     FOR EACH ROW
     
 BEGIN
-INSERT INTO friend(user_id)
-VALUES(new.user_id);
-END;
+INSERT INTO friend(user_id, request_time, request_list, friend_list, black_list)
+VALUES(new.user_id, "[]", "[]", "[]", "[]");
+END$$
+*/
 
-DELIMITER;
-
+INSERT INTO friend(user_id, request_time, request_list, friend_list, black_list)
+VALUES(1, '[]','[]','[]','[]');
+INSERT INTO friend(user_id, request_time, request_list, friend_list, black_list)
+VALUES(2, '[]','[]','[]','[]');

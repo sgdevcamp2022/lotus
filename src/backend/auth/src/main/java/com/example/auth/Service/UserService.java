@@ -82,6 +82,7 @@ public class UserService {
         System.out.println(user.getPassword());
 
         SignupRequest from = SignupRequest.from(userRepository.save(user));
+        System.out.println("from = " + from);
         SignupResponse signupResponse = new SignupResponse(from.getEmail(),
                 from.getNickname());
         return new DefaultResponse(StatusCode.OK, ResponseMessage.SIGNUP_SUCCESSS, signupResponse);
@@ -99,6 +100,12 @@ public class UserService {
     public Optional<User> getUserByUserId(Long userId) {
 
         Optional<User> oneByUserId = userRepository.findOneByUserId(userId);
+        return oneByUserId;
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<User> getUserByEmail(String email) {
+        Optional<User> oneByUserId = userRepository.findOneByEmail(email);
         return oneByUserId;
     }
 
@@ -132,12 +139,20 @@ public class UserService {
     }
 
     @Transactional
-    public DefaultResponse updateMainCharacter(String characterName, String accessToken){
+    public DefaultResponse updateMainCharacter(String characterName,String profileImage, String accessToken){
         Long userId = tokenProvider.getUserIdFromAccessToken(accessToken);
         Optional<User> oneByUserId = userRepository.findOneByUserId(userId);
+        System.out.println("profileImage = " + profileImage);
+
        if(oneByUserId.isPresent()){
            User user = oneByUserId.get();
            user.setCharacter_name(characterName);
+           if(!profileImage.equals("null") && !profileImage.isEmpty()) {
+               user.setProfile_image(profileImage);
+           }
+           else if(profileImage.equals("null")){
+               user.setProfile_image(null);
+           }
            userRepository.save(user);
            return new DefaultResponse(StatusCode.OK, ResponseMessage.LOSTARK_MAINCHARACTER_SUCCESS, null);
        }
@@ -149,5 +164,7 @@ public class UserService {
         }
 
     }
+
+
 
 }

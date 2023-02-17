@@ -1,5 +1,11 @@
 package com.example.auth.Lostark;
 
+import com.example.auth.Dto.Request.StoveRequest;
+import com.example.auth.Dto.Response.DefaultResponse;
+import com.example.auth.Dto.Response.ResponseMessage;
+import com.example.auth.Dto.Response.StatusCode;
+import com.example.auth.Dto.Response.StoveResponse;
+import com.example.auth.Entity.User;
 import com.example.auth.Jwt.TokenProvider;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -19,13 +25,22 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.Base64.Decoder;
+import java.util.Base64.Encoder;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -39,27 +54,90 @@ public class LostarkAuthentication {
     }
 
 
-    public String generateRandomCode() {
+    public String generateRandomCode(User user) {
         /*
          * 랜덤 문자열 생성
          * */
-        int leftLimit = 97; // letter 'a'
-        int rightLimit = 122; // letter 'z'
-        int targetStringLength = 80;
-        Random random = new Random();
-        String generatedString = random.ints(leftLimit, rightLimit + 1)
-                .limit(targetStringLength)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString();
-        System.out.println(generatedString);
+//        int leftLimit = 97; // letter 'a'
+//        int rightLimit = 122; // letter 'z'
+//        int targetStringLength = 80;
+//        Random random = new Random();
+//        String generatedString = random.ints(leftLimit, rightLimit + 1)
+//                .limit(targetStringLength)
+//                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+//                .toString();
+//        System.out.println(generatedString);
+        String randomCode="";
+        Encoder encode = Base64.getEncoder();
+        Decoder decode = Base64.getDecoder();
+        try {
+            byte encodeData[] = encode.encode(user.getNickname().getBytes()); //인코딩 객체 선언
+            System.out.println("인코딩(암호화) 바이트 : "+ Arrays.toString(encodeData));
+            System.out.println("인코딩(암호화) 문자열 : "+new String(encodeData));
+            System.out.println("");
 
-        return generatedString;
+            byte decodeData[] = decode.decode(encodeData); //디코딩 객체 선언
+            System.out.println("디코딩(복호화) 바이트 : "+Arrays.toString(decodeData));
+            System.out.println("디코딩(복호화) 문자열 : "+new String(decodeData));
+            randomCode=new String(encodeData);
+        }
+        catch(Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return randomCode;
+
+
+    }
+
+    public DefaultResponse getIntroductionInStove(StoveRequest stoveRequest){
+        DefaultResponse stoveNo = getStoveNo(stoveRequest.getStoveUrl());
+        switch(stoveNo.getCode()){
+            case StatusCode.URL_ERROR:{
+                return stoveNo;
+            }
+            case StatusCode.OK:{
+                JsonNode jsonNode = httpGetConnection("https://api.onstove.com/tm/v1/preferences/"+stoveNo.getData(), "empty");
+                System.out.println("jsonNode = " + jsonNode);
+                return new DefaultResponse(StatusCode.OK, ResponseMessage.STOVE_INTRODUCTION_SUCCESS, stoveNo.getData().toString());
+            }
+            default:{
+                return null;
+            }
+        }
+
+
+
+
+
+    }
+    public DefaultResponse getStoveNo(String url) {
+
+        //url 형식이 다를때(길이가 안맞을떄)
+        if (url.length() < 29) {
+            DefaultResponse defaultResponse = new DefaultResponse(StatusCode.URL_ERROR,
+                    ResponseMessage.STOVE_URL_AGAIN, null);
+            return defaultResponse;
+        }
+        String memberNo = url.substring(29);
+
+        try {
+            Integer.parseInt(memberNo);
+        } catch (NumberFormatException e) {
+            DefaultResponse defaultResponse = new DefaultResponse(StatusCode.URL_ERROR,
+                    ResponseMessage.STOVE_URL_AGAIN, null);
+            return defaultResponse;
+        }
+
+        return new DefaultResponse(StatusCode.OK, ResponseMessage.STOVE_INTRODUCTION_SUCCESS,
+                memberNo);
     }
 
 
     public String getEncryptedMemberNo(String memberNo) {
 
         // String memberNo = url.substring(29);
+        System.out.println("memberNo = " + memberNo);
 
         String json = "{" + "memberNo:" + memberNo + "}";
 
@@ -69,9 +147,13 @@ public class LostarkAuthentication {
         return jsonObject.get("encryptMemberNo").toString();
     }
 
-    public JsonNode getCharactersInLostark(String characterName) {
+    public JsonNode getCharactersInLostark(String urlPath) {
 
-        String json = "{" + "memberNo:" + "hi" + "}";
+        String characterName = getCharacterInLostark(urlPath);
+        System.out.println("characterName = " + characterName);
+
+
+        String json = "lostark";
         String encodedCharacterName;
         String url;
         try {
@@ -88,6 +170,40 @@ public class LostarkAuthentication {
         System.out.println("jsonNode = " + jsonNode);
         System.out.println(jsonNode.get(0).get("ServerName"));
         return jsonNode;
+    }
+
+    public String getProfileImageInLostark(String characterName) {
+
+
+        String json = "lostark";
+        String encodedCharacterName;
+        String url;
+        String profileUrl=null;
+        try {
+            encodedCharacterName = URLEncoder.encode(characterName, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+        url = "https://developer-lostark.game.onstove.com/armories/characters/" + encodedCharacterName
+                + "/profiles";
+        System.out.println("encodedCharacterName = " + encodedCharacterName);
+
+        JsonNode jsonNode = httpGetConnection(
+                url, json);
+        System.out.println("jsonNode = " + jsonNode);
+        if(jsonNode.isEmpty()){
+            return "사용자 존재x";
+        }
+
+        JsonNode jsonNode1 = jsonNode.get("CharacterImage");
+        System.out.println("jsonNode1 = " + jsonNode1);
+       if(jsonNode1!=null){
+            System.out.println("check2");
+            profileUrl = jsonNode1.toString();
+            profileUrl = profileUrl.replaceAll("\"", "");
+        }
+
+        return profileUrl;
     }
 
 
@@ -175,6 +291,7 @@ public class LostarkAuthentication {
 
     public static JsonNode httpGetConnection(String UrlData, String ParamData) {
         System.out.println("UrlData = " + UrlData);
+
 
         //http 요청 시 url 주소와 파라미터 데이터를 결합하기 위한 변수 선언
         String totalUrl = UrlData;
@@ -309,9 +426,12 @@ public class LostarkAuthentication {
             //http 요청에 필요한 타입 정의 실시
             conn.setRequestProperty("Accept", "application/json");
             conn.setRequestMethod("GET");
-            conn.setRequestProperty("Authorization",
-                    "bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IktYMk40TkRDSTJ5NTA5NWpjTWk5TllqY2lyZyIsImtpZCI6IktYMk40TkRDSTJ5NTA5NWpjTWk5TllqY2lyZyJ9.eyJpc3MiOiJodHRwczovL2x1ZHkuZ2FtZS5vbnN0b3ZlLmNvbSIsImF1ZCI6Imh0dHBzOi8vbHVkeS5nYW1lLm9uc3RvdmUuY29tL3Jlc291cmNlcyIsImNsaWVudF9pZCI6IjEwMDAwMDAwMDAwMzkxNDAifQ.h1duCpF8FTw4aH00VTcIXKgvX3LCcAtT8HKUkEDNDdZxa33ZaY8RgphyL9jhFIPDE8dehxi_F3BFe8BUEWlmthYdOm0LcPL5EIJKiPktJ8MPwSRUQbfntCCkSj1EBM6RebXTQ0rmH_EviiPKuwKYOIq0U24I40d_dUBT6iV-5rT6m_JxFxZpSGgz226U6LdOCzoBD5V8Tq0-Nuxx2WaNTb57CjpiQuvt_Oo7oS0LJKcf5JOBRyzUR-JFTPayx3JvzqzRO0CwVTfhUqie3xcu0N2STAmmmH-KKkIQthc3pJRobXsRWfzYDHzsjWlyupeNtEqiPJC3XotoAzSQW0zkmA");
-
+            System.out.println("ParamData = " + ParamData);
+            if(ParamData.equals("lostark")) {
+                System.out.println("야망으로채워");
+                    conn.setRequestProperty("Authorization",
+                   "bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IktYMk40TkRDSTJ5NTA5NWpjTWk5TllqY2lyZyIsImtpZCI6IktYMk40TkRDSTJ5NTA5NWpjTWk5TllqY2lyZyJ9.eyJpc3MiOiJodHRwczovL2x1ZHkuZ2FtZS5vbnN0b3ZlLmNvbSIsImF1ZCI6Imh0dHBzOi8vbHVkeS5nYW1lLm9uc3RvdmUuY29tL3Jlc291cmNlcyIsImNsaWVudF9pZCI6IjEwMDAwMDAwMDAwMzkxNDAifQ.h1duCpF8FTw4aH00VTcIXKgvX3LCcAtT8HKUkEDNDdZxa33ZaY8RgphyL9jhFIPDE8dehxi_F3BFe8BUEWlmthYdOm0LcPL5EIJKiPktJ8MPwSRUQbfntCCkSj1EBM6RebXTQ0rmH_EviiPKuwKYOIq0U24I40d_dUBT6iV-5rT6m_JxFxZpSGgz226U6LdOCzoBD5V8Tq0-Nuxx2WaNTb57CjpiQuvt_Oo7oS0LJKcf5JOBRyzUR-JFTPayx3JvzqzRO0CwVTfhUqie3xcu0N2STAmmmH-KKkIQthc3pJRobXsRWfzYDHzsjWlyupeNtEqiPJC3XotoAzSQW0zkmA");
+            }
             //http 요청 실시
             conn.connect();
             System.out.println("http 요청 방식 : " + "GET");
@@ -344,5 +464,38 @@ public class LostarkAuthentication {
         return jsonNode;
     }
 
+
+
+    public String getCharacterInLostark(String urlPath) {
+        String pageContents = "";
+        StringBuilder contents = new StringBuilder();
+        String characterName="";
+        try {
+
+            URL url = new URL(urlPath);
+            URLConnection con = (URLConnection) url.openConnection();
+            InputStreamReader reader = new InputStreamReader(con.getInputStream(), "utf-8");
+
+            BufferedReader buff = new BufferedReader(reader);
+
+            while ((pageContents = buff.readLine()) != null) {
+                contents.append(pageContents);
+                contents.append("\r\n");
+            }
+
+            buff.close();
+            int begin = contents.indexOf("meta property=\"og:url\"");
+            String substring = contents.substring(begin, 1340);
+            int first = substring.indexOf("Character/");
+            int last = substring.indexOf(">");
+
+            String returnName = substring.substring(first + 10, last-1);
+            characterName=returnName;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return characterName;
+    }
 
 }
