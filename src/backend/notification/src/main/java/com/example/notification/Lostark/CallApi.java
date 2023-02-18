@@ -56,6 +56,19 @@ public class CallApi {
         return result;
     }
 
+    public String loadEvent(){
+
+        JsonNode jsonNode = httpGetConnection(
+                "https://developer-lostark.game.onstove.com/news/events",
+                "lostark");
+
+        JsonNode jsonNode1 = jsonNode.get(0);
+        JsonNode jsonNode2 = jsonNode1.get("Title");
+        String result = jsonNode2.toString();
+        result=result.replaceAll("\"", "");
+        return result;
+    }
+
 
     public static JsonNode httpGetConnection(String UrlData, String ParamData) {
         System.out.println("UrlData = " + UrlData);
