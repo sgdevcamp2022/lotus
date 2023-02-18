@@ -1,24 +1,19 @@
 USE lotus;
 
-DROP TABLE IF EXISTS `user`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `user` (
-  `user_id` bigint NOT NULL AUTO_INCREMENT,
-  `activated` bit(1) DEFAULT NULL,
-  `auth` varchar(50) DEFAULT NULL,
-  `character_name` varchar(50) DEFAULT NULL,
-  `email` varchar(50) NOT NULL,
-  `nickname` varchar(50) DEFAULT NULL,
-  `password` varchar(100) DEFAULT NULL,
-  `profile_image` longtext,
-  `provider` varchar(10) DEFAULT NULL,
-  `stove_no` varchar(15) DEFAULT NULL,
-  `createdAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
-  `updatedAt` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
-  `deletedAt` datetime(6) DEFAULT NULL,
-  PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+CREATE TABLE user (
+user_id bigint AUTO_INCREMENT,
+activated bit(1),
+auth varchar(50),
+character_name varchar(50),
+email varchar(50) NOT NULL,
+nickname varchar(50),
+password varchar(100),
+profile_image LONGTEXT,
+provider varchar(10),
+stove_no varchar(15),
+
+PRIMARY KEY(user_id)
+);
 
 INSERT INTO user(email, password, nickname, activated, auth, provider)
 VALUES('admin', '$2a$08$lDnHPz7eUkSi6ao14Twuau08mzhWrL4kyZGGU5xfiGALO/Vxd5DOi', 'admin', 1, 'ROLE_ADMIN', 'LOCAL'),
