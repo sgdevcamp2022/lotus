@@ -12,11 +12,9 @@ export type IToken = {
 };
 
 export type IUser = {
-  activated: boolean;
   auth: string;
   email: string;
   nickname: string;
-  profile_image: string;
   provider: string;
   userid: number;
   stoveNo: string | null;
@@ -32,12 +30,14 @@ export type lostarkInfo = {
 };
 
 export type IPost = {
-  id: number;
-  title: string;
-  author: IUser;
-  content: string;
-  published_date: Date;
-  like: IUser[];
+  pk: number;
+  fields: {
+    title: string;
+    author: string;
+    content: string;
+    published_date: Date;
+    like: string[];
+  };
 };
 
 export type IComment = {
