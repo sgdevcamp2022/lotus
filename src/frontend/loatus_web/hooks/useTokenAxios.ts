@@ -6,7 +6,6 @@ const useTokenAxios = (
   setAccessToken: StateMutator<string | null>,
   refreshToken: string,
 ) => {
-  console.log('token axios 실행');
   const tokenAxios = axios.create();
   tokenAxios.interceptors.response.use(
     (response) => response,

@@ -20,9 +20,9 @@ const PostWrite = () => {
   const [content, onChangeContent, setContent] = useInput('');
   const [postSuccess, setPostSuccess] = useState(false);
   const onSubmitPost = useCallback(
-    (e: React.FormEvent<HTMLFormElement>) => {
+    async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      useTokenAxios(accessToken, setAccessToken, token.refreshToken)
+      await useTokenAxios(accessToken, setAccessToken, token.refreshToken)
         .post(
           '/post/regist/',
           {
@@ -37,12 +37,18 @@ const PostWrite = () => {
           },
         )
         .then((response) => {
-          toast.success('글쓰기가 성공했습니다.', {
-            position: 'top-right',
-          });
-          setTitle('');
-          setContent('');
-          setPostSuccess(true);
+          if (response.data.code === 200) {
+            toast.success('글쓰기가 성공했습니다.', {
+              position: 'top-right',
+            });
+            setTitle('');
+            setContent('');
+            setPostSuccess(true);
+          } else {
+            toast.error('글쓰기가 실패했습니다.', {
+              position: 'top-right',
+            });
+          }
         })
         .catch((error) => {
           toast.error('글쓰기가 실패했습니다.', {

@@ -8,7 +8,7 @@ character_name varchar(50),
 email varchar(50) NOT NULL,
 nickname varchar(50),
 password varchar(100),
-profile_image varchar(100),
+profile_image LONGTEXT,
 provider varchar(10),
 stove_no varchar(15),
 
@@ -35,6 +35,7 @@ CREATE TABLE `friend` (
 /* 오류나면 root계정으로 로그인 후
 set global log_bin_trust_function_creators=1; 실행해주기 */
     
+/* 안쓰는거
 DELIMITER $$
     CREATE TRIGGER insert_friend
     AFTER INSERT
@@ -45,5 +46,9 @@ BEGIN
 INSERT INTO friend(user_id, request_time, request_list, friend_list, black_list)
 VALUES(new.user_id, "[]", "[]", "[]", "[]");
 END$$
+*/
 
-
+INSERT INTO friend(user_id, request_time, request_list, friend_list, black_list)
+VALUES(1, '[]','[]','[]','[]');
+INSERT INTO friend(user_id, request_time, request_list, friend_list, black_list)
+VALUES(2, '[]','[]','[]','[]');

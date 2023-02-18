@@ -1,6 +1,7 @@
 package com.example.friend.Service;
 
 
+import com.example.friend.Dto.Request.FriendDto;
 import com.example.friend.Dto.Request.FriendRequest;
 import com.example.friend.Dto.Response.DefaultResponse;
 import com.example.friend.Dto.Response.FriendListResponse;
@@ -37,7 +38,7 @@ public class FriendService {
 
 
     @Transactional
-    public DefaultResponse createFriendList(FriendRequest friendRequest) {
+    public DefaultResponse createFriendList(FriendDto friendRequest) {
 
         Optional<Friend> oneByUserId = friendRepository.findOneByUserId(
                 friendRequest.getMyUserId());
@@ -63,7 +64,7 @@ public class FriendService {
     }
 
     @Transactional(readOnly = true)
-    public JSONArray getFriendIdList(FriendRequest friendRequest) {
+    public JSONArray getFriendIdList(FriendDto friendRequest) {
 
         Optional<Friend> oneByUserId = friendRepository.findOneByUserId(
                 friendRequest.getMyUserId());
@@ -80,10 +81,11 @@ public class FriendService {
     }
 
     @Transactional
-    public DefaultResponse getFriendList(FriendRequest friendRequest) {
+    public DefaultResponse getFriendList(FriendDto friendRequest) {
 
         JSONArray friendIdList = getFriendIdList(friendRequest);
         System.out.println("friendIdList = " + friendIdList);
+        System.out.println("friendIdList.size() = " + friendIdList.size());
 
         ArrayList<Long> list=new ArrayList<Long>();
 
@@ -108,6 +110,7 @@ public class FriendService {
                     .characterName(user.getCharacter_name())
                     .profileImage(user.getProfile_image())
                     .nickname(user.getNickname())
+                    .friendCount(friendIdList.size())
                     .build();
             friendListResponses.add(friendListResponse);
         }
@@ -118,7 +121,7 @@ public class FriendService {
 
 
     @Transactional
-    public DefaultResponse saveRequest(FriendRequest friendRequest) {
+    public DefaultResponse saveRequest(FriendDto friendRequest) {
         System.out.println("friendRequest = " + friendRequest);
         Date now = new Date();
 //        SimpleDateFormat sdf1=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -154,7 +157,7 @@ public class FriendService {
     }
 
     @Transactional
-    public DefaultResponse refuseFriend(FriendRequest friendRequest) {
+    public DefaultResponse refuseFriend(FriendDto friendRequest) {
         Optional<Friend> oneByUserId = friendRepository.findOneByUserId(
                 friendRequest.getMyUserId());
         Friend friend = oneByUserId.get();
@@ -189,7 +192,7 @@ public class FriendService {
     }
 
     @Transactional
-    public DefaultResponse acceptFriend(FriendRequest friendRequest) {
+    public DefaultResponse acceptFriend(FriendDto friendRequest) {
         Optional<Friend> oneByUserId = friendRepository.findOneByUserId(
                 friendRequest.getMyUserId());
         Friend friend = oneByUserId.get();
@@ -230,7 +233,7 @@ public class FriendService {
 
 
     @Transactional
-    public DefaultResponse deleteFriend(FriendRequest friendRequest) {
+    public DefaultResponse deleteFriend(FriendDto friendRequest) {
         Optional<Friend> oneByUserId = friendRepository.findOneByUserId(
                 friendRequest.getMyUserId());
         Friend friend = oneByUserId.get();

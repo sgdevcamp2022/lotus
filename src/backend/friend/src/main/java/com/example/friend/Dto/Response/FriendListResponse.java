@@ -14,4 +14,5 @@ public class FriendListResponse {
     private String nickname;
     private String profileImage;
     private String characterName;
+    private int friendCount;
 }

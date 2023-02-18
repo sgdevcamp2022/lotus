@@ -139,12 +139,20 @@ public class UserService {
     }
 
     @Transactional
-    public DefaultResponse updateMainCharacter(String characterName, String accessToken){
+    public DefaultResponse updateMainCharacter(String characterName,String profileImage, String accessToken){
         Long userId = tokenProvider.getUserIdFromAccessToken(accessToken);
         Optional<User> oneByUserId = userRepository.findOneByUserId(userId);
+        System.out.println("profileImage = " + profileImage);
+
        if(oneByUserId.isPresent()){
            User user = oneByUserId.get();
            user.setCharacter_name(characterName);
+           if(!profileImage.equals("null") && !profileImage.isEmpty()) {
+               user.setProfile_image(profileImage);
+           }
+           else if(profileImage.equals("null")){
+               user.setProfile_image(null);
+           }
            userRepository.save(user);
            return new DefaultResponse(StatusCode.OK, ResponseMessage.LOSTARK_MAINCHARACTER_SUCCESS, null);
        }
@@ -156,5 +164,7 @@ public class UserService {
         }
 
     }
+
+
 
 }

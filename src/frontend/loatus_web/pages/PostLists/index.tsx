@@ -1,103 +1,184 @@
-import React, { useContext } from 'react';
-import { Button, Carousel, Col, Form, InputGroup, Pagination, Row, Table } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Carousel, Col, Form, InputGroup, Row, Table } from 'react-bootstrap';
+import { Link, useSearchParams } from 'react-router-dom';
 import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
 import { APIItem, IPost, IUser } from '@typings/db';
 import makedate from '@utils/makedate';
 import axios from 'axios';
 import useToken from '@hooks/useToken';
+import {
+  Button,
+  CircularProgress,
+  Grid,
+  IconButton,
+  PaginationItem,
+  Paper,
+  Skeleton,
+  Stack,
+  Typography,
+} from '@mui/material';
+import { Pagination } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import AddIcon from '@mui/icons-material/Add';
+import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
+import Box from '@mui/material/Box';
+import { toast } from 'react-toastify';
 
 const PostLists = () => {
   const [accessToken] = useToken();
-  const { data: PostData, error, mutate } = useSWR<IPost[] | null>(['/post/'], fetcher);
+  const [params, setParams] = useSearchParams();
+  const {
+    data: PostData,
+    error,
+    mutate,
+  } = useSWR<{ post: IPost[]; total: number }>([`/post/?page=${params.get('page') || 1}`], fetcher);
+
+  const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    setParams(`page=${value}`);
+  };
+
+  const onClickDelete = useCallback((post: IPost) => {
+    axios
+      .delete(`/post/delete/${post.pk}/`, {
+        headers: {
+          Authorization: 'Bearer ' + accessToken,
+        },
+      })
+      .then((response) => {
+        mutate();
+      })
+      .catch((error) => {});
+  }, []);
+
+  const onClickEdit = useCallback(async (post: IPost) => {
+    //모달 실행 후 입력 받기
+    await axios
+      .post(
+        `/post/edit/${post.pk}/`,
+        {
+          title: '바뀌나요',
+          content: '안바뀌나요',
+        },
+        {
+          headers: {
+            Authorization: 'Bearer ' + accessToken,
+          },
+        },
+      )
+      .then((response) => {
+        toast.info(response.data.message);
+        mutate();
+      })
+      .catch((error) => {});
+  }, []);
 
   return (
-    <>
-      <h3>게시판</h3>
-      <Carousel style={{ margin: '25px' }}>
-        <Carousel.Item>
-          <img
-            className={'d-block w-100'}
-            src={'https://i.ytimg.com/vi/MYYj727uuV4/maxresdefault.jpg'}
-            width={'800'}
-            height={'400'}
-            alt={'First slide'}
-          />
-          <Carousel.Caption>
-            <h3>글 쓸 사람</h3>
-            <p>나야 나 나야 나</p>
-          </Carousel.Caption>
-        </Carousel.Item>
-      </Carousel>
-      <Row>
-        <Col md={4}>
-          <InputGroup>
-            <Form.Control aria-label="Text input" />
-            <Button>검색</Button>
-          </InputGroup>
-        </Col>
-        <Col md={{ span: 4, offset: 4 }} style={{ textAlign: 'end' }}>
-          <Link to={'/board/write'}>
-            <Button>글쓰기</Button>
-          </Link>
-        </Col>
-      </Row>
-      <Row style={{ marginTop: 50 }}>
-        <Table hover>
-          <thead>
-            <tr>
-              <th>No</th>
-              <th>TITLE</th>
-              <th>AUTHOR</th>
-              <th>CONTENT</th>
-              <th>PUBLISHED_DATE</th>
-              <th>MANAGEMENT</th>
-            </tr>
-          </thead>
-          <tbody>
-            {PostData?.map((post, key) => {
+    <div>
+      <Paper
+        elevation={3}
+        sx={{
+          margin: 'auto',
+          alignContent: 'center',
+          textAlign: 'center',
+          height: 500,
+        }}
+      >
+        <Typography
+          component="h1"
+          sx={{
+            fontFamily: 'Noto Sans KR, sans-serif',
+            fontWeight: 900,
+            lineHeight: 1.25,
+            letterSpacing: '.9px',
+            color: 'inherit',
+            fontSize: '2.75rem',
+          }}
+        >
+          <ThumbUpAltIcon sx={{ fontWeight: 900, fontSize: '2.75rem' }} />
+          &nbsp; 안녕하세요 또 만났네요
+        </Typography>
+        <Carousel style={{ margin: '25px' }}>
+          <Carousel.Item>
+            <img
+              className={'d-block w-100'}
+              src={
+                'https://w.namu.la/s/bab5cf7fddc14b6dce8d59e30e25c79bc8519072a57745aaff59239866ea5d217e51fbc224204a65fcdfd52a68df5303696ff7e023e497364ab60c06e35513b9065accc0762ee92daeca448a9f842239c751f12326c0d80815c5c68cd6476c092c4f07c9ed90b8e65f2ec8c59b67059b'
+              }
+              width={'800'}
+              height={'400'}
+              alt={'First slide'}
+            />
+            <Carousel.Caption>
+              <h3>글 쓸 사람</h3>
+              <p>나야 나 나야 나</p>
+            </Carousel.Caption>
+          </Carousel.Item>
+        </Carousel>
+      </Paper>
+      <Grid textAlign={'right'} sx={{ paddingTop: '1rem' }}>
+        <Button component={Link} to={'/board/write'} color={'primary'} variant="outlined" startIcon={<AddIcon />}>
+          글쓰기
+        </Button>
+      </Grid>
+      <Table hover style={{ textAlign: 'center' }}>
+        <thead style={{ fontFamily: 'Noto Sans KR, sans-serif' }}>
+          <tr>
+            <th>No</th>
+            <th>TITLE</th>
+            <th>AUTHOR</th>
+            <th>CONTENT</th>
+            <th>PUBLISHED_DATE</th>
+            <th>MANAGEMENT</th>
+          </tr>
+        </thead>
+        <tbody>
+          {PostData ? (
+            PostData.post.map((post, key) => {
               return (
                 <tr>
                   <td>{key}</td>
-                  <td>{post.title}</td>
-                  <td>{post.author.nickname}</td>
-                  <td>{post.content}</td>
-                  <td>{makedate(post.published_date)}</td>
+                  <td style={{ width: '200px' }}>{post.fields.title}</td>
+                  <td>{post.fields.author}</td>
+                  <td>{post.fields.content}</td>
+                  <td>{makedate(post.fields.published_date)}</td>
                   <td>
-                    <Button>수정</Button>
-                    <Button
-                      onClick={() =>
-                        axios
-                          .delete(`/post/delete/${post.id}`, {
-                            headers: {
-                              Authorization: 'Bearer ' + accessToken,
-                            },
-                          })
-                          .then((response) => {
-                            mutate();
-                          })
-                          .catch((error) => {})
-                      }
-                    >
-                      신고
-                    </Button>
+                    <IconButton onClick={() => onClickEdit(post)} color={'inherit'}>
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton onClick={() => onClickDelete(post)} color={'inherit'}>
+                      <DeleteIcon />
+                    </IconButton>
                   </td>
                 </tr>
               );
-            })}
-          </tbody>
-        </Table>
-      </Row>
-      <Pagination className="justify-content-md-center">
-        <Pagination.First disabled />
-        <Pagination.Prev disabled />
-        <Pagination.Item>{1}</Pagination.Item>
-        <Pagination.Ellipsis />
-        <Pagination.Next />
-        <Pagination.Last />
-      </Pagination>
-    </>
+            })
+          ) : (
+            <tr>
+              <td colSpan={6}>
+                <CircularProgress />
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </Table>
+      {PostData && (
+        <Pagination
+          sx={{ justifyContent: 'center', display: 'flex' }}
+          count={Math.trunc(PostData.total / 10) + (PostData.total % 10 && 1)}
+          page={Number(params.get('page'))}
+          onChange={handleChange}
+          variant={'outlined'}
+          color={'primary'}
+          shape={'rounded'}
+          defaultPage={0}
+          renderItem={(item) => (
+            <PaginationItem component={Link} to={`/board/lists?page=${item.page}`} {...item} sx={{ color: 'black' }} />
+          )}
+        />
+      )}
+    </div>
   );
 };
 
