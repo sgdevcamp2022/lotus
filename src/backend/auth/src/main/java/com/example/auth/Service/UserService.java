@@ -166,5 +166,27 @@ public class UserService {
     }
 
 
+    @Transactional
+    public DefaultResponse updateNickname(String nickname, String accessToken){
+        Long userId = tokenProvider.getUserIdFromAccessToken(accessToken);
+        Optional<User> oneByUserId = userRepository.findOneByUserId(userId);
+
+
+        if(oneByUserId.isPresent()){
+            User user = oneByUserId.get();
+            user.setNickname(nickname);
+            userRepository.save(user);
+            return new DefaultResponse(StatusCode.OK, ResponseMessage.UPDATE_NICKNAME_SUCCESS, null);
+        }
+
+        else{
+            DefaultResponse<Object> objectDefaultResponse = new DefaultResponse<>(StatusCode.USER_NONEXISTENCE,
+                    ResponseMessage.READ_USER_FAILURE, null);
+            return objectDefaultResponse;
+        }
+
+    }
+
+
 
 }

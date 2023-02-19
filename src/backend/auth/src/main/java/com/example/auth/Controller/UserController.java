@@ -1,6 +1,7 @@
 package com.example.auth.Controller;
 
 import com.example.auth.Dto.Request.MainCharacterRequest;
+import com.example.auth.Dto.Request.NicknameRequest;
 import com.example.auth.Dto.Request.SignupRequest;
 import com.example.auth.Dto.Response.DefaultResponse;
 import com.example.auth.Dto.Response.ResponseMessage;
@@ -65,10 +66,29 @@ public class UserController {
         return new ResponseEntity<>(signupResponse, HttpStatus.OK);
     }
 
-    @PostMapping("/get/maincharacter")
+
+
+//    @PostMapping("/update/maincharacter")
+//    public ResponseEntity<DefaultResponse> updateMainCharacter(@RequestHeader String authorization) {
+//        String accessToken = authorization.substring(7);
+//        Long userIdFromAccessToken = tokenProvider.getUserIdFromAccessToken(accessToken);
+//        Optional<User> userByUserId = userService.getUserByUserId(userIdFromAccessToken);
+//        JsonNode characterInfo = lostarkAuthentication.getCharacterInfo(
+//                userByUserId.get().getCharacter_name());
+//
+//        System.out.println("characterInfo = " + characterInfo);
+//
+//        DefaultResponse defaultResponse = new DefaultResponse(StatusCode.OK,
+//                ResponseMessage.LOSTARK_MAINCHARACTER_LOAD_SUCCESS, characterInfo);
+//        ResponseEntity.ok().body(defaultResponse);
+//        return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
+//
+//    }
+
+    @PostMapping("/update/maincharacter")
     @Operation(description = "response data null로 반환됨")
-    public ResponseEntity<DefaultResponse> setMainCharacter(@Valid @RequestBody
-            MainCharacterRequest mainCharacterRequest,
+    public ResponseEntity<DefaultResponse> updateMainCharacter(@Valid @RequestBody
+    MainCharacterRequest mainCharacterRequest,
             @RequestHeader String authorization){
         String accessToken = authorization.substring(7);
         String profileImageInLostark = lostarkAuthentication.getProfileImageInLostark(
@@ -94,6 +114,14 @@ public class UserController {
     }
 
     @PostMapping("/load/maincharacter")
+    @Operation(description = "response data 예시  {\n"
+            + "    \"ServerName\": \"니나브\",\n"
+            + "    \"CharacterName\": \"조안녕hi\",\n"
+            + "    \"CharacterLevel\": 45,\n"
+            + "    \"CharacterClassName\": \"바드\",\n"
+            + "    \"ItemAvgLevel\": \"209.17\",\n"
+            + "    \"ItemMaxLevel\": \"209.17\"\n"
+            + "  }")
     public ResponseEntity<DefaultResponse> loadMainCharacter(@RequestHeader String authorization) {
         String accessToken = authorization.substring(7);
         Long userIdFromAccessToken = tokenProvider.getUserIdFromAccessToken(accessToken);
@@ -109,6 +137,26 @@ public class UserController {
         return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
 
     }
+
+
+    @PostMapping("/update/nickname")
+    @Operation(description = "response data null로 반환됨")
+    public ResponseEntity<DefaultResponse> updateMainCharacter(@Valid @RequestBody NicknameRequest nicknameRequest,
+            @RequestHeader String authorization){
+        String accessToken = authorization.substring(7);
+        DefaultResponse defaultResponse = userService.updateNickname(nicknameRequest.getNickname(),
+                accessToken);
+        ResponseEntity.ok().body(defaultResponse);
+        if(defaultResponse.getCode()==StatusCode.USER_NONEXISTENCE){
+            return new ResponseEntity<>(defaultResponse, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(defaultResponse,HttpStatus.OK);
+
+    }
+
+
+
+
 
 
 
