@@ -65,7 +65,7 @@ public class UserController {
         return new ResponseEntity<>(signupResponse, HttpStatus.OK);
     }
 
-    @PostMapping("/charactername")
+    @PostMapping("/get/maincharacter")
     @Operation(description = "response data null로 반환됨")
     public ResponseEntity<DefaultResponse> setMainCharacter(@Valid @RequestBody
             MainCharacterRequest mainCharacterRequest,
@@ -92,6 +92,24 @@ public class UserController {
         return new ResponseEntity<>(defaultResponse,HttpStatus.OK);
 
     }
+
+    @PostMapping("/load/maincharacter")
+    public ResponseEntity<DefaultResponse> loadMainCharacter(@RequestHeader String authorization) {
+        String accessToken = authorization.substring(7);
+        Long userIdFromAccessToken = tokenProvider.getUserIdFromAccessToken(accessToken);
+        Optional<User> userByUserId = userService.getUserByUserId(userIdFromAccessToken);
+        JsonNode characterInfo = lostarkAuthentication.getCharacterInfo(
+                userByUserId.get().getCharacter_name());
+
+        System.out.println("characterInfo = " + characterInfo);
+
+        DefaultResponse defaultResponse = new DefaultResponse(StatusCode.OK,
+                ResponseMessage.LOSTARK_MAINCHARACTER_LOAD_SUCCESS, characterInfo);
+        ResponseEntity.ok().body(defaultResponse);
+        return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
+
+    }
+
 
 
     @GetMapping("/user")

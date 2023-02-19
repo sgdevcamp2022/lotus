@@ -16,6 +16,7 @@ public class ResponseMessage {
     public static final String STOVE_INTRODUCTION_SUCCESS = "스토브 자기소개글 조회 성공";
     public static final String STOVE_LOSTARK_SUCCESS = "스토브 계정으로부터 로스트아크 캐릭터 조회 성공";
     public static final String LOSTARK_MAINCHARACTER_SUCCESS = "대표캐릭터 설정 성공";
+    public static final String LOSTARK_MAINCHARACTER_LOAD_SUCCESS="대표캐릭터 정보 조회 성공";
     public static final String BAD_REQUEST = "BAD REQUEST";
     public static final String RANDOMCODE_SUCCESS = "랜덤 코드 발급 성공";
     public static final String STOVE_NUMBER_FAILURE = "회원테이블 스토브 번호 업데이트 실패";

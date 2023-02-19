@@ -147,6 +147,38 @@ public class LostarkAuthentication {
         return jsonObject.get("encryptMemberNo").toString();
     }
 
+    public JsonNode getCharacterInfo(String characterName){
+
+
+        String json = "lostark";
+        String encodedCharacterName;
+        String url;
+        int idx=0;
+
+        try {
+            encodedCharacterName = URLEncoder.encode(characterName, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+        characterName="\"" + characterName + "\"";
+        url = "https://developer-lostark.game.onstove.com/characters/" + encodedCharacterName
+                + "/siblings";
+        System.out.println("encodedCharacterName = " + encodedCharacterName);
+
+
+
+        JsonNode jsonNode = httpGetConnection(
+                url, json);
+        for(int i=0; i<jsonNode.size(); i++){
+            if(jsonNode.get(i).get("CharacterName").toString().equals(characterName)){
+                idx=i;
+            }
+
+        }
+        return jsonNode.get(idx);
+
+    }
+
     public JsonNode getCharactersInLostark(String urlPath) {
 
         String characterName = getCharacterInLostark(urlPath);
