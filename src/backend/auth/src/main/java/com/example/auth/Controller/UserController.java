@@ -2,6 +2,7 @@ package com.example.auth.Controller;
 
 import com.example.auth.Dto.Request.MainCharacterRequest;
 import com.example.auth.Dto.Request.NicknameRequest;
+import com.example.auth.Dto.Request.PasswordRequest;
 import com.example.auth.Dto.Request.SignupRequest;
 import com.example.auth.Dto.Response.DefaultResponse;
 import com.example.auth.Dto.Response.ResponseMessage;
@@ -150,6 +151,32 @@ public class UserController {
         if(defaultResponse.getCode()==StatusCode.USER_NONEXISTENCE){
             return new ResponseEntity<>(defaultResponse, HttpStatus.NOT_FOUND);
         }
+        return new ResponseEntity<>(defaultResponse,HttpStatus.OK);
+
+    }
+
+    @PostMapping("/update/password")
+    @Operation(description = "response data null로 반환됨")
+    public ResponseEntity<DefaultResponse> updatePassword(@Valid @RequestBody PasswordRequest passwordRequest,
+            @RequestHeader String authorization){
+        String accessToken = authorization.substring(7);
+        DefaultResponse defaultResponse = userService.updatePassword(passwordRequest.getPassword(),
+                accessToken);
+        ResponseEntity.ok().body(defaultResponse);
+        if(defaultResponse.getCode()==StatusCode.USER_NONEXISTENCE){
+            return new ResponseEntity<>(defaultResponse, HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(defaultResponse,HttpStatus.OK);
+
+    }
+
+    @PostMapping("/delete")
+    @Operation(description = "response data null로 반환됨")
+    public ResponseEntity<DefaultResponse> deleteUser(@RequestHeader String authorization){
+        String accessToken = authorization.substring(7);
+        userService.deleteUser(accessToken);
+        DefaultResponse defaultResponse=new DefaultResponse(StatusCode.OK,ResponseMessage.DELETE_USER_SUCCESS,null);
+        ResponseEntity.ok().body(defaultResponse);
         return new ResponseEntity<>(defaultResponse,HttpStatus.OK);
 
     }

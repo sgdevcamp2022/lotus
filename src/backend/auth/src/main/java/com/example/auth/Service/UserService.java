@@ -187,6 +187,33 @@ public class UserService {
 
     }
 
+    @Transactional
+    public DefaultResponse updatePassword(String password, String accessToken){
+        Long userId = tokenProvider.getUserIdFromAccessToken(accessToken);
+        Optional<User> oneByUserId = userRepository.findOneByUserId(userId);
+
+
+        if(oneByUserId.isPresent()){
+            User user = oneByUserId.get();
+            user.setPassword(passwordEncoder.encode(password));
+            userRepository.save(user);
+            return new DefaultResponse(StatusCode.OK, ResponseMessage.UPDATE_PASSWORD_SUCCESS, null);
+        }
+
+        else{
+            DefaultResponse<Object> objectDefaultResponse = new DefaultResponse<>(StatusCode.USER_NONEXISTENCE,
+                    ResponseMessage.READ_USER_FAILURE, null);
+            return objectDefaultResponse;
+        }
+
+    }
+
+
+    @Transactional
+    public void deleteUser(String accessToken){
+        Long userId = tokenProvider.getUserIdFromAccessToken(accessToken);
+        userRepository.deleteById(userId);
+    }
 
 
 }
