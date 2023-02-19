@@ -111,7 +111,7 @@ function Header() {
                   <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                     <Avatar
                       alt={userData.nickname}
-                      src={userData.stoveNo || gravatar.url(userData.email, { s: '25', d: 'retro' })}
+                      src={userData.profileImage || gravatar.url(userData.email, { s: '25', d: 'retro' })}
                     />
                   </IconButton>
                 </Tooltip>

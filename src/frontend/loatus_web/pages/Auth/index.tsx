@@ -14,6 +14,7 @@ import { toast } from 'react-toastify';
 import useToken from '@hooks/useToken';
 import { useCookies } from 'react-cookie';
 import useInput from '@hooks/useInput';
+import CharacterSelect from '@components/CharacterSelect';
 
 export default function Auth() {
   const [accessToken, setAccessToken] = useToken();
@@ -23,6 +24,7 @@ export default function Auth() {
   const [randomCode, setRandomCode] = useState('');
   const steps = ['스토브 로그인', '소개글에 인증코드 게시', '인증하기'];
   const [stoveUrl, onChangeStoveUrl, setStoveUrl] = useInput('');
+  const [gameInfo, setGameInfo] = useState<lostarkInfo[] | null>(null);
   const onClickCopyClipBoard = useCallback(async () => {
     if (!randomCode) {
       return;
@@ -55,7 +57,7 @@ export default function Auth() {
             },
           },
         )
-        .then((response: AxiosResponse<APIItem<lostarkInfo>>) => {
+        .then((response: AxiosResponse<APIItem<lostarkInfo[]>>) => {
           if (response.data.code === 200) {
             toast.success(response.data.message, {
               position: 'top-right',
@@ -157,6 +159,9 @@ export default function Auth() {
     setActiveStep(0);
   };
 
+  if (gameInfo) {
+    return <CharacterSelect gameInfo={gameInfo} />;
+  }
   return (
     <Box sx={{ minWidth: '1057px' }}>
       <Stepper activeStep={activeStep}>

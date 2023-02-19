@@ -25,8 +25,10 @@ import AddIcon from '@mui/icons-material/Add';
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
 import Box from '@mui/material/Box';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router';
 
 const PostLists = () => {
+  const navigate = useNavigate();
   const [accessToken] = useToken();
   const [params, setParams] = useSearchParams();
   const {
@@ -128,7 +130,6 @@ const PostLists = () => {
             <th>No</th>
             <th>TITLE</th>
             <th>AUTHOR</th>
-            <th>CONTENT</th>
             <th>PUBLISHED_DATE</th>
             <th>MANAGEMENT</th>
           </tr>
@@ -137,11 +138,10 @@ const PostLists = () => {
           {PostData ? (
             PostData.post.map((post, key) => {
               return (
-                <tr>
+                <tr key={key} onClick={() => navigate(`/board/${post.pk}`)}>
                   <td>{key}</td>
-                  <td style={{ width: '200px' }}>{post.fields.title}</td>
+                  <td style={{ width: '600px' }}>{post.fields.title}</td>
                   <td>{post.fields.author}</td>
-                  <td>{post.fields.content}</td>
                   <td>{makedate(post.fields.published_date)}</td>
                   <td>
                     <IconButton onClick={() => onClickEdit(post)} color={'inherit'}>
