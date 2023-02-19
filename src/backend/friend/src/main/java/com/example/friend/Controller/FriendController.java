@@ -39,7 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
         +"\n 내 자신의 아이디는 accesstoken으로부터 auth/my를 호출해 얻어냅니다.")
 public class FriendController {
 
-    private final String userInfoUrl = "http://3.39.239.141:32513/auth/my";
+    private final String userInfoUrl = "http://3.39.239.141:31436/auth/my";
     //  private final String userInfoUrl="http://localhost:8080/auth/test";
     private final FriendService friendService;
 
