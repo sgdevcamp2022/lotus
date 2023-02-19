@@ -28,11 +28,11 @@ const pages = [
 ];
 
 function Header() {
-  const [accessToken, setAccessToken] = useToken();
+  const accessToken = localStorage.getItem('accessToken');
   const [token] = useCookies(['refreshToken']);
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-  const { data: userData, error, mutate } = useSWRRetry('/auth/my', accessToken, setAccessToken, token.refreshToken);
+  const { data: userData, error, mutate } = useSWRRetry('/auth/my', token.refreshToken);
 
   const onClickLogout = useCallback(() => {
     axios
@@ -134,8 +134,8 @@ function Header() {
                   <MenuItem component={Link} to="/mypage" onClick={handleCloseUserMenu}>
                     <Typography textAlign="center">프로필</Typography>
                   </MenuItem>
-                  <MenuItem component={Link} to="/auth" onClick={handleCloseUserMenu}>
-                    <Typography textAlign="center">인증</Typography>
+                  <MenuItem component={Link} to={userData.stoveNo ? '/select' : '/auth'} onClick={handleCloseUserMenu}>
+                    <Typography textAlign="center">{userData.stoveNo ? '대표캐릭터 설정' : '인증'}</Typography>
                   </MenuItem>
                   <MenuItem onClick={onClickLogout}>
                     <Typography textAlign="center">로그아웃</Typography>

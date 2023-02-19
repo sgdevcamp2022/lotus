@@ -1,11 +1,7 @@
 import axios from 'axios';
 import { StateMutator } from 'swr-global-state';
 
-const useTokenAxios = (
-  accessToken: string | null,
-  setAccessToken: StateMutator<string | null>,
-  refreshToken: string,
-) => {
+const useTokenAxios = (refreshToken: string) => {
   const tokenAxios = axios.create();
   tokenAxios.interceptors.response.use(
     (response) => response,
@@ -17,13 +13,13 @@ const useTokenAxios = (
           {
             withCredentials: true,
             headers: {
-              Authorization: `Bearer ${accessToken}`,
+              Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
               refreshToken: refreshToken,
             },
           },
         )
         .then((res) => {
-          setAccessToken(res.data.data);
+          localStorage.setItem('accessToken', res.data.data);
         })
         .catch((error) => error);
     },

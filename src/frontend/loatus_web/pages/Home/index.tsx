@@ -5,7 +5,6 @@ import { toast } from 'react-toastify';
 import { useCookies } from 'react-cookie';
 
 const Home = () => {
-  const [cookie, setCookie] = useCookies(['accessToken']);
   return (
     <>
       <section>모집</section>

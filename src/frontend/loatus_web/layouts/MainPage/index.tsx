@@ -9,9 +9,6 @@ import { Container, createTheme, Grid, ThemeProvider } from '@mui/material';
 import Pagination from '@mui/material/Pagination';
 
 const MainPage = () => {
-  const [accessToken, setAccessToken] = useToken();
-  const [token] = useCookies(['refreshToken']);
-  const { data: userData, error, mutate } = useSWRRetry('/auth/my', accessToken, setAccessToken, token.refreshToken);
   const darkTheme = createTheme({
     palette: {
       primary: {

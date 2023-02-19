@@ -24,7 +24,7 @@ const App: FC = () => {
           <Route path="signup" element={<Signup />} />
           <Route element={<MainPage />}>
             <Route path={'party'} element={<Party />} />
-            <Route path={'test'} element={<CharacterSelect gameInfo={[]} />} />
+            <Route path={'select'} element={<CharacterSelect />} />
             <Route path={'notice'} element={<Notice />} />
             <Route path={'board'} element={<Board />}>
               <Route path={'lists'} element={<PostLists />} />

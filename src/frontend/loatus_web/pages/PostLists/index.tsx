@@ -29,7 +29,7 @@ import { useNavigate } from 'react-router';
 
 const PostLists = () => {
   const navigate = useNavigate();
-  const [accessToken] = useToken();
+  const accessToken = localStorage.getItem('accessToken');
   const [params, setParams] = useSearchParams();
   const {
     data: PostData,
@@ -99,7 +99,7 @@ const PostLists = () => {
           }}
         >
           <ThumbUpAltIcon sx={{ fontWeight: 900, fontSize: '2.75rem' }} />
-          &nbsp; 안녕하세요 또 만났네요
+          &nbsp; 안녕하세요
         </Typography>
         <Carousel style={{ margin: '25px' }}>
           <Carousel.Item>

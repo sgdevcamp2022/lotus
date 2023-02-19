@@ -4,24 +4,23 @@ import axios, { AxiosResponse } from 'axios';
 import { Button, Header, Horizon, Hr, Input, Page, PageHead, Root, SignIn } from '@pages/Login/styles';
 import { Link, Navigate, useSearchParams } from 'react-router-dom';
 import { APIItem, IToken, IUser } from '@typings/db';
-import useSWR from 'swr';
 import { useCookies } from 'react-cookie';
-import fetcher from '@utils/fetcher';
 import { toast, ToastContainer } from 'react-toastify';
 import { Form } from 'react-bootstrap';
-import useToken from '@hooks/useToken';
 import useSWRRetry from '@hooks/useSWRRetry';
+import { useNavigate } from 'react-router';
 
 const Login = () => {
+  const navigator = useNavigate();
   const [token, setToken] = useCookies(['refreshToken']);
-  const [accessToken, setAccessToken] = useToken();
+  const accessToken = localStorage.getItem('accessToken');
   const [email, onChangeEmail, setEmail] = useInput('');
   const [password, onChangePassword, setPassword] = useInput('');
-  const { data: userData, error, mutate } = useSWRRetry('/auth/my', accessToken, setAccessToken, token.refreshToken);
+  const { data: userData, error, mutate } = useSWRRetry('/auth/my', token.refreshToken);
   const [params, setParams] = useSearchParams();
   useEffect(() => {
     if (params.get('accessToken')) {
-      setAccessToken(params.get('accessToken'));
+      localStorage.setItem('accessToken', params.get('accessToken')!);
     }
     if (params.get('refreshToken')) {
       setToken('refreshToken', params.get('refreshToken'));
@@ -55,7 +54,7 @@ const Login = () => {
           }
           setToken('refreshToken', response?.data.data.refreshToken, { path: '/' });
           setEmail('');
-          setAccessToken(response?.data.data.accessToken);
+          localStorage.setItem('accessToken', response?.data.data.accessToken);
           mutate();
         })
         .catch((error) => {
@@ -77,7 +76,9 @@ const Login = () => {
       <Header>
         <div className="left-col"></div>
         <div className="center-col">
-          <h1 style={{ textAlign: 'center', fontFamily: 'Noto Sans KR, sans-serif' }}>LOATUS</h1>
+          <h1 style={{ textAlign: 'center', fontFamily: 'Noto Sans KR, sans-serif' }} onClick={() => navigator('/')}>
+            LOATUS
+          </h1>
         </div>
         <div className="right-col">
           <div

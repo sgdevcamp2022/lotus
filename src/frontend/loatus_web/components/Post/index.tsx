@@ -34,9 +34,9 @@ import { toast } from 'react-toastify';
 const Post = () => {
   const params = useParams();
   const { data: PostData, error: postError, mutate: postMutate } = useSWR<IPost[]>([`/post/${params.id}`], fetcher);
-  const [accessToken, setAccessToken] = useToken();
+  const accessToken = localStorage.getItem('accessToken');
   const [token] = useCookies(['refreshToken']);
-  const { data: userData, error, mutate } = useSWRRetry('/auth/my', accessToken, setAccessToken, token.refreshToken);
+  const { data: userData, error, mutate } = useSWRRetry('/auth/my', token.refreshToken);
   const [comment, onChangeComment, setComment] = useInput('');
 
   const onSubmitComment = useCallback(
@@ -69,6 +69,7 @@ const Post = () => {
         )
         .then((res) => {
           postMutate();
+          setComment('');
         })
         .catch((err) => {
           toast.error(err.message, {

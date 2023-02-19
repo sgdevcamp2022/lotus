@@ -10,7 +10,7 @@ interface Configuration extends WebpackConfiguration {
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
-const baseUrl = 'http://3.39.239.141:32513';
+const baseUrl = 'http://3.39.239.141:31436';
 const postSever = 'http://13.125.37.169:32280';
 
 const config: Configuration = {

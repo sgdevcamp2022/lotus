@@ -13,16 +13,16 @@ import { useCookies } from 'react-cookie';
 import useTokenAxios from '@hooks/useTokenAxios';
 
 const PostWrite = () => {
-  const [accessToken, setAccessToken] = useToken();
+  const accessToken = localStorage.getItem('accessToken');
   const [token] = useCookies(['refreshToken']);
-  const { data: userData, error, mutate } = useSWRRetry('/auth/my', accessToken, setAccessToken, token.refreshToken);
+  const { data: userData, error, mutate } = useSWRRetry('/auth/my', token.refreshToken);
   const [title, onChangeTitle, setTitle] = useInput('');
   const [content, onChangeContent, setContent] = useInput('');
   const [postSuccess, setPostSuccess] = useState(false);
   const onSubmitPost = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      await useTokenAxios(accessToken, setAccessToken, token.refreshToken)
+      await useTokenAxios(token.refreshToken)
         .post(
           '/post/regist/',
           {
