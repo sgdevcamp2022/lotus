@@ -11,7 +11,7 @@ import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 const baseUrl = 'http://3.39.239.141:32513';
-const postSever = 'http://15.165.40.191:8000';
+const postSever = 'http://13.125.37.169:32280';
 
 const config: Configuration = {
   name: 'Loatus', //여기를 바꾸면 됨

@@ -1,6 +1,5 @@
 import React from 'react';
 import { ToastContainer } from 'react-toastify';
-import LostarkAuth from '@components/LostarkAuth';
 import { Outlet } from 'react-router';
 import Header from '@components/Header';
 import useToken from '@hooks/useToken';
@@ -27,7 +26,7 @@ const MainPage = () => {
       <ThemeProvider theme={darkTheme}>
         <Header />
         <Grid container spacing={2} style={{ paddingTop: '4rem' }}>
-          <Grid xs display={'flex'} justifyContent={'center'} alignItems={'center'}>
+          <Grid item xs display={'flex'} justifyContent={'center'} alignItems={'center'}>
             <main role="main">
               <Outlet />
             </main>

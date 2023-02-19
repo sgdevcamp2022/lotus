@@ -12,6 +12,8 @@ const PostWrite = loadable(() => import('@pages/PostWrite'));
 const Auth = loadable(() => import('@pages/Auth'));
 import { CookiesProvider } from 'react-cookie';
 import loadable from '@loadable/component';
+import Post from '@components/Post';
+import CharacterSelect from '@components/CharacterSelect';
 
 const App: FC = () => {
   return (
@@ -22,10 +24,12 @@ const App: FC = () => {
           <Route path="signup" element={<Signup />} />
           <Route element={<MainPage />}>
             <Route path={'party'} element={<Party />} />
+            <Route path={'test'} element={<CharacterSelect gameInfo={[]} />} />
             <Route path={'notice'} element={<Notice />} />
             <Route path={'board'} element={<Board />}>
               <Route path={'lists'} element={<PostLists />} />
               <Route path={'write'} element={<PostWrite />} />
+              <Route path={':id'} element={<Post />} />
             </Route>
             <Route path={'auth'} element={<Auth />} />
             <Route path={'/'} element={<Home />} />

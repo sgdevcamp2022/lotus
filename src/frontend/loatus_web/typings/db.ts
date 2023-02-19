@@ -4,6 +4,12 @@ export type APIItem<T> = {
   data: T;
 };
 
+export type Comment = {
+  author: number;
+  content: string;
+  postId: number;
+};
+
 export type IToken = {
   accessToken: string;
   grantType: string;
@@ -12,12 +18,13 @@ export type IToken = {
 };
 
 export type IUser = {
-  auth: string;
+  userid: number;
   email: string;
   nickname: string;
-  provider: string;
-  userid: number;
+  auth: string;
   stoveNo: string | null;
+  characterName: string | null;
+  profileImage: string | null;
 };
 
 export type lostarkInfo = {
@@ -36,6 +43,7 @@ export type IPost = {
     author: string;
     content: string;
     published_date: Date;
+    comments: Comment[];
     like: string[];
   };
 };
