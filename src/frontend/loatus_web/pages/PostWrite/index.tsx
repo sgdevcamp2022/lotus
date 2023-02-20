@@ -27,7 +27,7 @@ const PostWrite = () => {
           '/post/regist/',
           {
             title,
-            content,
+            content
           },
           {
             withCredentials: true,

@@ -10,6 +10,7 @@ const Notice = loadable(() => import('@pages/Notice'));
 const PostLists = loadable(() => import('@pages/PostLists'));
 const PostWrite = loadable(() => import('@pages/PostWrite'));
 const Auth = loadable(() => import('@pages/Auth'));
+const My = loadable(() => import('@pages/My'));
 import { CookiesProvider } from 'react-cookie';
 import loadable from '@loadable/component';
 import Post from '@components/Post';
@@ -32,6 +33,7 @@ const App: FC = () => {
               <Route path={':id'} element={<Post />} />
             </Route>
             <Route path={'auth'} element={<Auth />} />
+             <Route path={'my'} element={<My />} />
             <Route path={'/'} element={<Home />} />
           </Route>
           <Route path="*" element={<Navigate to={'/'} replace />} />

@@ -134,7 +134,7 @@ function Header() {
                   open={Boolean(anchorElUser)}
                   onClose={handleCloseUserMenu}
                 >
-                  <MenuItem component={Link} to="/mypage" onClick={handleCloseUserMenu}>
+                  <MenuItem component={Link} to="/my" onClick={handleCloseUserMenu}>
                     <Typography textAlign="center">프로필</Typography>
                   </MenuItem>
                   <MenuItem component={Link} to={userData.stoveNo ? '/select' : '/auth'} onClick={handleCloseUserMenu}>
