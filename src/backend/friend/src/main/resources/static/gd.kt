@@ -1,0 +1,4 @@
+package static
+
+class gd {
+}
