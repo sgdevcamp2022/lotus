@@ -69,3 +69,12 @@ export type DjangoUser = {
   last_login: Date;
   data_joined: Date;
 };
+
+
+export type Friend = {
+  userId: number;
+  nickname: string;
+  profileImage: string | null;
+  characterName: string | null;
+  friendCount: number;
+}
