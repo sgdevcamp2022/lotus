@@ -1,13 +1,8 @@
 import React, { useCallback, useContext, useState } from 'react';
 import { Button, Form, Nav } from 'react-bootstrap';
 import useInput from '@hooks/useInput';
-import useSWR from 'swr';
-import { APIItem, IUser } from '@typings/db';
-import fetcher from '@utils/fetcher';
 import { toast } from 'react-toastify';
 import { Navigate } from 'react-router-dom';
-import axios from 'axios';
-import useToken from '@hooks/useToken';
 import useSWRRetry from '@hooks/useSWRRetry';
 import { useCookies } from 'react-cookie';
 import useTokenAxios from '@hooks/useTokenAxios';
@@ -27,7 +22,7 @@ const PostWrite = () => {
           '/post/regist/',
           {
             title,
-            content
+            content,
           },
           {
             withCredentials: true,

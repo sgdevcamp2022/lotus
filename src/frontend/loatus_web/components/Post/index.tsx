@@ -149,17 +149,17 @@ const Post = () => {
         <Divider />
         <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
           {typeof PostData[0].fields.comments !== 'string' &&
-            PostData[0].fields.comments.map((comment) => (
-              <ListItem alignItems="flex-start">
+            PostData[0].fields.comments.map((comment, key) => (
+              <ListItem alignItems="flex-start" key={key}>
                 <ListItemAvatar>
                   <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
                 </ListItemAvatar>
                 <ListItemText
-                  primary={comment.content}
+                  primary={comment.cur_user_comment}
                   secondary={
                     <React.Fragment>
                       <Typography sx={{ display: 'inline' }} component="span" variant="body2" color="text.primary">
-                        {comment.author}
+                        {comment.cur_user_id}
                       </Typography>
                     </React.Fragment>
                   }
