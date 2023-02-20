@@ -4,9 +4,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
 import { APIItem, IPost, IUser } from '@typings/db';
-import makedate from '@utils/makedate';
 import axios from 'axios';
-import useToken from '@hooks/useToken';
 import {
   Button,
   CircularProgress,
@@ -23,9 +21,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
-import Box from '@mui/material/Box';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router';
+import ReactTimeAgo from 'react-time-ago';
 
 const PostLists = () => {
   const navigate = useNavigate();
@@ -155,12 +153,14 @@ const PostLists = () => {
                   <td>{key}</td>
                   <td style={{ width: '600px' }}>{post.fields.title}</td>
                   <td>{post.fields.author}</td>
-                  <td>{makedate(post.fields.published_date)}</td>
+                  <td>
+                    <ReactTimeAgo date={post.fields.published_date} />
+                  </td>
                   <td>
                     <IconButton
                       onClick={(e) => {
                         e.stopPropagation();
-                        onClickEdit(post);
+                        navigate(`/board/edit/${post.pk}`);
                       }}
                       color={'inherit'}
                     >

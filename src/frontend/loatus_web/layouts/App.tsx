@@ -15,6 +15,11 @@ import { CookiesProvider } from 'react-cookie';
 import loadable from '@loadable/component';
 import Post from '@components/Post';
 import CharacterSelect from '@components/CharacterSelect';
+import PostEdit from '@pages/PostEdit';
+import TimeAgo from 'javascript-time-ago';
+import en from 'javascript-time-ago/locale/en.json';
+
+TimeAgo.addDefaultLocale(en);
 
 const App: FC = () => {
   return (
@@ -31,6 +36,9 @@ const App: FC = () => {
               <Route path={'lists'} element={<PostLists />} />
               <Route path={'write'} element={<PostWrite />} />
               <Route path={':id'} element={<Post />} />
+              <Route path={'edit'}>
+                <Route path={':id'} element={<PostEdit />} />
+              </Route>
             </Route>
             <Route path={'auth'} element={<Auth />} />
             <Route path={'my'} element={<My />} />

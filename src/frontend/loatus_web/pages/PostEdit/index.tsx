@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { Button, Form, Nav } from 'react-bootstrap';
 import useInput from '@hooks/useInput';
 import { toast } from 'react-toastify';
@@ -6,20 +6,41 @@ import { Navigate } from 'react-router-dom';
 import useSWRRetry from '@hooks/useSWRRetry';
 import { useCookies } from 'react-cookie';
 import useTokenAxios from '@hooks/useTokenAxios';
+import axios, { AxiosResponse } from 'axios';
+import { useNavigate, useParams } from 'react-router';
+import useSWR from 'swr';
+import { APIItem, IPost } from '@typings/db';
+import fetcher from '@utils/fetcher';
 
 const PostWrite = () => {
+  const navigate = useNavigate();
+  const params = useParams();
   const accessToken = localStorage.getItem('accessToken');
   const [token] = useCookies(['refreshToken']);
   const { data: userData, error, mutate } = useSWRRetry('/auth/my', token.refreshToken);
   const [title, onChangeTitle, setTitle] = useInput('');
   const [content, onChangeContent, setContent] = useInput('');
-  const [postSuccess, setPostSuccess] = useState(false);
+  const [author, setAuthor] = useState(0);
+
+  useEffect(() => {
+    axios
+      .get(`/post/${params.id}`)
+      .then((res: AxiosResponse<APIItem<IPost[]>>) => {
+        setTitle(res.data.data[0].fields.title);
+        setContent(res.data.data[0].fields.content);
+        setAuthor(+res.data.data[0].fields.author);
+      })
+      .catch((err) => {
+        toast.error(err.message);
+      });
+  }, []);
+
   const onSubmitPost = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       await useTokenAxios(token.refreshToken)
         .post(
-          '/post/regist/',
+          `/post/edit/${params.id}`,
           {
             title,
             content,
@@ -38,7 +59,7 @@ const PostWrite = () => {
             });
             setTitle('');
             setContent('');
-            setPostSuccess(true);
+            navigate(`/board/${params.id}`);
           } else {
             toast.error('글쓰기가 실패했습니다.', {
               position: 'top-right',
@@ -54,12 +75,10 @@ const PostWrite = () => {
     [title, content],
   );
 
-  if (!userData) {
-    toast.error('로그인이 필요합니다!', {
+  if (!userData || author !== userData.userid) {
+    toast.error('권한이 없습니다', {
       position: 'top-right',
     });
-    return <Navigate to={'/board/lists'} replace />;
-  } else if (postSuccess) {
     return <Navigate to={'/board/lists'} replace />;
   }
 
