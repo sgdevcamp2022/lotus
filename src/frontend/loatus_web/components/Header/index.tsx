@@ -108,12 +108,15 @@ function Header() {
             {userData ? (
               <>
                 <Tooltip title="Open settings">
-                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                    <Avatar
-                      alt={userData.nickname}
-                      src={userData.profileImage || gravatar.url(userData.email, { s: '25', d: 'retro' })}
-                    />
-                  </IconButton>
+                  <div>
+                    <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                      <Avatar
+                        alt={userData.characterName || userData.nickname}
+                        src={userData.profileImage || gravatar.url(userData.email, { s: '25', d: 'retro' })}
+                      />
+                      &nbsp;<span>{userData.characterName || userData.nickname}</span>
+                    </IconButton>
+                  </div>
                 </Tooltip>
                 <Menu
                   sx={{ mt: '45px' }}

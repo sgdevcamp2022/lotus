@@ -109,7 +109,7 @@ const Post = () => {
       <>
         <Box width={1000}>
           <Typography variant={'h2'} component={'h2'} fontFamily={'Noto Sans KR, sans-serif'}>
-            example &nbsp;{/*{PostData && PostData[0].fields.title}*/}
+            {PostData && PostData[0].fields.title}
             <Badge badgeContent={PostData && PostData[0].fields.like.length} color={'success'}>
               <IconButton onClick={onClickLike}>
                 <ThumbUp></ThumbUp>
@@ -119,7 +119,6 @@ const Post = () => {
         </Box>
         <Grid container marginTop={'30px'}>
           <Grid xs={4} item>
-            example
             {PostData[0].fields.author}
           </Grid>
           <Grid xs={8} item textAlign={'right'}>

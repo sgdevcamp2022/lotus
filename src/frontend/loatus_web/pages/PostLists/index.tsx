@@ -50,8 +50,11 @@ const PostLists = () => {
       })
       .then((response) => {
         mutate();
+        toast.success(response.data.message);
       })
-      .catch((error) => {});
+      .catch((error) => {
+        toast.error(error.message);
+      });
   }, []);
 
   const onClickEdit = useCallback(async (post: IPost) => {
@@ -144,10 +147,22 @@ const PostLists = () => {
                   <td>{post.fields.author}</td>
                   <td>{makedate(post.fields.published_date)}</td>
                   <td>
-                    <IconButton onClick={() => onClickEdit(post)} color={'inherit'}>
+                    <IconButton
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onClickEdit(post);
+                      }}
+                      color={'inherit'}
+                    >
                       <EditIcon />
                     </IconButton>
-                    <IconButton onClick={() => onClickDelete(post)} color={'inherit'}>
+                    <IconButton
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onClickDelete(post);
+                      }}
+                      color={'inherit'}
+                    >
                       <DeleteIcon />
                     </IconButton>
                   </td>

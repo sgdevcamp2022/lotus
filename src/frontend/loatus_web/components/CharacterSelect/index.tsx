@@ -1,6 +1,19 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { APIItem, lostarkInfo } from '@typings/db';
-import { Button, Card, CardActions, CardContent, CardMedia, Grid, Typography } from '@mui/material';
+import {
+  Avatar,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardMedia,
+  Grid,
+  ListItem,
+  ListItemAvatar,
+  ListItemButton,
+  ListItemText,
+  Typography,
+} from '@mui/material';
 import axios, { AxiosResponse } from 'axios';
 import useToken from '@hooks/useToken';
 import { useCookies } from 'react-cookie';
@@ -9,8 +22,9 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router';
 import useTokenAxios from '@hooks/useTokenAxios';
 import { Navigate } from 'react-router-dom';
-
-const example = [1, 2, 3, 4];
+import List from '@mui/material/List';
+import { getClassThumbImg } from '@utils/getClassImg';
+import gravatar from 'gravatar';
 
 const CharacterSelect = () => {
   const navigate = useNavigate();
@@ -26,7 +40,7 @@ const CharacterSelect = () => {
   const onClickSetCharacter = useCallback((characterName: string) => {
     axios
       .post(
-        '/auth/',
+        '/user/update/maincharacter',
         {
           characterName: characterName,
         },
@@ -38,6 +52,7 @@ const CharacterSelect = () => {
       )
       .then((res) => {
         toast.success(res.data.message);
+        mutate();
         navigate('/');
       })
       .catch((err) => {
@@ -75,32 +90,45 @@ const CharacterSelect = () => {
     return <Navigate to={'/'} />;
   }
 
+  if (!gameInfo) {
+  }
+
   return (
     <Grid container width={'1000px'}>
-      {gameInfo?.map((info, key) => (
-        <Grid xs={6} item key={key}>
-          <Card>
-            <CardMedia
-              sx={{ height: 140 }}
-              image="/static/images/cards/contemplative-reptile.jpg"
-              title="green iguana"
-            />
-            <CardContent>
-              <Typography gutterBottom variant="h5" component="div">
-                {`${info.ServerName} @ ${info.CharacterName}`}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {`${info.CharacterClassName} / Lv.${info.CharacterLevel}`}
-              </Typography>
-            </CardContent>
-            <CardActions>
-              <Button size="small" onClick={() => onClickSetCharacter(info.CharacterName)}>
-                등록하기
-              </Button>
-            </CardActions>
-          </Card>
-        </Grid>
-      ))}
+      <Typography component={'h3'} variant={'h3'}>
+        대표로 설정하고 싶은 캐릭터를 클릭해주세요.
+      </Typography>
+      <List sx={{ justifyContent: 'center', width: '100%' }}>
+        {gameInfo?.map((info, key) => (
+          <ListItem sx={{ width: '30%' }}>
+            <ListItemButton
+              sx={{
+                bgcolor: '#555',
+                borderRadius: '10px',
+                ':hover': { bgcolor: '#777' },
+                color: '#fff',
+                width: '350px',
+              }}
+              onClick={() => onClickSetCharacter(info.CharacterName)}
+            >
+              <ListItemAvatar>
+                <Avatar
+                  src={getClassThumbImg(info.CharacterClassName) || gravatar.url('nothing@noting.com')}
+                  alt={info.CharacterClassName}
+                />
+              </ListItemAvatar>
+              <ListItemText
+                primary={info.CharacterName}
+                secondary={
+                  <Typography component={'span'} variant={'body2'}>
+                    {`${info.ServerName} @ Lv.${info.CharacterLevel}`}
+                  </Typography>
+                }
+              ></ListItemText>
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
     </Grid>
   );
 };
