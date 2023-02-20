@@ -24,6 +24,7 @@ public class SecurityConfig {
             "/auth/login",
             "/auth/reissue",
             "/sns/**",
+            "/user/load/friend/maincharacter",
             "/login",
             /* swagger v2 */
             "/v2/api-docs",

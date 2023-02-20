@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import org.springframework.web.servlet.function.EntityResponse;
 
 @RestController
 @RequestMapping("/user")
@@ -139,6 +138,29 @@ public class UserController {
 
     }
 
+    @PostMapping("/load/friend/maincharacter")
+    @Operation(description = "response data 예시  {\n"
+            + "    \"ServerName\": \"니나브\",\n"
+            + "    \"CharacterName\": \"조안녕hi\",\n"
+            + "    \"CharacterLevel\": 45,\n"
+            + "    \"CharacterClassName\": \"바드\",\n"
+            + "    \"ItemAvgLevel\": \"209.17\",\n"
+            + "    \"ItemMaxLevel\": \"209.17\"\n"
+            + "  }")
+    public ResponseEntity<DefaultResponse> loadFriendMainCharacter(@Valid @RequestBody MainCharacterRequest mainCharacterRequest) {
+
+        JsonNode characterInfo = lostarkAuthentication.getCharacterInfo(
+                mainCharacterRequest.getCharacterName());
+
+        System.out.println("characterInfo = " + characterInfo);
+
+        DefaultResponse defaultResponse = new DefaultResponse(StatusCode.OK,
+                ResponseMessage.LOSTARK_MAINCHARACTER_LOAD_SUCCESS, characterInfo);
+        ResponseEntity.ok().body(defaultResponse);
+        return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
+
+    }
+
 
     @PostMapping("/update/nickname")
     @Operation(description = "response data null로 반환됨")
@@ -199,6 +221,8 @@ public class UserController {
     public ResponseEntity<SignupRequest> getUserInfo(@PathVariable String username) {
         return ResponseEntity.ok(userService.getUserWithAuthorities(username));
     }
+
+
 
 
 }
