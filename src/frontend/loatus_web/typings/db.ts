@@ -5,9 +5,9 @@ export type APIItem<T> = {
 };
 
 export type Comment = {
-  author: number;
-  content: string;
-  postId: number;
+  cur_user_id: number;
+  cur_user_comment: string;
+  cur_post_id: number;
 };
 
 export type IToken = {

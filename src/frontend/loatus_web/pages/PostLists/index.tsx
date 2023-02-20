@@ -49,8 +49,12 @@ const PostLists = () => {
         },
       })
       .then((response) => {
-        mutate();
-        toast.success(response.data.message);
+        if (response.data.code <= 300) {
+          mutate();
+          toast.success(response.data.message);
+          return;
+        }
+        toast.error(response.data.message);
       })
       .catch((error) => {
         toast.error(error.message);
@@ -73,10 +77,16 @@ const PostLists = () => {
         },
       )
       .then((response) => {
-        toast.info(response.data.message);
-        mutate();
+        if (response.data.code <= 300) {
+          mutate();
+          toast.success(response.data.message);
+          return;
+        }
+        toast.error(response.data.message);
       })
-      .catch((error) => {});
+      .catch((error) => {
+        toast.error(error.message);
+      });
   }, []);
 
   return (

@@ -2,11 +2,7 @@ import React from 'react';
 import { ToastContainer } from 'react-toastify';
 import { Outlet } from 'react-router';
 import Header from '@components/Header';
-import useToken from '@hooks/useToken';
-import useSWRRetry from '@hooks/useSWRRetry';
-import { useCookies } from 'react-cookie';
 import { Container, createTheme, Grid, ThemeProvider } from '@mui/material';
-import Pagination from '@mui/material/Pagination';
 
 const MainPage = () => {
   const darkTheme = createTheme({
