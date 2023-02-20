@@ -10,8 +10,9 @@ interface Configuration extends WebpackConfiguration {
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
-const baseUrl = 'http://3.39.239.141:32513';
+const baseUrl = 'http://3.39.239.141:31436';
 const postSever = 'http://15.165.40.191:8000';
+const friendServer= 'http://15.165.44.34:30657';
 
 const config: Configuration = {
   name: 'Loatus', //여기를 바꾸면 됨
@@ -98,6 +99,10 @@ const config: Configuration = {
       },
       '/post/': {
         target: postSever,
+        changeOrigin: true,
+      },
+      '/friend/': {
+        target: friendServer,
         changeOrigin: true,
       },
     },
