@@ -1,13 +1,16 @@
 import React, { useCallback, useContext, useState } from 'react';
-import { Button, Form, Nav } from 'react-bootstrap';
+import { Form } from 'react-bootstrap';
 import useInput from '@hooks/useInput';
 import { toast } from 'react-toastify';
 import { Navigate } from 'react-router-dom';
 import useSWRRetry from '@hooks/useSWRRetry';
 import { useCookies } from 'react-cookie';
 import useTokenAxios from '@hooks/useTokenAxios';
+import { useNavigate } from 'react-router';
+import { Button } from '@mui/material';
 
 const PostWrite = () => {
+  const navigate = useNavigate();
   const accessToken = localStorage.getItem('accessToken');
   const [token] = useCookies(['refreshToken']);
   const { data: userData, error, mutate } = useSWRRetry('/auth/my', token.refreshToken);
@@ -65,7 +68,7 @@ const PostWrite = () => {
 
   return (
     <>
-      <Form onSubmit={onSubmitPost}>
+      <Form onSubmit={onSubmitPost} style={{ width: '600px' }}>
         <Form.Group className="mb-3" controlId="postForm.ControlInput">
           <Form.Label>Title</Form.Label>
           <Form.Control
@@ -80,7 +83,7 @@ const PostWrite = () => {
           <Form.Label>Content</Form.Label>
           <Form.Control as="textarea" rows={10} value={content} onChange={onChangeContent} required />
         </Form.Group>
-        <Button href={'/board/lists'}>취소</Button>
+        <Button onClick={() => navigate(-1)}>취소</Button>
         <Button type="submit">등록</Button>
       </Form>
     </>

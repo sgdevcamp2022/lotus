@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { Button, Form, Nav } from 'react-bootstrap';
+import { Form } from 'react-bootstrap';
 import useInput from '@hooks/useInput';
 import { toast } from 'react-toastify';
 import { Navigate } from 'react-router-dom';
@@ -8,9 +8,8 @@ import { useCookies } from 'react-cookie';
 import useTokenAxios from '@hooks/useTokenAxios';
 import axios, { AxiosResponse } from 'axios';
 import { useNavigate, useParams } from 'react-router';
-import useSWR from 'swr';
 import { APIItem, IPost } from '@typings/db';
-import fetcher from '@utils/fetcher';
+import { Button } from '@mui/material';
 
 const PostWrite = () => {
   const navigate = useNavigate();
@@ -20,15 +19,16 @@ const PostWrite = () => {
   const { data: userData, error, mutate } = useSWRRetry('/auth/my', token.refreshToken);
   const [title, onChangeTitle, setTitle] = useInput('');
   const [content, onChangeContent, setContent] = useInput('');
-  const [author, setAuthor] = useState(0);
+  const [author, setAuthor] = useState('');
 
   useEffect(() => {
     axios
       .get(`/post/${params.id}`)
       .then((res: AxiosResponse<APIItem<IPost[]>>) => {
+        console.log(res.data.data[0].fields);
+        setAuthor(res.data.data[0].fields.author);
         setTitle(res.data.data[0].fields.title);
         setContent(res.data.data[0].fields.content);
-        setAuthor(+res.data.data[0].fields.author);
       })
       .catch((err) => {
         toast.error(err.message);
@@ -40,7 +40,7 @@ const PostWrite = () => {
       e.preventDefault();
       await useTokenAxios(token.refreshToken)
         .post(
-          `/post/edit/${params.id}`,
+          `/post/edit/${params.id}/`,
           {
             title,
             content,
@@ -75,7 +75,12 @@ const PostWrite = () => {
     [title, content],
   );
 
-  if (!userData || author !== userData.userid) {
+  if (!userData) {
+    toast.error('권한이 없습니다', {
+      position: 'top-right',
+    });
+    return <Navigate to={'/board/lists'} replace />;
+  } else if (author && author !== userData.nickname) {
     toast.error('권한이 없습니다', {
       position: 'top-right',
     });
@@ -84,7 +89,7 @@ const PostWrite = () => {
 
   return (
     <>
-      <Form onSubmit={onSubmitPost}>
+      <Form onSubmit={onSubmitPost} style={{ width: '600px' }}>
         <Form.Group className="mb-3" controlId="postForm.ControlInput">
           <Form.Label>Title</Form.Label>
           <Form.Control
@@ -99,7 +104,7 @@ const PostWrite = () => {
           <Form.Label>Content</Form.Label>
           <Form.Control as="textarea" rows={10} value={content} onChange={onChangeContent} required />
         </Form.Group>
-        <Button href={'/board/lists'}>취소</Button>
+        <Button onClick={() => navigate(-1)}>취소</Button>
         <Button type="submit">등록</Button>
       </Form>
     </>

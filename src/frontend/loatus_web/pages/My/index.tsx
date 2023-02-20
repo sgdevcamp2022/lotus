@@ -12,7 +12,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import useToken from '@hooks/useToken';
 import useSWRRetry from '@hooks/useSWRRetry';
 import useTokenAxios from '@hooks/useTokenAxios';
-import {lostarkInfo } from '@typings/db';
+import { lostarkInfo } from '@typings/db';
 import Avatar from '@mui/material/Avatar';
 import gravatar from 'gravatar';
 
@@ -23,60 +23,59 @@ const My = () => {
   const [params, setParams] = useSearchParams();
   const toUserId = '1';
   const [nickname, onChangeNickname, setNickname] = useInput('');
-  const [characterInfo, setCharacterInfo] = useState<lostarkInfo|null>();
-  const [friendList, setFriendList] = useState<Friend[]|null|undefined>();
+  const [characterInfo, setCharacterInfo] = useState<lostarkInfo | null>();
+  const [friendList, setFriendList] = useState<Friend[] | null | undefined>();
   //  const profileImage="\""+userData.profileImage+"\"";
 
   console.log(friendList);
   console.log(friendList && friendList[0]);
- // console.log(friendList.length);
+  // console.log(friendList.length);
 
+  useEffect(() => {
+    axios
+      .post(
+        '/user/load/maincharacter',
+        {},
+        {
+          headers: {
+            Authorization: 'Bearer ' + accessToken,
+          },
+        },
+      )
+      .then((res) => {
+        setCharacterInfo(res.data.data);
+      })
+      .catch((err) => {
+        toast.error(err.message, {
+          position: 'top-right',
+        });
+      }),
+      [];
+  }, []);
 
-
-useEffect(() => {
-  axios
-  .post(
-    '/user/load/maincharacter',{
-
-    },
-    {
-      headers: {
-        Authorization: 'Bearer ' + accessToken,
-      },
-    },
-  )
-  .then((res) => {
-    setCharacterInfo(res.data.data);
-  })
-  .catch((err) => {
-    toast.error(err.message, {
-      position: 'top-right',
-    });
-  }),[]
-}, []);
-
-
-useEffect(() => {
-  axios
-  .post(
-    '/friend/list',{
-      toUserId
-    },
-    {
-      headers: {
-        Authorization: 'Bearer ' + accessToken,
-      },
-    },
-  )
-  .then((res) => {
-    setFriendList(res.data.data);
-  })
-  .catch((err) => {
-    toast.error(err.message, {
-      position: 'top-right',
-    });
-  }),[]
-}, []);
+  useEffect(() => {
+    axios
+      .post(
+        '/friend/list',
+        {
+          toUserId,
+        },
+        {
+          headers: {
+            Authorization: 'Bearer ' + accessToken,
+          },
+        },
+      )
+      .then((res) => {
+        setFriendList(res.data.data);
+      })
+      .catch((err) => {
+        toast.error(err.message, {
+          position: 'top-right',
+        });
+      }),
+      [];
+  }, []);
 
   const onSubmitUpdateNickname = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
@@ -217,6 +216,10 @@ useEffect(() => {
     [toUserId],
   );
 
+  if (!userData) {
+    return <Navigate to={'/login'} />;
+  }
+
   return (
     <Root>
       <Container maxWidth={false}>
@@ -225,10 +228,10 @@ useEffect(() => {
             <tr>
               <td>프로필 사진</td>
               <td>
-              <Avatar
-                alt={userData?.characterName || userData?.nickname}
-                src={userData?.profileImage || gravatar.url(userData?.email, { s: '25', d: 'retro' })}
-                    />
+                <Avatar
+                  alt={userData?.characterName || userData?.nickname}
+                  src={userData?.profileImage || gravatar.url(userData.email, { s: '25', d: 'retro' })}
+                />
               </td>
             </tr>
 
@@ -263,13 +266,10 @@ useEffect(() => {
             </tr>
           </table>
 
-
-          
           <table>
             <tr>
-            <th>친구 목록</th>
+              <th>친구 목록</th>
             </tr>
-            
           </table>
 
           <Form onSubmit={onSubmitUpdateNickname}>
