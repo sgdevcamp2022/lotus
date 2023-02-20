@@ -1,9 +1,9 @@
 import React, { FC } from 'react';
 import { Routes, Route, Navigate, BrowserRouter } from 'react-router-dom';
-const MainPage = loadable(() => import('@layouts//MainPage'));
+const MainPage = loadable(() => import('@layouts/MainPage'));
 const Login = loadable(() => import('@pages/Login'));
 const Signup = loadable(() => import('@pages/Signup'));
-const Board = loadable(() => import('@layouts/../pages/Board'));
+const Board = loadable(() => import('@pages/Board'));
 const Party = loadable(() => import('@pages/Party'));
 const Home = loadable(() => import('@pages/Home'));
 const Notice = loadable(() => import('@pages/Notice'));
@@ -33,7 +33,7 @@ const App: FC = () => {
               <Route path={':id'} element={<Post />} />
             </Route>
             <Route path={'auth'} element={<Auth />} />
-             <Route path={'my'} element={<My />} />
+            <Route path={'my'} element={<My />} />
             <Route path={'/'} element={<Home />} />
           </Route>
           <Route path="*" element={<Navigate to={'/'} replace />} />
