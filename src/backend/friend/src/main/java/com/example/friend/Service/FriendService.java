@@ -64,16 +64,22 @@ public class FriendService {
     }
 
     @Transactional(readOnly = true)
-    public JSONArray getFriendIdList(FriendDto friendRequest) {
+    public JSONArray getFriendIdList(FriendDto friendRequest, String type) {
 
         Optional<Friend> oneByUserId = friendRepository.findOneByUserId(
                 friendRequest.getMyUserId());
         Friend friend = oneByUserId.get();
-        String friendList = friend.getFriendList();
+        String list="";
+        if(type.equals("friendlist")) {
+            list = friend.getFriendList();
+        }
+        else if(type.equals("friendrequestlist")){
+            list=friend.getRequestList();
+        }
         JSONParser jsonParser = new JSONParser();
 
         try {
-            JSONArray friendArray =(JSONArray) jsonParser.parse(friendList);
+            JSONArray friendArray =(JSONArray) jsonParser.parse(list);
             return friendArray;
         } catch (ParseException e) {
             throw new RuntimeException(e);
@@ -81,9 +87,9 @@ public class FriendService {
     }
 
     @Transactional
-    public DefaultResponse getFriendList(FriendDto friendRequest) {
+    public DefaultResponse getFriendList(FriendDto friendRequest, String type) {
 
-        JSONArray friendIdList = getFriendIdList(friendRequest);
+        JSONArray friendIdList = getFriendIdList(friendRequest,type);
         System.out.println("friendIdList = " + friendIdList);
         System.out.println("friendIdList.size() = " + friendIdList.size());
 

@@ -187,7 +187,34 @@ public class FriendController {
                 .toUserId(friendRequest.getToUserId())
                 .build();
 
-        DefaultResponse defaultResponse = friendService.getFriendList(friendDto);
+        DefaultResponse defaultResponse = friendService.getFriendList(friendDto,"friendlist");
+        ResponseEntity.ok().body(defaultResponse);
+        return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
+    }
+
+    @PostMapping("/request/list")
+    public ResponseEntity<DefaultResponse<FriendListResponse>> getFriendRequestList(
+            @Valid @RequestBody FriendRequest friendRequest,
+            @RequestHeader String authorization) {
+        System.out.println("authorization = " + authorization);
+        MyResponse data = CallApi.httpGetConnection(userInfoUrl, null, authorization);
+
+        System.out.println("data = " + data);
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+
+        if (Objects.isNull(data)) {
+            DefaultResponse defaultResponse1 = DefaultResponse.builder().data(null)
+                    .code(StatusCode.NOT_FOUND).message(ResponseMessage.READ_USER_FAILURE).build();
+            return new ResponseEntity<>(defaultResponse1, httpHeaders, HttpStatus.BAD_REQUEST);
+        }
+
+        FriendDto friendDto = FriendDto.builder()
+                .myUserId(data.getUserId())
+                .toUserId(friendRequest.getToUserId())
+                .build();
+
+        DefaultResponse defaultResponse = friendService.getFriendList(friendDto,"friendrequestlist");
         ResponseEntity.ok().body(defaultResponse);
         return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
     }
