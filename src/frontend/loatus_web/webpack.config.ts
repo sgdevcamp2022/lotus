@@ -8,10 +8,13 @@ interface Configuration extends WebpackConfiguration {
 }
 
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
+import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
-const baseUrl = 'http://3.39.239.141:32513';
-const postSever = 'http://15.165.40.191:8000';
+const baseUrl = 'http://3.39.239.141:31436';
+const postSever = 'http://13.125.37.169:32280';
+const friendServer = 'http://15.165.44.34:30657';
+const chatServer = 'http://localhost:8090';
 
 const config: Configuration = {
   name: 'Loatus', //여기를 바꾸면 됨
@@ -100,6 +103,14 @@ const config: Configuration = {
         target: postSever,
         changeOrigin: true,
       },
+      '/friend/': {
+        target: friendServer,
+        changeOrigin: true,
+      },
+      '/api/': {
+        target: chatServer,
+        changeOrigin: true,
+      },
     },
   },
 };
@@ -107,8 +118,11 @@ const config: Configuration = {
 if (isDevelopment && config.plugins) {
   config.plugins.push(new webpack.HotModuleReplacementPlugin());
   config.plugins.push(new ReactRefreshWebpackPlugin());
+  config.plugins.push(new BundleAnalyzerPlugin({ analyzerMode: 'server', openAnalyzer: true }));
 }
 if (!isDevelopment && config.plugins) {
+  config.plugins.push(new webpack.LoaderOptionsPlugin({ minimize: true }));
+  config.plugins.push(new BundleAnalyzerPlugin({ analyzerMode: 'static' }));
 }
 
 export default config;

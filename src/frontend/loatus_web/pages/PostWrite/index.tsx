@@ -1,28 +1,26 @@
 import React, { useCallback, useContext, useState } from 'react';
-import { Button, Form, Nav } from 'react-bootstrap';
+import { Form } from 'react-bootstrap';
 import useInput from '@hooks/useInput';
-import useSWR from 'swr';
-import { APIItem, IUser } from '@typings/db';
-import fetcher from '@utils/fetcher';
 import { toast } from 'react-toastify';
 import { Navigate } from 'react-router-dom';
-import axios from 'axios';
-import useToken from '@hooks/useToken';
 import useSWRRetry from '@hooks/useSWRRetry';
 import { useCookies } from 'react-cookie';
 import useTokenAxios from '@hooks/useTokenAxios';
+import { useNavigate } from 'react-router';
+import { Button } from '@mui/material';
 
 const PostWrite = () => {
-  const [accessToken, setAccessToken] = useToken();
+  const navigate = useNavigate();
+  const accessToken = localStorage.getItem('accessToken');
   const [token] = useCookies(['refreshToken']);
-  const { data: userData, error, mutate } = useSWRRetry('/auth/my', accessToken, setAccessToken, token.refreshToken);
+  const { data: userData, error, mutate } = useSWRRetry('/auth/my', token.refreshToken);
   const [title, onChangeTitle, setTitle] = useInput('');
   const [content, onChangeContent, setContent] = useInput('');
   const [postSuccess, setPostSuccess] = useState(false);
   const onSubmitPost = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      await useTokenAxios(accessToken, setAccessToken, token.refreshToken)
+      await useTokenAxios(token.refreshToken)
         .post(
           '/post/regist/',
           {
@@ -70,7 +68,7 @@ const PostWrite = () => {
 
   return (
     <>
-      <Form onSubmit={onSubmitPost}>
+      <Form onSubmit={onSubmitPost} style={{ width: '600px' }}>
         <Form.Group className="mb-3" controlId="postForm.ControlInput">
           <Form.Label>Title</Form.Label>
           <Form.Control
@@ -85,7 +83,7 @@ const PostWrite = () => {
           <Form.Label>Content</Form.Label>
           <Form.Control as="textarea" rows={10} value={content} onChange={onChangeContent} required />
         </Form.Group>
-        <Button href={'/board/lists'}>취소</Button>
+        <Button onClick={() => navigate(-1)}>취소</Button>
         <Button type="submit">등록</Button>
       </Form>
     </>

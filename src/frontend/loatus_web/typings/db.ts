@@ -4,6 +4,12 @@ export type APIItem<T> = {
   data: T;
 };
 
+export type Comment = {
+  cur_user_nickname: string;
+  cur_user_comment: string;
+  cur_post_id: number;
+};
+
 export type IToken = {
   accessToken: string;
   grantType: string;
@@ -12,12 +18,13 @@ export type IToken = {
 };
 
 export type IUser = {
-  auth: string;
+  userId: number;
   email: string;
   nickname: string;
-  provider: string;
-  userid: number;
+  auth: string;
   stoveNo: string | null;
+  characterName: string | null;
+  profileImage: string | null;
 };
 
 export type lostarkInfo = {
@@ -36,6 +43,7 @@ export type IPost = {
     author: string;
     content: string;
     published_date: Date;
+    comments: Comment[];
     like: string[];
   };
 };
@@ -60,4 +68,12 @@ export type DjangoUser = {
   is_superuser: boolean;
   last_login: Date;
   data_joined: Date;
+};
+
+export type Friend = {
+  userId: number;
+  nickname: string;
+  profileImage: string | null;
+  characterName: string | null;
+  friendCount: number;
 };
