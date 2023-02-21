@@ -176,6 +176,27 @@ export class PartysService {
       });
   }
 
+  async findMyParties(url: string, myId: number, userId: number) {
+    if (myId != userId) {
+      throw new HttpException('올바른 유저 정보가 아닙니다.', 401);
+    }
+    return await this.partiesRepository
+      .find({
+        where: {
+          PartyMembers: [{ userId: myId }],
+          Channel: [{ url: url }],
+        },
+      })
+      .then((res) => ({
+        data: res,
+        code: 200,
+        message: '파티 조회에 성공했습니다.',
+      }))
+      .catch((err) => {
+        throw new HttpException(err.message, err.status);
+      });
+  }
+
   async getChannelPartyMembers(url: string, name: string) {
     return this.usersRepository
       .createQueryBuilder('user')

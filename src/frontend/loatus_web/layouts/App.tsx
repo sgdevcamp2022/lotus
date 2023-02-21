@@ -47,9 +47,9 @@ const App: FC = () => {
             </Route>
             <Route path={'auth'} element={<Auth />} />
             <Route path={'my'} element={<My />} />
-            <Route path={'/'} element={<Home />} />
+            {/*<Route path={'/'} element={<Home />} />*/}
           </Route>
-          <Route path="*" element={<Navigate to={'/'} replace />} />
+          <Route path="*" element={<Navigate to={'board/lists'} replace />} />
         </Routes>
       </CookiesProvider>
     </BrowserRouter>

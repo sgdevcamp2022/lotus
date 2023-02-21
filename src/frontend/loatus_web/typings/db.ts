@@ -18,7 +18,7 @@ export type IToken = {
 };
 
 export type IUser = {
-  userid: number;
+  userId: number;
   email: string;
   nickname: string;
   auth: string;
@@ -70,11 +70,10 @@ export type DjangoUser = {
   data_joined: Date;
 };
 
-
 export type Friend = {
   userId: number;
   nickname: string;
   profileImage: string | null;
   characterName: string | null;
   friendCount: number;
-}
+};

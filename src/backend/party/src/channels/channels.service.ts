@@ -62,20 +62,8 @@ export class ChannelsService {
         const channelMember = new ChannelMembers();
         channelMember.channelId = channelReturned.id;
         channelMember.userId = ownerId;
-        const party = new Parties();
-        party.channelId = channelReturned.id;
-        party.name = '전체';
-        party.ownerId = ownerId;
 
-        const [, partyReturned] = await Promise.all([
-          await manager.save(channelMember),
-          await manager.save(party),
-        ]);
-
-        const partyMember = new PartyMembers();
-        partyMember.partyId = partyReturned.id;
-        partyMember.userId = ownerId;
-        await manager.save(partyMember);
+        await manager.save(channelMember);
       })
       .then(() => ({
         code: 200,

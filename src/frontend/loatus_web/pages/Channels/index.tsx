@@ -1,45 +1,87 @@
 import React, { useCallback, useState } from 'react';
-import List from '@mui/material/List';
 import { useCookies } from 'react-cookie';
 import useSWRRetry from '@hooks/useSWRRetry';
+import { Channel, Party } from '@typings/partyDB';
+import { Outlet, useNavigate, useParams } from 'react-router';
+import { Badge, Tab, Tabs } from '@mui/material';
+import useInput from '@hooks/useInput';
+import BottomNavigation from '@mui/material/BottomNavigation';
+import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import { IUser } from '@typings/db';
-import { Channel } from '@typings/partyDB';
-import { Outlet, useNavigate } from 'react-router';
-import { ListItemButton, ListItemText } from '@mui/material';
-import Typography from '@mui/material/Typography';
+import MessageIcon from '@mui/icons-material/Message';
+import axios from 'axios';
 
 const Channels = () => {
   const navigate = useNavigate();
-  const accessToken = localStorage.getItem('accessToken');
   const [token] = useCookies(['refreshToken']);
   const { data: userData, error: userError, mutate: userMutate } = useSWRRetry<IUser>('/auth/my', token.refreshToken);
+  const params = useParams();
   const {
     data: channels,
     error: channelsError,
     mutate: channelsMutate,
   } = useSWRRetry<Channel[]>('/api/channels', token.refreshToken);
-  const [showPartyModal, setShowPartyModal] = useState(false);
-  const [partyInfo, setPartyInfo] = useState(0);
-  const toggleShowPartyModal = useCallback(() => {
-    setPartyInfo(1);
-    setShowPartyModal((prev) => !prev);
-  }, []);
-
-  const handleClose = useCallback(() => setShowPartyModal(false), []);
+  const [value, onChangeValue, setValue] = useInput(0);
+  const [navValue, onChangeNavValue, setNavValue] = useInput(0);
+  const {
+    data: myPartiesData,
+    error: myPartiesError,
+    mutate: myPartiesMutate,
+  } = useSWRRetry<Party[]>(
+    userData ? `/api/channels/${params.url}/parties/my/${userData.userId}` : null,
+    token.refreshToken,
+  );
 
   return (
-    <List sx={{ width: '500px', bgcolor: 'background.paper' }}>
-      {channels?.map((channel, key) => (
-        <ListItemButton
-          key={key}
-          sx={{ borderRadius: '10px', bgcolor: '#30343F', margin: '10px', color: 'white' }}
-          onClick={() => navigate(`/channels/${channel.url}/parties`)}
-        >
-          <ListItemText primary={<Typography color={'white'}>{channel.name}</Typography>} />
-        </ListItemButton>
-      ))}
+    <>
+      <Tabs value={value} onChange={onChangeValue} aria-label="basic tabs example">
+        {channels?.map((channel, key) => (
+          <Tab
+            label={channel.name}
+            id={`tab-${key}`}
+            key={key}
+            aria-controls={`tabpanel-${key}`}
+            onClick={() => {
+              setValue(key);
+              navigate(`/channels/${channel.url}/parties`);
+            }}
+          />
+        ))}
+      </Tabs>
       <Outlet />
-    </List>
+      <BottomNavigation
+        showLabels
+        value={navValue}
+        onChange={(event, newValue) => {
+          setNavValue(newValue);
+        }}
+      >
+        {myPartiesData?.map((party, key) => (
+          <BottomNavigationAction
+            key={key}
+            label={party.name}
+            icon={
+              <Badge
+                badgeContent={
+                  <>
+                    {async () => {
+                      const res: number = await axios
+                        .get(`/api/channels/${params.url}/parties/${party.name}/unread`)
+                        .then((res) => res.data)
+                        .catch((err) => 0);
+                      return res;
+                    }}
+                  </>
+                }
+                color="primary"
+              >
+                <MessageIcon />
+              </Badge>
+            }
+          />
+        ))}
+      </BottomNavigation>
+    </>
   );
 };
 

@@ -1,3 +1,5 @@
+import { IUser } from '@typings/db';
+
 export type Channel = {
   id: number;
   name: string;
@@ -24,3 +26,21 @@ export type Party = {
     profileImage: string | null;
   };
 };
+
+export interface IChat {
+  // 채널의 채팅
+  id: number;
+  UserId: number;
+  User: IUser; // 보낸 사람
+  content: string;
+  createdAt: Date;
+  PartyId: number;
+  Party: IParty;
+}
+
+export interface IParty {
+  id: number;
+  name: string;
+  private: boolean;
+  ChannelId: number;
+}

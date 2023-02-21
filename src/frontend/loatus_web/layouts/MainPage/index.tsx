@@ -18,11 +18,9 @@ const MainPage = () => {
     <div>
       <ThemeProvider theme={darkTheme}>
         <Header />
-        <Grid container spacing={2} style={{ paddingTop: '4rem' }}>
-          <Grid item xs display={'flex'} justifyContent={'center'} alignItems={'center'}>
-            <main role="main">
-              <Outlet />
-            </main>
+        <Grid container direction="row" justifyContent="center" alignItems="center">
+          <Grid item style={{ paddingTop: '2rem' }}>
+            <Outlet />
           </Grid>
         </Grid>
         <ToastContainer />

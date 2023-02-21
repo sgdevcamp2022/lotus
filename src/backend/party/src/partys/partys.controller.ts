@@ -66,6 +66,18 @@ export class PartysController {
   }
 
   @ApiOperation({
+    description: '내가 속한 모든 채널 정보를 불러옵니다.',
+  })
+  @Get('my/:id')
+  async findMyChannels(
+    @Param('id') id: number,
+    @Param('url') url: string,
+    @User() userInfo,
+  ) {
+    return await this.partysService.findMyParties(url, id, userInfo.userId);
+  }
+
+  @ApiOperation({
     description: '현재 채널 아래에 모든 파티 정보를 받아옵니다.',
   })
   @Get()
