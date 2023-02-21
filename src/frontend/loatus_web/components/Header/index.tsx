@@ -31,11 +31,11 @@ function Header() {
   const [token] = useCookies(['refreshToken']);
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-  const { data: userData, error, mutate } = useSWRRetry('/auth/my', token.refreshToken);
+  const { data: userData, error, mutate } = useSWRRetry(process.env.REACT_APP_DB_HOST + '/auth/my', token.refreshToken);
 
   const onClickLogout = useCallback(() => {
     axios
-      .get('/auth/logout', {
+      .get(process.env.REACT_APP_DB_HOST + '/auth/logout', {
         headers: {
           Authorization: 'Bearer ' + accessToken,
         },

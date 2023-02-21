@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkloatus_web=self.webpackChunkloatus_web||[]).push([[65],{65:(e,t,u)=>{u.r(t),u.d(t,{default:()=>s});var n=u(7294);const s=function(){return n.createElement("section",null,"노티스노티스")}}}]);

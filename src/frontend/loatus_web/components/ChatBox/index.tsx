@@ -22,7 +22,9 @@ const ChatBox: FC<Props> = (data) => {
     error: ChatError,
     mutate: ChatMutate,
   } = useSWRRetry<IChat[]>(
-    data.url !== undefined ? `/api/channels/${data.url}/parties/${data.name}/chats?perPage=20&page=1` : null,
+    data.url !== undefined
+      ? process.env.REACT_APP_DB_HOST + `/api/channels/${data.url}/parties/${data.name}/chats?perPage=20&page=1`
+      : null,
     token.refreshToken,
   );
 
@@ -35,7 +37,7 @@ const ChatBox: FC<Props> = (data) => {
       }
       axios
         .post(
-          `/api/channels/${data.url}/parties/${data.name}/chats`,
+          process.env.REACT_APP_DB_HOST + `/api/channels/${data.url}/parties/${data.name}/chats`,
           {
             content: comment,
           },

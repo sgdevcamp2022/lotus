@@ -13,7 +13,7 @@ const PostWrite = () => {
   const navigate = useNavigate();
   const accessToken = localStorage.getItem('accessToken');
   const [token] = useCookies(['refreshToken']);
-  const { data: userData, error, mutate } = useSWRRetry('/auth/my', token.refreshToken);
+  const { data: userData, error, mutate } = useSWRRetry(process.env.REACT_APP_DB_HOST + '/auth/my', token.refreshToken);
   const [title, onChangeTitle, setTitle] = useInput('');
   const [content, onChangeContent, setContent] = useInput('');
   const [postSuccess, setPostSuccess] = useState(false);
@@ -22,7 +22,7 @@ const PostWrite = () => {
       e.preventDefault();
       await useTokenAxios(token.refreshToken)
         .post(
-          '/post/regist/',
+          process.env.REACT_APP_DB_HOST + '/post/regist/',
           {
             title,
             content,

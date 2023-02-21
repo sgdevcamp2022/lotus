@@ -8,7 +8,7 @@ const useTokenAxios = (refreshToken: string) => {
     (error) => {
       axios
         .post(
-          '/auth/reissue',
+          process.env.REACT_APP_DB_HOST + '/auth/reissue',
           {},
           {
             withCredentials: true,

@@ -45,13 +45,13 @@ const PartyPage = () => {
     data: partiesData,
     error: partiesError,
     mutate: partiesMutate,
-  } = useSWRRetry<Party[]>(`/api/channels/${params.url}/parties`, token.refreshToken);
+  } = useSWRRetry<Party[]>(process.env.REACT_APP_DB_HOST + `/api/channels/${params.url}/parties`, token.refreshToken);
   const {
     data: myPartiesData,
     error: myPartiesError,
     mutate: myPartiesMutate,
   } = useSWRRetry<Party[]>(
-    userData ? `/api/channels/${params.url}/parties/my/${userData.userId}` : null,
+    userData ? process.env.REACT_APP_DB_HOST + `/api/channels/${params.url}/parties/my/${userData.userId}` : null,
     token.refreshToken,
   );
   const [socket, disconnect] = useSocket(params.url);
@@ -71,7 +71,7 @@ const PartyPage = () => {
       }
       axios
         .post(
-          `/api/channels/${params.url}/parties`,
+          process.env.REACT_APP_DB_HOST + `/api/channels/${params.url}/parties`,
           {
             name: partyName,
           },
