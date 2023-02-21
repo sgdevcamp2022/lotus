@@ -7,7 +7,7 @@ import { APIItem, Friend, IToken, IUser } from '@typings/db';
 import useSWR from 'swr';
 import { useCookies } from 'react-cookie';
 import { Row, Col, Form } from 'react-bootstrap';
-import { Container } from '@mui/material';
+import { Container,CircularProgress } from '@mui/material';
 import { toast, ToastContainer } from 'react-toastify';
 import useToken from '@hooks/useToken';
 import useSWRRetry from '@hooks/useSWRRetry';
@@ -72,9 +72,7 @@ useEffect(() => {
     setFriendList(res.data.data);
   })
   .catch((err) => {
-    toast.error(err.message, {
-      position: 'top-right',
-    });
+
   }),[]
 }, []);
 
@@ -114,72 +112,7 @@ useEffect(() => {
     [nickname],
   );
 
-  const onSubmitCharacterInfo = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    await useTokenAxios(token.refreshToken)
-      .post(
-        '/user/load/maincharacter',
-        {},
-        {
-          withCredentials: true,
-          headers: {
-            Authorization: 'Bearer ' + accessToken,
-          },
-        },
-      )
-      .then((response) => {
-        if (response.data.code === 200) {
-          toast.success('글쓰기가 성공했습니다.', {
-            position: 'top-right',
-          });
-        } else {
-          toast.error('글쓰기가 실패했습니다.', {
-            position: 'top-right',
-          });
-        }
-      })
-      .catch((error) => {
-        toast.error('글쓰기가 실패했습니다.', {
-          position: 'top-right',
-        });
-      });
-  }, []);
-
-  const onSubmitFriendList = useCallback(
-    async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      await useTokenAxios(token.refreshToken)
-        .post(
-          '/friend/list',
-          {
-            toUserId,
-          },
-          {
-            withCredentials: true,
-            headers: {
-              Authorization: 'Bearer ' + accessToken,
-            },
-          },
-        )
-        .then((response) => {
-          if (response.data.code === 200) {
-            toast.success('글쓰기가 성공했습니다.', {
-              position: 'top-right',
-            });
-          } else {
-            toast.error('글쓰기가 실패했습니다.', {
-              position: 'top-right',
-            });
-          }
-        })
-        .catch((error) => {
-          toast.error('글쓰기가 실패했습니다.', {
-            position: 'top-right',
-          });
-        });
-    },
-    [toUserId],
-  );
+  
 
   const onSubmitFriendAcceptList = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
@@ -258,56 +191,52 @@ useEffect(() => {
             </tr>
 
             <tr>
-              <td>친구수</td>
+              <td>친구 수</td>
               <td>{friendList && friendList[0].friendCount}</td>
             </tr>
           </table>
 
 
           
-          <table>
-            <tr>
-            <th>친구 목록</th>
-            </tr>
-            
-          </table>
 
           <Form onSubmit={onSubmitUpdateNickname}>
             <Input placeholder={'닉네임'} type="input" value={nickname} onChange={onChangeNickname} />
             <Button type="submit">변경</Button>
           </Form>
 
-          <div className="col">프로필 사진</div>
-          <div className="col">
-            [Lv.50
-            {userData?.characterName}]
-          </div>
-          <div className="col">
-            <Button>정보수정</Button>
-          </div>
         </Row>
       </Container>
 
       <Container maxWidth={false}>
-        <div>
-          친구목록
-          <Form onSubmit={onSubmitFriendList}>
-            <Button type="submit">친구목록</Button>
-          </Form>
-        </div>
+      <table>
+            <tr>
+            <th>친구 목록</th>
+            </tr>
+            {friendList ? (
+            friendList.map((friend, key) => {
+              return (
+                <tr>
+                  <td>{friend.nickname}</td>
+                </tr>
+              );
+            })
+          ) : (
+            <tr>
+              <td colSpan={1}>
+                <CircularProgress />
+              </td>
+            </tr>
+          )}
+           
+            
+          </table>
 
         <div>
           친구요청목록
-          <Form onSubmit={onSubmitFriendAcceptList}>
-            <Button type="submit">친구요청목록</Button>
-          </Form>
         </div>
 
         <div>
           캐릭터 정보
-          <Form onSubmit={onSubmitCharacterInfo}>
-            <Button type="submit">캐릭터정보</Button>
-          </Form>
         </div>
       </Container>
     </Root>
