@@ -1,38 +1,37 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import useInput from '@hooks/useInput';
 import axios, { AxiosResponse } from 'axios';
 import { Button, Header, Horizon, Hr, Input, Page, PageHead, Root, SignIn } from '@pages/Login/styles';
 import { Link, Navigate, useSearchParams } from 'react-router-dom';
-import { IToken, IUser } from '@typings/db';
+import { APIItem, IToken, IUser } from '@typings/db';
 import useSWR from 'swr';
 import { useCookies } from 'react-cookie';
 import fetcher from '@utils/fetcher';
 import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import { Form } from 'react-bootstrap';
+import useToken from '@hooks/useToken';
+import useSWRRetry from '@hooks/useSWRRetry';
 
 const Login = () => {
-  const [cookie, setCookie] = useCookies(['accessToken']);
+  const [token, setToken] = useCookies(['refreshToken']);
+  const [accessToken, setAccessToken] = useToken();
   const [email, onChangeEmail, setEmail] = useInput('');
   const [password, onChangePassword, setPassword] = useInput('');
-  const {
-    data: userData,
-    error,
-    mutate,
-  } = useSWR<IUser>(cookie.accessToken ? ['/auth/my', cookie.accessToken] : null, fetcher);
+  const { data: userData, error, mutate } = useSWRRetry('/auth/my', accessToken, setAccessToken, token.refreshToken);
   const [params, setParams] = useSearchParams();
-
   useEffect(() => {
     if (params.get('accessToken')) {
-      setCookie('accessToken', params.get('accessToken'));
+      setAccessToken(params.get('accessToken'));
+    }
+    if (params.get('refreshToken')) {
+      setToken('refreshToken', params.get('refreshToken'));
     }
   }, []);
 
   const onSubmitLogin = useCallback(
-    (e: React.FormEvent<HTMLFormElement>) => {
+    async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      axios
+      await axios
         .post(
           `/auth/login`,
           {
@@ -43,26 +42,26 @@ const Login = () => {
             withCredentials: true,
           },
         )
-        .then((response) => {
-          if (response?.data.code !== 200) {
+        .then((response: AxiosResponse<APIItem<IToken>>) => {
+          if (response?.data.code === 200) {
+            toast.success(response.data.message, {
+              position: 'top-right',
+            });
+          } else {
             toast.error(response.data.message, {
               position: 'top-right',
             });
+            return;
           }
-          setCookie('accessToken', response?.data.object.accessToken, { path: '/' });
-          mutate();
+          setToken('refreshToken', response?.data.data.refreshToken, { path: '/' });
           setEmail('');
+          setAccessToken(response?.data.data.accessToken);
+          mutate();
         })
         .catch((error) => {
-          toast.error(
-            error.response.status === 504 ? '네트워크가 연결되지 않았습니다!' : '아이디나 비밀번호를 확인해 주세요!',
-            {
-              position: 'top-right',
-            },
-          );
-
-          //TODO: debug 삭제
-          console.dir(error);
+          toast.error('요청이 실패했습니다.\n관리자에게 문의하세요!', {
+            position: 'top-right',
+          });
         })
         .finally(() => setPassword(''));
     },
@@ -78,7 +77,7 @@ const Login = () => {
       <Header>
         <div className="left-col"></div>
         <div className="center-col">
-          <h1 style={{ textAlign: 'center' }}>Loatus</h1>
+          <h1 style={{ textAlign: 'center', fontFamily: 'Noto Sans KR, sans-serif' }}>LOATUS</h1>
         </div>
         <div className="right-col">
           <div
@@ -97,15 +96,15 @@ const Login = () => {
       <Page>
         <PageHead>이메일로 로그인해 보세요.</PageHead>
         <SignIn>
-          <Button>
-            <a href={'http://localhost:8080/oauth2/authorization/naver'}>네이버를 사용하여 로그인</a>
-          </Button>
-          <Button>
-            <a href={'http://localhost:8080/oauth2/authorization/kakao'}>카카오를 사용하여 로그인</a>
-          </Button>
-          <Button>
-            <a href={'http://localhost:8080/oauth2/authorization/google'}>구글을 사용하여 로그인</a>
-          </Button>
+          <a href={'http://15.164.192.183:8080/oauth2/authorization/naver'}>
+            <Button>네이버를 사용하여 로그인</Button>
+          </a>
+          <a href={'http://15.164.192.183:8080/oauth2/authorization/kakao'}>
+            <Button>카카오를 사용하여 로그인</Button>
+          </a>
+          <a href={'http://15.164.192.183:8080/oauth2/authorization/google'}>
+            <Button>구글을 사용하여 로그인</Button>
+          </a>
           <Horizon>
             <Hr />
             <div style={{ padding: '0 20px' }}>또는</div>

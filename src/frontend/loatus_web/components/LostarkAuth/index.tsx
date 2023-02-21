@@ -1,31 +1,37 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Button, Card, Col, Container, Form, InputGroup, Row } from 'react-bootstrap';
 import axios, { AxiosResponse } from 'axios';
 import { toast } from 'react-toastify';
 import useInput from '@hooks/useInput';
+import { APIItem, IUser, lostarkInfo } from '@typings/db';
+import useToken from '@hooks/useToken';
+import useTokenAxios from '@hooks/useTokenAxios';
 import { useCookies } from 'react-cookie';
-import { lostarkInfo } from '@typings/db';
 
 const LostarkAuth = () => {
-  const [cookie, setCookie] = useCookies(['accessToken']);
+  const [accessToken, setAccessToken] = useToken();
+  const [token, setToken] = useCookies(['refreshToken']);
   const [randomCode, setRandomCode] = useState('');
   const [stoveUrl, onChangeStoveUrl, setStoveUrl] = useInput('');
+  const config = useMemo(
+    () => ({
+      withCredentials: true,
+      headers: {
+        Authorization: 'Bearer ' + accessToken,
+      },
+    }),
+    [accessToken],
+  );
   useEffect(() => {
-    axios
-      .get('/auth/randomcode', {
-        withCredentials: true,
-        headers: {
-          Authorization: 'Bearer ' + cookie.accessToken,
-        },
-      })
-      .then((response) => {
-        setRandomCode(response.data);
+    useTokenAxios(accessToken, setAccessToken, token.refreshToken)
+      .get('/auth/randomcode', config)
+      .then((response: AxiosResponse<APIItem<string>>) => {
+        setRandomCode(response.data.data);
       })
       .catch((error) => {
         toast.error('인증번호를 불러올 수 없습니다.', {
           position: 'top-right',
         });
-        console.dir(error);
       });
   }, []);
 
@@ -45,28 +51,30 @@ const LostarkAuth = () => {
   const onSubmitAuthInfo = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      axios
+      useTokenAxios(accessToken, setAccessToken, token.refreshToken)
         .post(
           '/auth/stove',
           {
             randomCode,
             stoveUrl,
           },
-          {
-            headers: {
-              Authorization: 'Bearer ' + cookie.accessToken,
-            },
-            withCredentials: true,
-          },
+          config,
         )
-        .then((response: AxiosResponse<lostarkInfo>) => {
-          //TODO 서버에서 캐릭터 정보 받아오기 만들어야 함.
-          toast.success(response.data.message, {
-            position: 'top-right',
-          });
+        .then((response: AxiosResponse<APIItem<lostarkInfo>>) => {
+          if (response.data.code === 200) {
+            toast.success(response.data.message, {
+              position: 'top-right',
+            });
+          } else {
+            toast.error(response.data.message, {
+              position: 'top-right',
+            });
+            return;
+          }
+          console.log(response.data.data);
         })
         .catch((error) => {
-          toast.error('인증이 완료되지 않았습니다', {
+          toast.error('오류가 발생했습니다.\n기술팀에 문의해주세요!', {
             position: 'top-right',
           });
         });
@@ -82,7 +90,7 @@ const LostarkAuth = () => {
             <Card.Body>
               <Card.Title>스토브 로그인</Card.Title>
               <Card.Text>
-                <p>스토브 사이트에 로그인 해 주세요!</p>
+                스토브 사이트에 로그인 해 주세요!
                 <Button onClick={() => window.open('https://www.onstove.com/')}>스토브 가기</Button>
               </Card.Text>
             </Card.Body>

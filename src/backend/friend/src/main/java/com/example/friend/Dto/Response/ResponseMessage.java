@@ -28,5 +28,10 @@ public class ResponseMessage {
     public static final String LOGOUT_JWT = "로그아웃한 사용자 입니다.";
 
     //friend
+    public static final String FRIENDLIST_CREATE_SUCCESS = "친구테이블 생성 성공";
     public static final String FRIEND_REQUEST_SUCCESS = "친구요청 성공";
+    public static final String FRIEND_REFUSE_SUCCESS = "친구거절 성공";
+    public static final String FRIEND_ACCEPT_SUCCESS = "친구수락 성공";
+    public static final String FRIEND_DELETE_SUCCESS = "친구삭제 성공";
+    public static final String FRIEND_LIST_SUCCESS = "친구조회 성공";
 }

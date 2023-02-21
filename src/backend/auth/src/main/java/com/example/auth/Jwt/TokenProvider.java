@@ -55,23 +55,23 @@ public class TokenProvider implements InitializingBean {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public LoginResponse createToken(Authentication authentication) {
-        String accessToken = createAccessToken(authentication);
-        String refreshToken = createRefreshToken();
-        String username = authentication.getName();
-
-        return LoginResponse.builder()
-                .grantType("Bearer")
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .username(username)
-                .build();
-
-    }
+//    public LoginResponse createToken(Authentication authentication) {
+//        String accessToken = createAccessToken(authentication);
+//        String refreshToken = createRefreshToken();
+//        String username = authentication.getName();
+//
+//        return LoginResponse.builder()
+//                .grantType("Bearer")
+//                .accessToken(accessToken)
+//                .refreshToken(refreshToken)
+//                .username(username)
+//                .build();
+//
+//    }
 
     public LoginResponse createToken(Authentication authentication, Long userId) {
         String accessToken = createAccessToken(authentication, userId);
-        String refreshToken = createRefreshToken();
+        String refreshToken = createRefreshToken(userId);
         String username = authentication.getName();
 
         return LoginResponse.builder()
@@ -122,12 +122,13 @@ public class TokenProvider implements InitializingBean {
         return accessToken;
     }
 
-    public String createRefreshToken() {
+    public String createRefreshToken(Long userId) {
 
         long now = (new Date()).getTime();
         Date refreshValidity = new Date(now + this.refreshTokenValidityInMilliseconds);
 
         String refreshToken = Jwts.builder()
+                .claim("id", userId)
                 .setExpiration(refreshValidity)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
@@ -207,6 +208,11 @@ public class TokenProvider implements InitializingBean {
     public Long getUserIdFromAccessToken(String accessToken) {
         String id = extractAllClaims(accessToken).get("id").toString();
         return Long.parseLong(id);
+    }
+
+    public String getUserEmailFromAccessToken(String accessToken) {
+        String sub = extractAllClaims(accessToken).get("sub").toString();
+        return sub;
     }
 
     public long getRemainMilliSeconds(String accessToken) {

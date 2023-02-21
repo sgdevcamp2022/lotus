@@ -1,28 +1,28 @@
-import React, { FormEvent, useCallback, useState } from 'react';
+import React, { FormEvent, useCallback, useContext, useState } from 'react';
 import { Button, Header, Horizon, Hr, Input, Page, PageHead, Root, SignIn } from '@pages/Login/styles';
 import { Link, Navigate } from 'react-router-dom';
 import useInput from '@hooks/useInput';
 import axios from 'axios';
-import { useCookies } from 'react-cookie';
 import useSWR from 'swr';
-import { IUser } from '@typings/db';
+import { APIItem, IUser } from '@typings/db';
 import fetcher from '@utils/fetcher';
 import { toast, ToastContainer } from 'react-toastify';
 import { Form } from 'react-bootstrap';
+import useToken from '@hooks/useToken';
 
 const Signup = () => {
-  const [cookie] = useCookies(['accessToken']);
   const [email, onChangeEmail, setEmail] = useInput('');
   const [password, , setPassword] = useInput('');
   const [passwordCheck, , setPasswordCheck] = useInput('');
   const [nickname, onChangeNickname, setNickname] = useInput('');
   const [mismatchError, setMismatchError] = useState(false);
   const [signupSuccess, setSignupSuccess] = useState(false);
+  const [accessToken] = useToken();
   const {
     data: userData,
     error,
     mutate,
-  } = useSWR<IUser | undefined | null>(cookie.accessToken ? '/auth/my' : null, fetcher);
+  } = useSWR<IUser | null>(accessToken ? ['/auth/my', accessToken] : null, fetcher);
   const onChangePassword = useCallback(
     (e: any) => {
       setMismatchError(e.target.value === passwordCheck);
@@ -45,26 +45,32 @@ const Signup = () => {
         return;
       }
       axios
-        .post('/api/signup', {
+        .post('/user/signup', {
           email,
           nickname,
           password,
         })
         .then((response) => {
-          console.log(response.data);
+          if (response.data.code === 200) {
+            toast.success(response.data.message, {
+              position: 'top-right',
+            });
+            setSignupSuccess(true);
+          } else {
+            toast.error(response.data.message, {
+              position: 'top-right',
+            });
+            return;
+          }
           setEmail('');
           setPassword('');
           setPasswordCheck('');
           setNickname('');
           mutate();
-          toast.success(response.data, {
-            position: 'top-right',
-          });
-          setSignupSuccess(true);
         })
         .catch((error) => {
           console.dir(error);
-          toast.error('이미 존재하는 이메일입니다.', {
+          toast.error('오류가 발생했습니다.\n기술팀에 문의해 주세요!', {
             position: 'top-right',
           });
           setSignupSuccess(false);
@@ -81,7 +87,7 @@ const Signup = () => {
       <Header>
         <div className="left-col"></div>
         <div className="center-col">
-          <h1 style={{ textAlign: 'center' }}>Loatus</h1>
+          <h1 style={{ textAlign: 'center', fontFamily: 'Noto Sans KR, sans-serif' }}>LOATUS</h1>
         </div>
         <div className="right-col"></div>
       </Header>

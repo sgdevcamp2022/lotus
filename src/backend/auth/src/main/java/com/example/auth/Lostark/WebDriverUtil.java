@@ -18,15 +18,17 @@ public class WebDriverUtil {
     private WebDriver driver;
     public static String WEB_DRIVER_ID = "webdriver.chrome.driver"; // Properties 설정
     // public static String WEB_DRIVER_PATH = "C:/dev/python/crawling/webdriver/chromedriver.exe"; // WebDriver 경로
-    public static String WEB_DRIVER_PATH = "D:/Software/chromedriver/chromedriver.exe"; // WebDriver 경로
+   // public static String WEB_DRIVER_PATH = "D:/Software/chromedriver/test/chromedriver.exe"; // WebDriver 경로
+     //public static String WEB_DRIVER_PATH = "src/main/resources/chromedriver/chromedriver.exe"; // WebDriver 경로
+    public static String WEB_DRIVER_PATH = "/usr/src/chrome/chromedriver.exe"; // WebDriver 경로
 
     public WebDriverUtil() {
         chrome();
     }
 
     private void chrome() {
+       // System.setProperty(WEB_DRIVER_ID, WEB_DRIVER_PATH);
         System.setProperty(WEB_DRIVER_ID, WEB_DRIVER_PATH);
-
         // webDriver 옵션 설정.
         ChromeOptions options = new ChromeOptions();
         options.setHeadless(true);

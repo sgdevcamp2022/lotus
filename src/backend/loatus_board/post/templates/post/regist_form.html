@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container">
+    <div class="row pt-4 my-3">
+        <div class="col-md-12">
+            <h3>글 등록</h3>
+        </div>
+    </div>
+    <div class="row my-3"></div>
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div style="padding: 5px 50px; float:right;">
+                <input class="btn btn-primary" type="submit" value="글 등록">
+                <a href="#" class="btn btn-primary">글 목록</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

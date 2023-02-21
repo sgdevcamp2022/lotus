@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
+import org.springframework.data.redis.core.index.GeoIndexed;
 import org.springframework.data.redis.core.index.Indexed;
 
 import javax.persistence.Id;
@@ -12,6 +13,8 @@ import java.time.LocalDateTime;
 
 @Getter
 @RedisHash(value = "refreshtoken", timeToLive = 604800)
+
+
 @NoArgsConstructor
 @AllArgsConstructor
 public class RefreshToken {
@@ -21,7 +24,7 @@ public class RefreshToken {
 
     @Indexed
     private Long userId;
-
+    @Indexed
     private String refreshToken;
 
 
