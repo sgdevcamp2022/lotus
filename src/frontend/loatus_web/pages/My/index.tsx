@@ -25,6 +25,7 @@ const My = () => {
   const [nickname, onChangeNickname, setNickname] = useInput('');
   const [characterInfo, setCharacterInfo] = useState<lostarkInfo|null>();
   const [friendList, setFriendList] = useState<Friend[]|null|undefined>();
+  const [friendRequestList, setFriendRequestList] = useState<Friend[]|null|undefined>();
   const [friendId, setFriendId] = useState<number>(0);
   //  const profileImage="\""+userData.profileImage+"\"";
 
@@ -80,6 +81,31 @@ const My = () => {
   }, []);
 
 
+
+  
+  useEffect(() => {
+    axios
+      .post(
+        '/friend/request/list',
+        {
+          toUserId,
+        },
+        {
+          headers: {
+            Authorization: 'Bearer ' + accessToken,
+          },
+        },
+      )
+      .then((res) => {
+        setFriendRequestList(res.data.data);
+      })
+      .catch((err) => {
+        toast.error(err.message, {
+          position: 'top-right',
+        });
+      }),
+      [];
+  }, []);
 
 
   const onSubmitUpdateNickname = useCallback(
@@ -190,16 +216,14 @@ const My = () => {
   );
 
 
-  
-
-  const onSubmitFriendAcceptList = useCallback(
+  const onSubmitAcceptFriend= useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       await useTokenAxios(token.refreshToken)
         .post(
-          '/friend/list',
+          '/friend/accept',
           {
-            toUserId,
+            toUserId:friendId
           },
           {
             withCredentials: true,
@@ -210,23 +234,65 @@ const My = () => {
         )
         .then((response) => {
           if (response.data.code === 200) {
-            toast.success('글쓰기가 성공했습니다.', {
+            toast.success('친구수락이 성공했습니다.', {
               position: 'top-right',
             });
           } else {
-            toast.error('글쓰기가 실패했습니다.', {
+            toast.error('친구수락이 실패했습니다.', {
               position: 'top-right',
             });
           }
         })
         .catch((error) => {
-          toast.error('글쓰기가 실패했습니다.', {
+          toast.error('친구수락이 실패했습니다.', {
             position: 'top-right',
           });
         });
     },
-    [toUserId],
+    [friendId],
   );
+
+
+  const onSubmitRefuseFriend= useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      await useTokenAxios(token.refreshToken)
+        .post(
+          '/friend/refuse',
+          {
+            toUserId:friendId
+          },
+          {
+            withCredentials: true,
+            headers: {
+              Authorization: 'Bearer ' + accessToken,
+            },
+          },
+        )
+        .then((response) => {
+          if (response.data.code === 200) {
+            toast.success('친구거절이 성공했습니다.', {
+              position: 'top-right',
+            });
+          } else {
+            toast.error('친구거절이 실패했습니다.', {
+              position: 'top-right',
+            });
+          }
+        })
+        .catch((error) => {
+          toast.error('친구거절이 실패했습니다.', {
+            position: 'top-right',
+          });
+        });
+    },
+    [friendId],
+  );
+
+
+
+  
+
 
   if (!userData) {
     return <Navigate to={'/login'} />;
@@ -279,12 +345,7 @@ const My = () => {
             </tr> */}
           </table>
 
-          <table>
-            <tr>
-              <th>친구 목록</th>
-            </tr>
-          </table>
-
+        
           <Form onSubmit={onSubmitUpdateNickname}>
             <Input placeholder={'닉네임'} type="input" value={nickname} onChange={onChangeNickname} />
             <Button type="submit">변경</Button>
@@ -308,6 +369,7 @@ const My = () => {
               return (
                 <tr>
                   <td>{friend.nickname}</td>
+                  <td>{friend.characterName}</td>
                   <td>
                   <Form onSubmit={onSubmitDeleteFriend}>
                   <Button type="submit" onClick={() => setFriendId(friend.userId)}>삭제</Button>
@@ -332,13 +394,44 @@ const My = () => {
             
           </table>
 
-        <div>
-          친구요청목록
-        </div>
+          <table>
+            <tr>
+            <th>친구요청 목록</th>
+            <th></th>
+            <th></th>
+            <th></th>
+            </tr>
+            {friendRequestList ? (
+            friendRequestList.map((friend, key) => {
+              return (
+                <tr>
+                  <td>{friend.nickname}({friend.characterName})</td>
+                  <td>
+                  <Form onSubmit={onSubmitAcceptFriend}>
+                  <Button type="submit" onClick={() => setFriendId(friend.userId)}>수락</Button>
+                  </Form>
+                  </td>
+                  <td>
+                  <Form onSubmit={onSubmitRefuseFriend}>
+                  <Button type="submit" onClick={() => setFriendId(friend.userId)}>거절</Button>
+                  </Form>
+                  </td>
+                  <td></td>
+                </tr>
+              );
+            })
+          ) : (
+            <tr>
+              <td colSpan={1}>
+                <CircularProgress />
+              </td>
+            </tr>
+          )}
+           
+            
+          </table>
 
-        <div>
-          캐릭터 정보
-        </div>
+ 
       </Container>
     </Root>
   );
