@@ -23,15 +23,9 @@ const My = () => {
   const [params, setParams] = useSearchParams();
   var toUserId = '1';
   const [nickname, onChangeNickname, setNickname] = useInput('');
-<<<<<<< HEAD
   const [characterInfo, setCharacterInfo] = useState<lostarkInfo|null>();
   const [friendList, setFriendList] = useState<Friend[]|null|undefined>();
   const [friendId, setFriendId] = useState<number>(0);
-
-=======
-  const [characterInfo, setCharacterInfo] = useState<lostarkInfo | null>();
-  const [friendList, setFriendList] = useState<Friend[] | null | undefined>();
->>>>>>> b3404d4cc81860a6a6e4c70fdd9ea955aa4f7395
   //  const profileImage="\""+userData.profileImage+"\"";
 
   console.log(friendList);
@@ -285,16 +279,11 @@ const My = () => {
             </tr> */}
           </table>
 
-<<<<<<< HEAD
-
-          
-=======
           <table>
             <tr>
               <th>친구 목록</th>
             </tr>
           </table>
->>>>>>> b3404d4cc81860a6a6e4c70fdd9ea955aa4f7395
 
           <Form onSubmit={onSubmitUpdateNickname}>
             <Input placeholder={'닉네임'} type="input" value={nickname} onChange={onChangeNickname} />
