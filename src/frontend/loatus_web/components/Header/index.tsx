@@ -22,7 +22,7 @@ import { Link } from 'react-router-dom';
 import gravatar from 'gravatar';
 
 const pages = [
-  { name: '파티', param: '/party' },
+  { name: '파티구하기', param: '/channels' },
   { name: '커뮤니티', param: '/board/lists' },
   { name: '공지사항', param: '/notice' },
 ];

@@ -13,6 +13,7 @@ const isDevelopment = process.env.NODE_ENV !== 'production';
 const baseUrl = 'http://3.39.239.141:31436';
 const postSever = 'http://13.125.37.169:32280';
 const friendServer = 'http://15.165.44.34:30657';
+const chatServer = 'http://localhost:8090';
 
 const config: Configuration = {
   name: 'Loatus', //여기를 바꾸면 됨
@@ -103,6 +104,10 @@ const config: Configuration = {
       },
       '/friend/': {
         target: friendServer,
+        changeOrigin: true,
+      },
+      '/api/': {
+        target: chatServer,
         changeOrigin: true,
       },
     },
