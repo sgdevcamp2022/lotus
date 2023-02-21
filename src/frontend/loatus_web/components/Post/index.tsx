@@ -2,10 +2,11 @@ import React, { useCallback } from 'react';
 import { IPost } from '@typings/db';
 import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import {
   Avatar,
   Badge,
+  Button,
   Divider,
   FilledInput,
   FormControl,
@@ -21,17 +22,18 @@ import {
   Typography,
 } from '@mui/material';
 import Box from '@mui/material/Box';
-import makedate from '@utils/makedate';
 import SendIcon from '@mui/icons-material/Send';
 import List from '@mui/material/List';
 import { ThumbUp } from '@mui/icons-material';
 import useInput from '@hooks/useInput';
 import axios from 'axios';
-import useToken from '@hooks/useToken';
 import { useCookies } from 'react-cookie';
 import useSWRRetry from '@hooks/useSWRRetry';
 import { toast } from 'react-toastify';
+import ReactTimeAgo from 'react-time-ago';
+
 const Post = () => {
+  const navigate = useNavigate();
   const params = useParams();
   const { data: PostData, error: postError, mutate: postMutate } = useSWR<IPost[]>([`/post/${params.id}`], fetcher);
   const accessToken = localStorage.getItem('accessToken');
@@ -116,13 +118,14 @@ const Post = () => {
               </IconButton>
             </Badge>
           </Typography>
+          <Button onClick={() => navigate(-1)}>뒤로가기</Button>
         </Box>
         <Grid container marginTop={'30px'}>
           <Grid xs={4} item>
             {PostData[0].fields.author}
           </Grid>
           <Grid xs={8} item textAlign={'right'}>
-            {makedate(PostData[0].fields.published_date)}
+            <ReactTimeAgo date={PostData[0].fields.published_date} />
           </Grid>
         </Grid>
         <Paper elevation={3} sx={{ height: '350px', marginTop: '20px', padding: '30px', marginBottom: '20px' }}>
@@ -159,7 +162,7 @@ const Post = () => {
                   secondary={
                     <React.Fragment>
                       <Typography sx={{ display: 'inline' }} component="span" variant="body2" color="text.primary">
-                        {comment.cur_user_id}
+                        {comment.cur_user_nickname}
                       </Typography>
                     </React.Fragment>
                   }

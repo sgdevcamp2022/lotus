@@ -5,7 +5,7 @@ export type APIItem<T> = {
 };
 
 export type Comment = {
-  cur_user_id: number;
+  cur_user_nickname: string;
   cur_user_comment: string;
   cur_post_id: number;
 };
