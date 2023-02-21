@@ -65,6 +65,7 @@ export class ChannelsService {
         const party = new Parties();
         party.channelId = channelReturned.id;
         party.name = '전체';
+        party.ownerId = ownerId;
 
         const [, partyReturned] = await Promise.all([
           await manager.save(channelMember),
@@ -90,11 +91,11 @@ export class ChannelsService {
     return await this.usersRepository
       .createQueryBuilder('user')
       .select([
-        'userId',
-        'email',
-        'nickname',
-        'profile_image',
-        'character_name',
+        'user.Id',
+        'user.email',
+        'user.nickname',
+        'user.profileImage',
+        'user.characterName',
       ])
       .innerJoin('user.ChannelMembers', 'members')
       .innerJoin('members.Channel', 'channel', 'channel.url = :url', { url })
@@ -111,6 +112,13 @@ export class ChannelsService {
   async getChannelMember(url: string, id: number) {
     return await this.usersRepository
       .createQueryBuilder('user')
+      .select([
+        'userId',
+        'email',
+        'nickname',
+        'profile_image',
+        'character_name',
+      ])
       .where('user.id = :id', { id })
       .innerJoin('user.ChannelMembers', 'members')
       .innerJoin('members.Channel', 'channel', 'channel.url = :url', { url })

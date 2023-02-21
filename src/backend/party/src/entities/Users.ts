@@ -16,6 +16,8 @@ import { ChannelMembers } from './ChannelMembers';
 import { Channels } from './Channels';
 import { Friend } from './Friend';
 import { ApiProperty } from '@nestjs/swagger';
+import { Parties } from './Parties';
+import { Party } from '../partys/entities/party.entity';
 
 /*@Index('email', ['email'], { unique: true })*/
 @Entity('user')
@@ -132,4 +134,7 @@ export class Users {
 
   @OneToMany(() => Channels, (channels) => channels.Owner)
   Channels: Channels[];
+
+  @OneToMany(() => Parties, (parties) => parties.Owner)
+  Parties: Parties[];
 }

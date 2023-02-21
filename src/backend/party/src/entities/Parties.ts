@@ -13,8 +13,10 @@ import { PartyChats } from './PartyChats';
 import { PartyMembers } from './PartyMembers';
 import { Channels } from './Channels';
 import { ApiProperty } from '@nestjs/swagger';
+import { Users } from './Users';
 
 @Index('ChannelId', ['channelId'], {})
+@Index('OwnerId', ['ownerId'])
 @Entity('parties')
 export class Parties {
   @ApiProperty({
@@ -64,6 +66,13 @@ export class Parties {
   @Column('int', { name: 'ChannelId', nullable: true })
   channelId: number | null;
 
+  @ApiProperty({
+    example: 12231251,
+    description: '파티를 생성한 유저id',
+  })
+  @Column('int', { name: 'OwnerId', nullable: true })
+  ownerId: number | null;
+
   @OneToMany(() => PartyChats, (partyChats) => partyChats.Party)
   PartyChats: PartyChats[];
 
@@ -76,4 +85,10 @@ export class Parties {
   })
   @JoinColumn([{ name: 'ChannelId', referencedColumnName: 'id' }])
   Channel: Channels;
+  @ManyToOne(() => Users, (users) => users.Parties, {
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn([{ name: 'OwnerId', referencedColumnName: 'id' }])
+  Owner: Users;
 }

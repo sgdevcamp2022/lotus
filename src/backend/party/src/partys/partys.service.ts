@@ -34,6 +34,15 @@ export class PartysService {
     return await this.partiesRepository
       .createQueryBuilder('party')
       .innerJoin('party.Channel', 'channel', 'channel.url = :url', { url })
+      .leftJoin('party.Owner', 'user')
+      .select([
+        'party',
+        'user.id',
+        'user.characterName',
+        'user.email',
+        'user.nickname',
+        'user.profileImage',
+      ])
       .getMany()
       .then((res) => ({
         code: 200,
@@ -52,7 +61,7 @@ export class PartysService {
       .where('party.name = :name', { name })
       .getOne();
     if (!party) {
-      throw new NotFoundError('파티가 존재하지 않습니다');
+      throw new NotFoundError('파티가 존재하지 않습니다up');
     }
     await this.dataSource.transaction(async (manager) => {
       const chats = new PartyChats();
@@ -117,6 +126,7 @@ export class PartysService {
     const party = new Parties();
     party.name = name;
     party.channelId = channel.id;
+    party.ownerId = ownerId;
     const partyReturned = await this.partiesRepository.save(party);
     const partyMember = new PartyMembers();
     partyMember.userId = ownerId;
@@ -138,7 +148,6 @@ export class PartysService {
       .innerJoin('party.Channel', 'Channel', 'Channel.url = :url', { url })
       .where('party.name = :name', { name })
       .getOne();
-    console.log(party);
     if (!party) {
       throw new HttpException('파티 정보가 없습니다', 401);
     }
@@ -174,6 +183,13 @@ export class PartysService {
       .innerJoin('channels.Parties', 'parties', 'parties.name = :name', {
         name,
       })
+      .select([
+        'user.id',
+        'user.email',
+        'user.nickname',
+        'user.profileImage',
+        'user.characterName',
+      ])
       .getMany()
       .then((res) => ({
         code: 200,
