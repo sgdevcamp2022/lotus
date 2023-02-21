@@ -21,10 +21,12 @@ const My = () => {
   const accessToken = localStorage.getItem('accessToken');
   const { data: userData, error, mutate } = useSWRRetry('/auth/my', token.refreshToken);
   const [params, setParams] = useSearchParams();
-  const toUserId = '1';
+  var toUserId = '1';
   const [nickname, onChangeNickname, setNickname] = useInput('');
   const [characterInfo, setCharacterInfo] = useState<lostarkInfo|null>();
   const [friendList, setFriendList] = useState<Friend[]|null|undefined>();
+  const [friendId, setFriendId] = useState<number>(0);
+
   //  const profileImage="\""+userData.profileImage+"\"";
 
   console.log(friendList);
@@ -76,6 +78,8 @@ useEffect(() => {
   }),[]
 }, []);
 
+
+
   const onSubmitUpdateNickname = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
@@ -111,6 +115,78 @@ useEffect(() => {
     },
     [nickname],
   );
+
+  const onSubmitDeleteUser= useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      await useTokenAxios(token.refreshToken)
+        .post(
+          '/user/delete',
+          {
+          },
+          {
+            withCredentials: true,
+            headers: {
+              Authorization: 'Bearer ' + accessToken,
+            },
+          },
+        )
+        .then((response) => {
+          if (response.data.code === 200) {
+            toast.success('회원탈퇴가 성공했습니다.', {
+              position: 'top-right',
+            });
+          } else {
+            toast.error('회원탈퇴가 실패했습니다.', {
+              position: 'top-right',
+            });
+          }
+        })
+        .catch((error) => {
+          toast.error('회원탈퇴가 실패했습니다.', {
+            position: 'top-right',
+          });
+        });
+    },
+    [],
+  );
+
+  const onSubmitDeleteFriend= useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      await useTokenAxios(token.refreshToken)
+        .post(
+          '/friend/delete',
+          {
+            toUserId:friendId
+          },
+          {
+            withCredentials: true,
+            headers: {
+              Authorization: 'Bearer ' + accessToken,
+            },
+          },
+        )
+        .then((response) => {
+          if (response.data.code === 200) {
+            toast.success('친구삭제가 성공했습니다.', {
+              position: 'top-right',
+            });
+          } else {
+            toast.error('친구삭제가 실패했습니다.', {
+              position: 'top-right',
+            });
+          }
+        })
+        .catch((error) => {
+          toast.error('친구삭제가 실패했습니다.', {
+            position: 'top-right',
+          });
+        });
+    },
+    [friendId],
+  );
+
 
   
 
@@ -190,10 +266,11 @@ useEffect(() => {
               <td>{userData?.nickname}</td>
             </tr>
 
-            <tr>
+
+            {/* <tr>
               <td>친구 수</td>
               <td>{friendList && friendList[0].friendCount}</td>
-            </tr>
+            </tr> */}
           </table>
 
 
@@ -204,6 +281,9 @@ useEffect(() => {
             <Button type="submit">변경</Button>
           </Form>
 
+          <Form onSubmit={onSubmitDeleteUser}>
+            <Button type="submit">회원탈퇴</Button>
+          </Form>
         </Row>
       </Container>
 
@@ -211,12 +291,24 @@ useEffect(() => {
       <table>
             <tr>
             <th>친구 목록</th>
+            <th></th>
+            <th></th>
             </tr>
             {friendList ? (
             friendList.map((friend, key) => {
               return (
                 <tr>
                   <td>{friend.nickname}</td>
+                  <td>
+                  <Form onSubmit={onSubmitDeleteFriend}>
+                  <Button type="submit" onClick={() => setFriendId(friend.userId)}>삭제</Button>
+                  </Form>
+                  </td>
+                  <td>
+                  <Form>
+                  <Button type="submit">채팅</Button>
+                  </Form>
+                  </td>
                 </tr>
               );
             })
