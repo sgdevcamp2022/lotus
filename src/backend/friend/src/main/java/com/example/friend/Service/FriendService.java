@@ -201,18 +201,28 @@ public class FriendService {
     public DefaultResponse acceptFriend(FriendDto friendRequest) {
         Optional<Friend> oneByUserId = friendRepository.findOneByUserId(
                 friendRequest.getMyUserId());
+        Optional<Friend> oneByUserId1 = friendRepository.findOneByUserId(
+                friendRequest.getToUserId());
         Friend friend = oneByUserId.get();
+        Friend friend1 = oneByUserId1.get();
+
         String requestList = friend.getRequestList();
         String requestTime = friend.getRequestTime();
         String friendList = friend.getFriendList();
+
+        String friendList1 = friend1.getFriendList();
+
         JSONParser jsonParser = new JSONParser();
         try {
             JSONArray requestArray = (JSONArray) jsonParser.parse(requestList);
             JSONArray friendArray = (JSONArray) jsonParser.parse(friendList);
             JSONArray requestTimeArray = (JSONArray) jsonParser.parse(requestTime);
+            JSONArray friendArray1 = (JSONArray) jsonParser.parse(friendList1);
 
             int idx = -1;
             JSONObject newFriend = new JSONObject();
+            JSONObject newFriend1 = new JSONObject();
+            newFriend1.put("id", friendRequest.getMyUserId());
             for (int i = 0; i < requestArray.size(); i++) {
                 Object o = requestArray.get(i);
                 JSONObject o1 = (JSONObject) o;
@@ -226,10 +236,12 @@ public class FriendService {
                 requestArray.remove(idx);
                 requestTimeArray.remove(idx);
                 friendArray.add(newFriend);
+                friendArray1.add(newFriend1);
             }
             oneByUserId.get().setRequestList(requestArray.toJSONString());
             oneByUserId.get().setFriendList(friendArray.toJSONString());
             oneByUserId.get().setRequestTime(requestTimeArray.toJSONString());
+            oneByUserId1.get().setFriendList(friendArray1.toJSONString());
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
