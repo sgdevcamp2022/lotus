@@ -24,6 +24,7 @@ import gravatar from 'gravatar';
 const pages = [
   { name: '파티구하기', param: '/channels' },
   { name: '커뮤니티', param: '/board/lists' },
+  { name: '매칭', param: '/matching' },
 ];
 
 function Header() {

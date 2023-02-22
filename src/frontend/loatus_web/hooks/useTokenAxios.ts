@@ -2,7 +2,11 @@ import axios from 'axios';
 import { StateMutator } from 'swr-global-state';
 
 const useTokenAxios = (refreshToken: string) => {
-  const tokenAxios = axios.create();
+  const tokenAxios = axios.create({
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+    },
+  });
   tokenAxios.interceptors.response.use(
     (response) => response,
     (error) => {

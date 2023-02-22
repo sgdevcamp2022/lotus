@@ -35,7 +35,11 @@ import Box from '@mui/material/Box';
 const PartyPage = () => {
   const accessToken = localStorage.getItem('accessToken');
   const [token] = useCookies(['refreshToken']);
-  const { data: userData, error: userError, mutate: userMutate } = useSWRRetry<IUser>('/auth/my', token.refreshToken);
+  const {
+    data: userData,
+    error: userError,
+    mutate: userMutate,
+  } = useSWRRetry<IUser>(process.env.REACT_APP_DB_HOST + '/auth/my', token.refreshToken);
   const params = useParams();
   const [openPostParty, setOpenPostParty] = useState(false);
   const [openPartyChat, setOpenPartyChat] = useState(false);

@@ -9,7 +9,7 @@ const Login = loadable(() => import('@pages/Login'));
 const Signup = loadable(() => import('@pages/Signup'));
 const Board = loadable(() => import('@pages/Board'));
 const PartyPage = loadable(() => import('@pages/PartyPage'));
-const Home = loadable(() => import('@pages/Home'));
+const Matching = loadable(() => import('@pages/Matching'));
 const Notice = loadable(() => import('@pages/Notice'));
 const PostLists = loadable(() => import('@pages/PostLists'));
 const PostWrite = loadable(() => import('@pages/PostWrite'));
@@ -47,7 +47,7 @@ const App: FC = () => {
             </Route>
             <Route path={'auth'} element={<Auth />} />
             <Route path={'my'} element={<My />} />
-            {/*<Route path={'/'} element={<Home />} />*/}
+            {<Route path={'matching'} element={<Matching />} />}
           </Route>
           <Route path="*" element={<Navigate to={'board/lists'} replace />} />
         </Routes>

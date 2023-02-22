@@ -19,7 +19,7 @@ import gravatar from 'gravatar';
 const My = () => {
   const [token, setToken] = useCookies(['refreshToken']);
   const accessToken = localStorage.getItem('accessToken');
-  const { data: userData, error, mutate } = useSWRRetry('/auth/my', token.refreshToken);
+  const { data: userData, error, mutate } = useSWRRetry(process.env.REACT_APP_DB_HOST + '/auth/my', token.refreshToken);
   const [params, setParams] = useSearchParams();
   var toUserId = '1';
   const [nickname, onChangeNickname, setNickname] = useInput('');
@@ -58,7 +58,7 @@ const My = () => {
   useEffect(() => {
     axios
       .post(
-        process.env.REACT_APP_DB_HOST + '/friend/list',
+        '/friend/list',
         {
           toUserId,
         },
@@ -82,7 +82,7 @@ const My = () => {
   useEffect(() => {
     axios
       .post(
-        process.env.REACT_APP_DB_HOST + '/friend/request/list',
+        '/friend/request/list',
         {
           toUserId,
         },
@@ -175,7 +175,7 @@ const My = () => {
       e.preventDefault();
       await useTokenAxios(token.refreshToken)
         .post(
-          process.env.REACT_APP_DB_HOST + '/friend/delete',
+          '/friend/delete',
           {
             toUserId: friendId,
           },
@@ -211,7 +211,7 @@ const My = () => {
       e.preventDefault();
       await useTokenAxios(token.refreshToken)
         .post(
-          process.env.REACT_APP_DB_HOST + '/friend/accept',
+          '/friend/accept',
           {
             toUserId: friendId,
           },
@@ -247,7 +247,7 @@ const My = () => {
       e.preventDefault();
       await useTokenAxios(token.refreshToken)
         .post(
-          process.env.REACT_APP_DB_HOST + '/friend/refuse',
+          '/friend/refuse',
           {
             toUserId: friendId,
           },
