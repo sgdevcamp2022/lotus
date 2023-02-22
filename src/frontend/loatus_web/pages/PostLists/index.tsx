@@ -4,9 +4,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import useSWR from 'swr';
 import fetcher from '@utils/fetcher';
 import { APIItem, IPost, IUser } from '@typings/db';
-import makedate from '@utils/makedate';
 import axios from 'axios';
-import useToken from '@hooks/useToken';
 import {
   Button,
   CircularProgress,
@@ -23,17 +21,22 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
-import Box from '@mui/material/Box';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router';
+import ReactTimeAgo from 'react-time-ago';
 
 const PostLists = () => {
-  const [accessToken] = useToken();
+  const navigate = useNavigate();
+  const accessToken = localStorage.getItem('accessToken');
   const [params, setParams] = useSearchParams();
   const {
     data: PostData,
     error,
     mutate,
-  } = useSWR<{ post: IPost[]; total: number }>([`/post/?page=${params.get('page') || 1}`], fetcher);
+  } = useSWR<{ post: IPost[]; total: number }>(
+    [process.env.REACT_APP_DB_HOST + `/post/?page=${params.get('page') || 1}`, accessToken],
+    fetcher,
+  );
 
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setParams(`page=${value}`);
@@ -41,22 +44,29 @@ const PostLists = () => {
 
   const onClickDelete = useCallback((post: IPost) => {
     axios
-      .delete(`/post/delete/${post.pk}/`, {
+      .delete(process.env.REACT_APP_DB_HOST + `/post/delete/${post.pk}/`, {
         headers: {
           Authorization: 'Bearer ' + accessToken,
         },
       })
       .then((response) => {
-        mutate();
+        if (response.data.code <= 300) {
+          mutate();
+          toast.success(response.data.message);
+          return;
+        }
+        toast.error(response.data.message);
       })
-      .catch((error) => {});
+      .catch((error) => {
+        toast.error(error.message);
+      });
   }, []);
 
   const onClickEdit = useCallback(async (post: IPost) => {
     //모달 실행 후 입력 받기
     await axios
       .post(
-        `/post/edit/${post.pk}/`,
+        process.env.REACT_APP_DB_HOST + `/post/edit/${post.pk}/`,
         {
           title: '바뀌나요',
           content: '안바뀌나요',
@@ -68,10 +78,16 @@ const PostLists = () => {
         },
       )
       .then((response) => {
-        toast.info(response.data.message);
-        mutate();
+        if (response.data.code <= 300) {
+          mutate();
+          toast.success(response.data.message);
+          return;
+        }
+        toast.error(response.data.message);
       })
-      .catch((error) => {});
+      .catch((error) => {
+        toast.error(error.message);
+      });
   }, []);
 
   return (
@@ -97,7 +113,7 @@ const PostLists = () => {
           }}
         >
           <ThumbUpAltIcon sx={{ fontWeight: 900, fontSize: '2.75rem' }} />
-          &nbsp; 안녕하세요 또 만났네요
+          &nbsp; 안녕하세요
         </Typography>
         <Carousel style={{ margin: '25px' }}>
           <Carousel.Item>
@@ -128,7 +144,6 @@ const PostLists = () => {
             <th>No</th>
             <th>TITLE</th>
             <th>AUTHOR</th>
-            <th>CONTENT</th>
             <th>PUBLISHED_DATE</th>
             <th>MANAGEMENT</th>
           </tr>
@@ -137,17 +152,30 @@ const PostLists = () => {
           {PostData ? (
             PostData.post.map((post, key) => {
               return (
-                <tr>
+                <tr key={key} onClick={() => navigate(`/board/${post.pk}`)}>
                   <td>{key}</td>
-                  <td style={{ width: '200px' }}>{post.fields.title}</td>
+                  <td style={{ width: '600px' }}>{post.fields.title}</td>
                   <td>{post.fields.author}</td>
-                  <td>{post.fields.content}</td>
-                  <td>{makedate(post.fields.published_date)}</td>
                   <td>
-                    <IconButton onClick={() => onClickEdit(post)} color={'inherit'}>
+                    <ReactTimeAgo date={post.fields.published_date} />
+                  </td>
+                  <td>
+                    <IconButton
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/board/edit/${post.pk}`);
+                      }}
+                      color={'inherit'}
+                    >
                       <EditIcon />
                     </IconButton>
-                    <IconButton onClick={() => onClickDelete(post)} color={'inherit'}>
+                    <IconButton
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onClickDelete(post);
+                      }}
+                      color={'inherit'}
+                    >
                       <DeleteIcon />
                     </IconButton>
                   </td>

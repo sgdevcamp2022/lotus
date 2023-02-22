@@ -2,10 +2,7 @@ import React, { useCallback } from 'react';
 import { Button } from 'react-bootstrap';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { useCookies } from 'react-cookie';
-
 const Home = () => {
-  const [cookie, setCookie] = useCookies(['accessToken']);
   return (
     <>
       <section>모집</section>
@@ -15,7 +12,26 @@ const Home = () => {
         <h1>기능테스트</h1>
         <Button
           onClick={() => {
-            return;
+            axios
+              .post(
+                process.env.REACT_APP_DB_HOST + '/user/update/maincharacter',
+                {
+                  characterName: '초록눈의조안녕',
+                },
+                {
+                  headers: {
+                    Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+                  },
+                },
+              )
+              .then((res) => {
+                toast.success(res.data.message);
+              })
+              .catch((err) => {
+                toast.error(err.message, {
+                  position: 'top-right',
+                });
+              });
           }}
         >
           가입하기

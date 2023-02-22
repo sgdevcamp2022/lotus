@@ -14,10 +14,16 @@ import { toast } from 'react-toastify';
 import useToken from '@hooks/useToken';
 import { useCookies } from 'react-cookie';
 import useInput from '@hooks/useInput';
+import CharacterSelect from '@components/CharacterSelect';
+import useSWRRetry from '@hooks/useSWRRetry';
+import { Navigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 export default function Auth() {
-  const [accessToken, setAccessToken] = useToken();
+  const navigate = useNavigate();
+  const accessToken = localStorage.getItem('accessToken');
   const [token, setToken] = useCookies(['refreshToken']);
+  const { data: userData, error, mutate } = useSWRRetry(process.env.REACT_APP_DB_HOST + '/auth/my', token.refreshToken);
   const [activeStep, setActiveStep] = React.useState(0);
   const [skipped, setSkipped] = React.useState(new Set<number>());
   const [randomCode, setRandomCode] = useState('');
@@ -41,21 +47,21 @@ export default function Auth() {
   const onSubmitAuthInfo = useCallback(
     (e: any) => {
       e.preventDefault();
-      useTokenAxios(accessToken, setAccessToken, token.refreshToken)
+      useTokenAxios(token.refreshToken)
         .post(
-          '/auth/stove',
+          process.env.REACT_APP_DB_HOST + '/auth/stove',
           {
             randomCode,
             stoveUrl,
           },
           {
-            withCredentials: true,
+            withCredentials: false,
             headers: {
               Authorization: 'Bearer ' + accessToken,
             },
           },
         )
-        .then((response: AxiosResponse<APIItem<lostarkInfo>>) => {
+        .then((response: AxiosResponse<APIItem<lostarkInfo[]>>) => {
           if (response.data.code === 200) {
             toast.success(response.data.message, {
               position: 'top-right',
@@ -66,7 +72,8 @@ export default function Auth() {
             });
             return;
           }
-          console.log(response.data.data);
+          mutate();
+          navigate('/select');
         })
         .catch((error) => {
           toast.error('오류가 발생했습니다.\n기술팀에 문의해주세요!', {
@@ -98,9 +105,9 @@ export default function Auth() {
   ];
 
   useEffect(() => {
-    useTokenAxios(accessToken, setAccessToken, token.refreshToken)
-      .get('/auth/randomcode', {
-        withCredentials: true,
+    useTokenAxios(token.refreshToken)
+      .get(process.env.REACT_APP_DB_HOST + '/auth/randomcode', {
+        withCredentials: false,
         headers: {
           Authorization: 'Bearer ' + accessToken,
         },
@@ -157,6 +164,9 @@ export default function Auth() {
     setActiveStep(0);
   };
 
+  if (!userData) {
+    return <Navigate to={'/'} />;
+  }
   return (
     <Box sx={{ minWidth: '1057px' }}>
       <Stepper activeStep={activeStep}>

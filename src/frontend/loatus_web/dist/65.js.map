@@ -1,0 +1,1 @@
+{"version":3,"file":"65.js","mappings":"gJAMA,QAJe,WACb,OAAO,+BAAS,SAClB,C","sources":["webpack://loatus_web/./pages/Notice/index.tsx"],"sourcesContent":["import React from 'react';\n\nconst Notice = () => {\n  return <section>노티스노티스</section>;\n};\n\nexport default Notice;\n"],"names":[],"sourceRoot":""}

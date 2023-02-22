@@ -22,7 +22,7 @@ const Signup = () => {
     data: userData,
     error,
     mutate,
-  } = useSWR<IUser | null>(accessToken ? ['/auth/my', accessToken] : null, fetcher);
+  } = useSWR<IUser | null>(accessToken ? [process.env.REACT_APP_DB_HOST + '/auth/my', accessToken] : null, fetcher);
   const onChangePassword = useCallback(
     (e: any) => {
       setMismatchError(e.target.value === passwordCheck);
@@ -45,7 +45,7 @@ const Signup = () => {
         return;
       }
       axios
-        .post('/user/signup', {
+        .post(process.env.REACT_APP_DB_HOST + '/user/signup', {
           email,
           nickname,
           password,
