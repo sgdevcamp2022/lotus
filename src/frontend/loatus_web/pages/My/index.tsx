@@ -50,6 +50,8 @@ const My = () => {
             toast.success('닉네임 변경이 성공했습니다.', {
               position: 'top-right',
             });
+            mainCharMutate();
+            mutate();
           } else {
             toast.error('닉네임 변경이 실패했습니다.', {
               position: 'top-right',
@@ -99,6 +101,8 @@ const My = () => {
             toast.success('친구삭제가 성공했습니다.', {
               position: 'top-right',
             });
+            friendMutate();
+            friendRequestMutate();
           } else {
             toast.error('친구삭제가 실패했습니다.', {
               position: 'top-right',
@@ -135,6 +139,8 @@ const My = () => {
             toast.success('친구수락이 성공했습니다.', {
               position: 'top-right',
             });
+            friendMutate();
+            friendRequestMutate();
           } else {
             toast.error('친구수락이 실패했습니다.', {
               position: 'top-right',
@@ -171,6 +177,8 @@ const My = () => {
             toast.success('친구거절이 성공했습니다.', {
               position: 'top-right',
             });
+            friendMutate();
+            friendRequestMutate();
           } else {
             toast.error('친구거절이 실패했습니다.', {
               position: 'top-right',
