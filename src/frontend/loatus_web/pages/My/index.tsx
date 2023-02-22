@@ -113,7 +113,7 @@ const My = () => {
             nickname,
           },
           {
-            withCredentials: true,
+            withCredentials: false,
             headers: {
               Authorization: 'Bearer ' + accessToken,
             },
@@ -146,7 +146,7 @@ const My = () => {
         process.env.REACT_APP_DB_HOST + '/user/delete',
         {},
         {
-          withCredentials: true,
+          withCredentials: false,
           headers: {
             Authorization: 'Bearer ' + accessToken,
           },
@@ -180,7 +180,7 @@ const My = () => {
             toUserId: friendId,
           },
           {
-            withCredentials: true,
+            withCredentials: false,
             headers: {
               Authorization: 'Bearer ' + accessToken,
             },
@@ -216,7 +216,7 @@ const My = () => {
             toUserId: friendId,
           },
           {
-            withCredentials: true,
+            withCredentials: false,
             headers: {
               Authorization: 'Bearer ' + accessToken,
             },
@@ -252,7 +252,7 @@ const My = () => {
             toUserId: friendId,
           },
           {
-            withCredentials: true,
+            withCredentials: false,
             headers: {
               Authorization: 'Bearer ' + accessToken,
             },

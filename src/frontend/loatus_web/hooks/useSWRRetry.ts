@@ -16,7 +16,7 @@ const useSWRRetry = <T = any>(url: string | null, refreshToken: string) =>
               process.env.REACT_APP_DB_HOST + '/auth/reissue',
               {},
               {
-                withCredentials: true,
+                withCredentials: false,
                 headers: {
                   Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
                   refreshToken: refreshToken,

@@ -55,7 +55,7 @@ export default function Auth() {
             stoveUrl,
           },
           {
-            withCredentials: true,
+            withCredentials: false,
             headers: {
               Authorization: 'Bearer ' + accessToken,
             },
@@ -106,8 +106,8 @@ export default function Auth() {
 
   useEffect(() => {
     useTokenAxios(token.refreshToken)
-      .get('/auth/randomcode', {
-        withCredentials: true,
+      .get(process.env.REACT_APP_DB_HOST + '/auth/randomcode', {
+        withCredentials: false,
         headers: {
           Authorization: 'Bearer ' + accessToken,
         },

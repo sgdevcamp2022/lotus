@@ -34,7 +34,7 @@ const PostLists = () => {
     error,
     mutate,
   } = useSWR<{ post: IPost[]; total: number }>(
-    [process.env.REACT_APP_DB_HOST + `/post/?page=${params.get('page') || 1}`],
+    [process.env.REACT_APP_DB_HOST + `/post/?page=${params.get('page') || 1}`, accessToken],
     fetcher,
   );
 

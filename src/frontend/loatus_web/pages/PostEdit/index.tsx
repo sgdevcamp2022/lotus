@@ -46,7 +46,7 @@ const PostWrite = () => {
             content,
           },
           {
-            withCredentials: true,
+            withCredentials: false,
             headers: {
               Authorization: 'Bearer ' + accessToken,
             },

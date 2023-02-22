@@ -39,7 +39,7 @@ function Header() {
         headers: {
           Authorization: 'Bearer ' + accessToken,
         },
-        withCredentials: true,
+        withCredentials: false,
       })
       .then((response) => {
         toast.success(response.data.message, {

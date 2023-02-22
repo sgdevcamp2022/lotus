@@ -38,7 +38,7 @@ const Login = () => {
             password,
           },
           {
-            withCredentials: true,
+            withCredentials: false,
           },
         )
         .then((response: AxiosResponse<APIItem<IToken>>) => {

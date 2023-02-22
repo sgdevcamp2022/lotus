@@ -35,12 +35,12 @@ import ReactTimeAgo from 'react-time-ago';
 const Post = () => {
   const navigate = useNavigate();
   const params = useParams();
+  const accessToken = localStorage.getItem('accessToken');
   const {
     data: PostData,
     error: postError,
     mutate: postMutate,
-  } = useSWR<IPost[]>(process.env.REACT_APP_DB_HOST + `/post/${params.id}`, fetcher);
-  const accessToken = localStorage.getItem('accessToken');
+  } = useSWR<IPost[]>([process.env.REACT_APP_DB_HOST + `/post/${params.id}`, accessToken], fetcher);
   const [token] = useCookies(['refreshToken']);
   const { data: userData, error, mutate } = useSWRRetry(process.env.REACT_APP_DB_HOST + '/auth/my', token.refreshToken);
   const [comment, onChangeComment, setComment] = useInput('');
