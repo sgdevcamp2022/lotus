@@ -16,10 +16,11 @@ const CharacterAvatar: FC<Props> = (Props) => {
     <Avatar
       src={Props.user.profileImage || gravatar.url(Props.user.email, { d: 'retro' })}
       onClick={() => {
+        console.log(Props.user.id);
         useTokenAxios(token.refreshToken)
           .post(process.env.REACT_APP_DB_HOST + '/friend/request', {
             // .post('/friend/request', {
-            toUserId: Props.user.userId,
+            toUserId: +Props.user.id,
           })
           .then((res) => {
             toast.success(res.data.message);

@@ -56,7 +56,7 @@ const PartyPage = () => {
     error: myPartiesError,
     mutate: myPartiesMutate,
   } = useSWRRetry<Party[]>(
-    userData ? process.env.REACT_APP_DB_HOST + `/api/channels/${params.url}/parties/my/${userData.userId}` : null,
+    userData ? process.env.REACT_APP_DB_HOST + `/api/channels/${params.url}/parties/my/${userData.id}` : null,
     token.refreshToken,
   );
   const [socket, disconnect] = useSocket(params.url);
@@ -102,7 +102,7 @@ const PartyPage = () => {
 
   useEffect(() => {
     if (myPartiesData && userData && socket) {
-      socket.emit('login', { id: userData.userId, parties: myPartiesData.map((v) => v.id) });
+      socket.emit('login', { id: userData.id, parties: myPartiesData.map((v) => v.id) });
     }
   }, [socket, myPartiesData, userData]);
 

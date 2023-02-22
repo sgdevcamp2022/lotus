@@ -18,7 +18,7 @@ export type IToken = {
 };
 
 export type IUser = {
-  userId: number;
+  id: string;
   email: string;
   nickname: string;
   auth: string;

@@ -32,7 +32,7 @@ const Channels = () => {
     error: myPartiesError,
     mutate: myPartiesMutate,
   } = useSWRRetry<Party[]>(
-    userData ? process.env.REACT_APP_DB_HOST + `/api/channels/${params.url}/parties/my/${userData.userId}` : null,
+    userData ? process.env.REACT_APP_DB_HOST + `/api/channels/${params.url}/parties/my/${userData.id}` : null,
     token.refreshToken,
   );
 
