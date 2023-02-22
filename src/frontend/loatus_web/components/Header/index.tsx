@@ -24,6 +24,7 @@ import gravatar from 'gravatar';
 const pages = [
   { name: '파티구하기', param: '/channels' },
   { name: '커뮤니티', param: '/board/lists' },
+  { name: '매칭', param: '/matching' },
 ];
 
 function Header() {
@@ -31,15 +32,15 @@ function Header() {
   const [token] = useCookies(['refreshToken']);
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
-  const { data: userData, error, mutate } = useSWRRetry('/auth/my', token.refreshToken);
+  const { data: userData, error, mutate } = useSWRRetry(process.env.REACT_APP_DB_HOST + '/auth/my', token.refreshToken);
 
   const onClickLogout = useCallback(() => {
     axios
-      .get('/auth/logout', {
+      .get(process.env.REACT_APP_DB_HOST + '/auth/logout', {
         headers: {
           Authorization: 'Bearer ' + accessToken,
         },
-        withCredentials: true,
+        withCredentials: false,
       })
       .then((response) => {
         toast.success(response.data.message, {

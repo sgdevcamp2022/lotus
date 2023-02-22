@@ -30,17 +30,17 @@ const CharacterSelect = () => {
   const navigate = useNavigate();
   const accessToken = localStorage.getItem('accessToken');
   const [token] = useCookies(['refreshToken']);
-  const { data: userData, error, mutate } = useSWRRetry('/auth/my', token.refreshToken);
+  const { data: userData, error, mutate } = useSWRRetry(process.env.REACT_APP_DB_HOST + '/auth/my', token.refreshToken);
   const {
     data: randomCode,
     error: randomCodeError,
     mutate: randomCodeMutate,
-  } = useSWRRetry('/auth/randomcode', token.refreshToken);
+  } = useSWRRetry(process.env.REACT_APP_DB_HOST + '/auth/randomcode', token.refreshToken);
   const [gameInfo, setGameInfo] = useState<lostarkInfo[] | null>(null);
   const onClickSetCharacter = useCallback((characterName: string) => {
     axios
       .post(
-        '/user/update/maincharacter',
+        process.env.REACT_APP_DB_HOST + '/user/update/maincharacter',
         {
           characterName: characterName,
         },
@@ -66,7 +66,7 @@ const CharacterSelect = () => {
     if (userData?.stoveNo && randomCode) {
       useTokenAxios(token.refreshToken)
         .post(
-          '/auth/stove',
+          process.env.REACT_APP_DB_HOST + '/auth/stove',
           {
             randomCode,
             stoveUrl: `https://timeline.onstove.com/${userData.stoveNo}`,

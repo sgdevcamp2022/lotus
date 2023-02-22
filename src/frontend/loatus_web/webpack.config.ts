@@ -9,6 +9,7 @@ interface Configuration extends WebpackConfiguration {
 
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
+const dotenv = require('dotenv-webpack');
 
 const isDevelopment = process.env.NODE_ENV !== 'production';
 const baseUrl = 'http://3.39.239.141:31436';
@@ -68,6 +69,7 @@ const config: Configuration = {
     ],
   },
   plugins: [
+    new dotenv(),
     new ForkTsCheckerWebpackPlugin({
       async: false,
       // eslint: {
@@ -75,6 +77,9 @@ const config: Configuration = {
       // },
     }),
     new webpack.EnvironmentPlugin({ NODE_ENV: isDevelopment ? 'development' : 'production' }),
+    new webpack.ProvidePlugin({
+      process: 'process/browser.js',
+    }),
   ],
   output: {
     path: path.join(__dirname, 'dist'),
@@ -118,10 +123,10 @@ const config: Configuration = {
 if (isDevelopment && config.plugins) {
   config.plugins.push(new webpack.HotModuleReplacementPlugin());
   config.plugins.push(new ReactRefreshWebpackPlugin());
-  config.plugins.push(new BundleAnalyzerPlugin({ analyzerMode: 'server', openAnalyzer: true }));
+  config.plugins.push(new BundleAnalyzerPlugin({ analyzerMode: 'server', openAnalyzer: false }));
 }
 if (!isDevelopment && config.plugins) {
-  config.plugins.push(new webpack.LoaderOptionsPlugin({ minimize: true }));
+  // config.plugins.push(new webpack.LoaderOptionsPlugin({ minimize: true }));
   config.plugins.push(new BundleAnalyzerPlugin({ analyzerMode: 'static' }));
 }
 

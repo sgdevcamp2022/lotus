@@ -16,14 +16,14 @@ const PostWrite = () => {
   const params = useParams();
   const accessToken = localStorage.getItem('accessToken');
   const [token] = useCookies(['refreshToken']);
-  const { data: userData, error, mutate } = useSWRRetry('/auth/my', token.refreshToken);
+  const { data: userData, error, mutate } = useSWRRetry(process.env.REACT_APP_DB_HOST + '/auth/my', token.refreshToken);
   const [title, onChangeTitle, setTitle] = useInput('');
   const [content, onChangeContent, setContent] = useInput('');
   const [author, setAuthor] = useState('');
 
   useEffect(() => {
     axios
-      .get(`/post/${params.id}`)
+      .get(process.env.REACT_APP_DB_HOST + `/post/${params.id}`)
       .then((res: AxiosResponse<APIItem<IPost[]>>) => {
         console.log(res.data.data[0].fields);
         setAuthor(res.data.data[0].fields.author);
@@ -40,13 +40,13 @@ const PostWrite = () => {
       e.preventDefault();
       await useTokenAxios(token.refreshToken)
         .post(
-          `/post/edit/${params.id}/`,
+          process.env.REACT_APP_DB_HOST + `/post/edit/${params.id}/`,
           {
             title,
             content,
           },
           {
-            withCredentials: true,
+            withCredentials: false,
             headers: {
               Authorization: 'Bearer ' + accessToken,
             },

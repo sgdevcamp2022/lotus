@@ -35,10 +35,14 @@ import ReactTimeAgo from 'react-time-ago';
 const Post = () => {
   const navigate = useNavigate();
   const params = useParams();
-  const { data: PostData, error: postError, mutate: postMutate } = useSWR<IPost[]>([`/post/${params.id}`], fetcher);
   const accessToken = localStorage.getItem('accessToken');
+  const {
+    data: PostData,
+    error: postError,
+    mutate: postMutate,
+  } = useSWR<IPost[]>([process.env.REACT_APP_DB_HOST + `/post/${params.id}`, accessToken], fetcher);
   const [token] = useCookies(['refreshToken']);
-  const { data: userData, error, mutate } = useSWRRetry('/auth/my', token.refreshToken);
+  const { data: userData, error, mutate } = useSWRRetry(process.env.REACT_APP_DB_HOST + '/auth/my', token.refreshToken);
   const [comment, onChangeComment, setComment] = useInput('');
 
   const onSubmitComment = useCallback(
@@ -58,7 +62,7 @@ const Post = () => {
       }
       axios
         .post(
-          '/post/comment/',
+          process.env.REACT_APP_DB_HOST + '/post/comment/',
           {
             post: params.id,
             text: comment,
@@ -91,7 +95,7 @@ const Post = () => {
     }
 
     axios
-      .get(`/post/like/${params.id}`, {
+      .get(process.env.REACT_APP_DB_HOST + `/post/like/${params.id}`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },

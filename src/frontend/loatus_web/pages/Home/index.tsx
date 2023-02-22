@@ -14,7 +14,7 @@ const Home = () => {
           onClick={() => {
             axios
               .post(
-                '/user/update/maincharacter',
+                process.env.REACT_APP_DB_HOST + '/user/update/maincharacter',
                 {
                   characterName: '초록눈의조안녕',
                 },

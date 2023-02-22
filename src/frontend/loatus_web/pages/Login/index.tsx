@@ -16,7 +16,7 @@ const Login = () => {
   const accessToken = localStorage.getItem('accessToken');
   const [email, onChangeEmail, setEmail] = useInput('');
   const [password, onChangePassword, setPassword] = useInput('');
-  const { data: userData, error, mutate } = useSWRRetry('/auth/my', token.refreshToken);
+  const { data: userData, error, mutate } = useSWRRetry(process.env.REACT_APP_DB_HOST + '/auth/my', token.refreshToken);
   const [params, setParams] = useSearchParams();
   useEffect(() => {
     if (params.get('accessToken')) {
@@ -32,13 +32,13 @@ const Login = () => {
       e.preventDefault();
       await axios
         .post(
-          `/auth/login`,
+          process.env.REACT_APP_DB_HOST + `/auth/login`,
           {
             email,
             password,
           },
           {
-            withCredentials: true,
+            withCredentials: false,
           },
         )
         .then((response: AxiosResponse<APIItem<IToken>>) => {

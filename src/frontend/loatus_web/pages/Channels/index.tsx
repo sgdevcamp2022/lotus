@@ -14,13 +14,17 @@ import axios from 'axios';
 const Channels = () => {
   const navigate = useNavigate();
   const [token] = useCookies(['refreshToken']);
-  const { data: userData, error: userError, mutate: userMutate } = useSWRRetry<IUser>('/auth/my', token.refreshToken);
+  const {
+    data: userData,
+    error: userError,
+    mutate: userMutate,
+  } = useSWRRetry<IUser>(process.env.REACT_APP_DB_HOST + '/auth/my', token.refreshToken);
   const params = useParams();
   const {
     data: channels,
     error: channelsError,
     mutate: channelsMutate,
-  } = useSWRRetry<Channel[]>('/api/channels', token.refreshToken);
+  } = useSWRRetry<Channel[]>(process.env.REACT_APP_DB_HOST + '/api/channels', token.refreshToken);
   const [value, onChangeValue, setValue] = useInput(0);
   const [navValue, onChangeNavValue, setNavValue] = useInput(0);
   const {
@@ -28,7 +32,7 @@ const Channels = () => {
     error: myPartiesError,
     mutate: myPartiesMutate,
   } = useSWRRetry<Party[]>(
-    userData ? `/api/channels/${params.url}/parties/my/${userData.userId}` : null,
+    userData ? process.env.REACT_APP_DB_HOST + `/api/channels/${params.url}/parties/my/${userData.userId}` : null,
     token.refreshToken,
   );
 
@@ -66,7 +70,7 @@ const Channels = () => {
                   <>
                     {async () => {
                       const res: number = await axios
-                        .get(`/api/channels/${params.url}/parties/${party.name}/unread`)
+                        .get(process.env.REACT_APP_DB_HOST + `/api/channels/${params.url}/parties/${party.name}/unread`)
                         .then((res) => res.data)
                         .catch((err) => 0);
                       return res;

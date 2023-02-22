@@ -35,7 +35,11 @@ import Box from '@mui/material/Box';
 const PartyPage = () => {
   const accessToken = localStorage.getItem('accessToken');
   const [token] = useCookies(['refreshToken']);
-  const { data: userData, error: userError, mutate: userMutate } = useSWRRetry<IUser>('/auth/my', token.refreshToken);
+  const {
+    data: userData,
+    error: userError,
+    mutate: userMutate,
+  } = useSWRRetry<IUser>(process.env.REACT_APP_DB_HOST + '/auth/my', token.refreshToken);
   const params = useParams();
   const [openPostParty, setOpenPostParty] = useState(false);
   const [openPartyChat, setOpenPartyChat] = useState(false);
@@ -45,13 +49,13 @@ const PartyPage = () => {
     data: partiesData,
     error: partiesError,
     mutate: partiesMutate,
-  } = useSWRRetry<Party[]>(`/api/channels/${params.url}/parties`, token.refreshToken);
+  } = useSWRRetry<Party[]>(process.env.REACT_APP_DB_HOST + `/api/channels/${params.url}/parties`, token.refreshToken);
   const {
     data: myPartiesData,
     error: myPartiesError,
     mutate: myPartiesMutate,
   } = useSWRRetry<Party[]>(
-    userData ? `/api/channels/${params.url}/parties/my/${userData.userId}` : null,
+    userData ? process.env.REACT_APP_DB_HOST + `/api/channels/${params.url}/parties/my/${userData.userId}` : null,
     token.refreshToken,
   );
   const [socket, disconnect] = useSocket(params.url);
@@ -71,7 +75,7 @@ const PartyPage = () => {
       }
       axios
         .post(
-          `/api/channels/${params.url}/parties`,
+          process.env.REACT_APP_DB_HOST + `/api/channels/${params.url}/parties`,
           {
             name: partyName,
           },

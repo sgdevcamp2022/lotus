@@ -7,7 +7,7 @@ import { APIItem, Friend, IToken, IUser } from '@typings/db';
 import useSWR from 'swr';
 import { useCookies } from 'react-cookie';
 import { Row, Col, Form } from 'react-bootstrap';
-import { Container,CircularProgress } from '@mui/material';
+import { Container, CircularProgress } from '@mui/material';
 import { toast, ToastContainer } from 'react-toastify';
 import useToken from '@hooks/useToken';
 import useSWRRetry from '@hooks/useSWRRetry';
@@ -19,13 +19,13 @@ import gravatar from 'gravatar';
 const My = () => {
   const [token, setToken] = useCookies(['refreshToken']);
   const accessToken = localStorage.getItem('accessToken');
-  const { data: userData, error, mutate } = useSWRRetry('/auth/my', token.refreshToken);
+  const { data: userData, error, mutate } = useSWRRetry(process.env.REACT_APP_DB_HOST + '/auth/my', token.refreshToken);
   const [params, setParams] = useSearchParams();
   var toUserId = '1';
   const [nickname, onChangeNickname, setNickname] = useInput('');
-  const [characterInfo, setCharacterInfo] = useState<lostarkInfo|null>();
-  const [friendList, setFriendList] = useState<Friend[]|null|undefined>();
-  const [friendRequestList, setFriendRequestList] = useState<Friend[]|null|undefined>();
+  const [characterInfo, setCharacterInfo] = useState<lostarkInfo | null>();
+  const [friendList, setFriendList] = useState<Friend[] | null | undefined>();
+  const [friendRequestList, setFriendRequestList] = useState<Friend[] | null | undefined>();
   const [friendId, setFriendId] = useState<number>(0);
   //  const profileImage="\""+userData.profileImage+"\"";
 
@@ -36,7 +36,7 @@ const My = () => {
   useEffect(() => {
     axios
       .post(
-        '/user/load/maincharacter',
+        process.env.REACT_APP_DB_HOST + '/user/load/maincharacter',
         {},
         {
           headers: {
@@ -54,7 +54,6 @@ const My = () => {
       }),
       [];
   }, []);
-
 
   useEffect(() => {
     axios
@@ -80,9 +79,6 @@ const My = () => {
       [];
   }, []);
 
-
-
-  
   useEffect(() => {
     axios
       .post(
@@ -107,18 +103,17 @@ const My = () => {
       [];
   }, []);
 
-
   const onSubmitUpdateNickname = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       await useTokenAxios(token.refreshToken)
         .post(
-          '/user/update/nickname',
+          process.env.REACT_APP_DB_HOST + '/user/update/nickname',
           {
             nickname,
           },
           {
-            withCredentials: true,
+            withCredentials: false,
             headers: {
               Authorization: 'Bearer ' + accessToken,
             },
@@ -144,52 +139,48 @@ const My = () => {
     [nickname],
   );
 
-  const onSubmitDeleteUser= useCallback(
-    async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      await useTokenAxios(token.refreshToken)
-        .post(
-          '/user/delete',
-          {
+  const onSubmitDeleteUser = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    await useTokenAxios(token.refreshToken)
+      .post(
+        process.env.REACT_APP_DB_HOST + '/user/delete',
+        {},
+        {
+          withCredentials: false,
+          headers: {
+            Authorization: 'Bearer ' + accessToken,
           },
-          {
-            withCredentials: true,
-            headers: {
-              Authorization: 'Bearer ' + accessToken,
-            },
-          },
-        )
-        .then((response) => {
-          if (response.data.code === 200) {
-            toast.success('회원탈퇴가 성공했습니다.', {
-              position: 'top-right',
-            });
-          } else {
-            toast.error('회원탈퇴가 실패했습니다.', {
-              position: 'top-right',
-            });
-          }
-        })
-        .catch((error) => {
+        },
+      )
+      .then((response) => {
+        if (response.data.code === 200) {
+          toast.success('회원탈퇴가 성공했습니다.', {
+            position: 'top-right',
+          });
+        } else {
           toast.error('회원탈퇴가 실패했습니다.', {
             position: 'top-right',
           });
+        }
+      })
+      .catch((error) => {
+        toast.error('회원탈퇴가 실패했습니다.', {
+          position: 'top-right',
         });
-    },
-    [],
-  );
+      });
+  }, []);
 
-  const onSubmitDeleteFriend= useCallback(
+  const onSubmitDeleteFriend = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       await useTokenAxios(token.refreshToken)
         .post(
           '/friend/delete',
           {
-            toUserId:friendId
+            toUserId: friendId,
           },
           {
-            withCredentials: true,
+            withCredentials: false,
             headers: {
               Authorization: 'Bearer ' + accessToken,
             },
@@ -215,18 +206,17 @@ const My = () => {
     [friendId],
   );
 
-
-  const onSubmitAcceptFriend= useCallback(
+  const onSubmitAcceptFriend = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       await useTokenAxios(token.refreshToken)
         .post(
           '/friend/accept',
           {
-            toUserId:friendId
+            toUserId: friendId,
           },
           {
-            withCredentials: true,
+            withCredentials: false,
             headers: {
               Authorization: 'Bearer ' + accessToken,
             },
@@ -252,18 +242,17 @@ const My = () => {
     [friendId],
   );
 
-
-  const onSubmitRefuseFriend= useCallback(
+  const onSubmitRefuseFriend = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       await useTokenAxios(token.refreshToken)
         .post(
           '/friend/refuse',
           {
-            toUserId:friendId
+            toUserId: friendId,
           },
           {
-            withCredentials: true,
+            withCredentials: false,
             headers: {
               Authorization: 'Bearer ' + accessToken,
             },
@@ -288,11 +277,6 @@ const My = () => {
     },
     [friendId],
   );
-
-
-
-  
-
 
   if (!userData) {
     return <Navigate to={'/login'} />;
@@ -338,14 +322,12 @@ const My = () => {
               <td>{userData?.nickname}</td>
             </tr>
 
-
             {/* <tr>
               <td>친구 수</td>
               <td>{friendList && friendList[0].friendCount}</td>
             </tr> */}
           </table>
 
-        
           <Form onSubmit={onSubmitUpdateNickname}>
             <Input placeholder={'닉네임'} type="input" value={nickname} onChange={onChangeNickname} />
             <Button type="submit">변경</Button>
@@ -358,27 +340,29 @@ const My = () => {
       </Container>
 
       <Container maxWidth={false}>
-      <table>
-            <tr>
+        <table>
+          <tr>
             <th>친구 목록</th>
             <th></th>
             <th></th>
-            </tr>
-            {friendList ? (
+          </tr>
+          {friendList ? (
             friendList.map((friend, key) => {
               return (
                 <tr>
                   <td>{friend.nickname}</td>
                   <td>{friend.characterName}</td>
                   <td>
-                  <Form onSubmit={onSubmitDeleteFriend}>
-                  <Button type="submit" onClick={() => setFriendId(friend.userId)}>삭제</Button>
-                  </Form>
+                    <Form onSubmit={onSubmitDeleteFriend}>
+                      <Button type="submit" onClick={() => setFriendId(friend.userId)}>
+                        삭제
+                      </Button>
+                    </Form>
                   </td>
                   <td>
-                  <Form>
-                  <Button type="submit">채팅</Button>
-                  </Form>
+                    <Form>
+                      <Button type="submit">채팅</Button>
+                    </Form>
                   </td>
                 </tr>
               );
@@ -390,31 +374,35 @@ const My = () => {
               </td>
             </tr>
           )}
-           
-            
-          </table>
+        </table>
 
-          <table>
-            <tr>
+        <table>
+          <tr>
             <th>친구요청 목록</th>
             <th></th>
             <th></th>
             <th></th>
-            </tr>
-            {friendRequestList ? (
+          </tr>
+          {friendRequestList ? (
             friendRequestList.map((friend, key) => {
               return (
                 <tr>
-                  <td>{friend.nickname}({friend.characterName})</td>
                   <td>
-                  <Form onSubmit={onSubmitAcceptFriend}>
-                  <Button type="submit" onClick={() => setFriendId(friend.userId)}>수락</Button>
-                  </Form>
+                    {friend.nickname}({friend.characterName})
                   </td>
                   <td>
-                  <Form onSubmit={onSubmitRefuseFriend}>
-                  <Button type="submit" onClick={() => setFriendId(friend.userId)}>거절</Button>
-                  </Form>
+                    <Form onSubmit={onSubmitAcceptFriend}>
+                      <Button type="submit" onClick={() => setFriendId(friend.userId)}>
+                        수락
+                      </Button>
+                    </Form>
+                  </td>
+                  <td>
+                    <Form onSubmit={onSubmitRefuseFriend}>
+                      <Button type="submit" onClick={() => setFriendId(friend.userId)}>
+                        거절
+                      </Button>
+                    </Form>
                   </td>
                   <td></td>
                 </tr>
@@ -427,11 +415,7 @@ const My = () => {
               </td>
             </tr>
           )}
-           
-            
-          </table>
-
- 
+        </table>
       </Container>
     </Root>
   );

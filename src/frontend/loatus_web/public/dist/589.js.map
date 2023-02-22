@@ -1,0 +1,1 @@
+{"version":3,"file":"589.js","mappings":"6JAOA,QAJkB,WAChB,OAAO,gBAAC,KAAM,KAChB,C","sources":["webpack://loatus_web/./pages/Board/index.tsx"],"sourcesContent":["import React from 'react';\r\nimport { Outlet } from 'react-router';\r\n\r\nconst Community = () => {\r\n  return <Outlet />;\r\n};\r\n\r\nexport default Community;\r\n"],"names":[],"sourceRoot":""}

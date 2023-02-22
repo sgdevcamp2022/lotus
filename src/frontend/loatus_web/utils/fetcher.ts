@@ -3,7 +3,7 @@ import axios from 'axios';
 const fetcher = async ([url, token]: string[]) => {
   const res = await axios
     .get(url, {
-      withCredentials: true,
+      withCredentials: false,
       headers: token
         ? {
             Authorization: `Bearer ${token}`,

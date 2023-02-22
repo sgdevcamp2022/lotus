@@ -1,7 +1,7 @@
 import { io, Socket } from 'socket.io-client';
 import { useCallback } from 'react';
 
-const backUrl = 'http://localhost:8090';
+const backUrl = process.env.REACT_APP_DB_HOST + '/api/';
 
 const sockets: { [key: string]: Socket } = {};
 const useSocket = (Channel?: string): [Socket | undefined, () => void] => {

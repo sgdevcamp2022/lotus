@@ -23,7 +23,7 @@ export default function Auth() {
   const navigate = useNavigate();
   const accessToken = localStorage.getItem('accessToken');
   const [token, setToken] = useCookies(['refreshToken']);
-  const { data: userData, error, mutate } = useSWRRetry('/auth/my', token.refreshToken);
+  const { data: userData, error, mutate } = useSWRRetry(process.env.REACT_APP_DB_HOST + '/auth/my', token.refreshToken);
   const [activeStep, setActiveStep] = React.useState(0);
   const [skipped, setSkipped] = React.useState(new Set<number>());
   const [randomCode, setRandomCode] = useState('');
@@ -49,13 +49,13 @@ export default function Auth() {
       e.preventDefault();
       useTokenAxios(token.refreshToken)
         .post(
-          '/auth/stove',
+          process.env.REACT_APP_DB_HOST + '/auth/stove',
           {
             randomCode,
             stoveUrl,
           },
           {
-            withCredentials: true,
+            withCredentials: false,
             headers: {
               Authorization: 'Bearer ' + accessToken,
             },
@@ -106,8 +106,8 @@ export default function Auth() {
 
   useEffect(() => {
     useTokenAxios(token.refreshToken)
-      .get('/auth/randomcode', {
-        withCredentials: true,
+      .get(process.env.REACT_APP_DB_HOST + '/auth/randomcode', {
+        withCredentials: false,
         headers: {
           Authorization: 'Bearer ' + accessToken,
         },

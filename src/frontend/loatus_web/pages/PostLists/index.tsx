@@ -33,7 +33,10 @@ const PostLists = () => {
     data: PostData,
     error,
     mutate,
-  } = useSWR<{ post: IPost[]; total: number }>([`/post/?page=${params.get('page') || 1}`], fetcher);
+  } = useSWR<{ post: IPost[]; total: number }>(
+    [process.env.REACT_APP_DB_HOST + `/post/?page=${params.get('page') || 1}`, accessToken],
+    fetcher,
+  );
 
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setParams(`page=${value}`);
@@ -41,7 +44,7 @@ const PostLists = () => {
 
   const onClickDelete = useCallback((post: IPost) => {
     axios
-      .delete(`/post/delete/${post.pk}/`, {
+      .delete(process.env.REACT_APP_DB_HOST + `/post/delete/${post.pk}/`, {
         headers: {
           Authorization: 'Bearer ' + accessToken,
         },
@@ -63,7 +66,7 @@ const PostLists = () => {
     //모달 실행 후 입력 받기
     await axios
       .post(
-        `/post/edit/${post.pk}/`,
+        process.env.REACT_APP_DB_HOST + `/post/edit/${post.pk}/`,
         {
           title: '바뀌나요',
           content: '안바뀌나요',

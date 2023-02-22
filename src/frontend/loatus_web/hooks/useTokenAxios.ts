@@ -2,16 +2,20 @@ import axios from 'axios';
 import { StateMutator } from 'swr-global-state';
 
 const useTokenAxios = (refreshToken: string) => {
-  const tokenAxios = axios.create();
+  const tokenAxios = axios.create({
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+    },
+  });
   tokenAxios.interceptors.response.use(
     (response) => response,
     (error) => {
       axios
         .post(
-          '/auth/reissue',
+          process.env.REACT_APP_DB_HOST + '/auth/reissue',
           {},
           {
-            withCredentials: true,
+            withCredentials: false,
             headers: {
               Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
               refreshToken: refreshToken,
