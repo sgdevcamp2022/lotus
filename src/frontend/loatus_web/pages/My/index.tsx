@@ -58,7 +58,7 @@ const My = () => {
   useEffect(() => {
     axios
       .post(
-        '/friend/list',
+        process.env.REACT_APP_DB_HOST + '/friend/list',
         {
           toUserId,
         },
@@ -82,7 +82,7 @@ const My = () => {
   useEffect(() => {
     axios
       .post(
-        '/friend/request/list',
+        process.env.REACT_APP_DB_HOST + '/friend/request/list',
         {
           toUserId,
         },
@@ -175,7 +175,7 @@ const My = () => {
       e.preventDefault();
       await useTokenAxios(token.refreshToken)
         .post(
-          '/friend/delete',
+          process.env.REACT_APP_DB_HOST + '/friend/delete',
           {
             toUserId: friendId,
           },
@@ -211,7 +211,7 @@ const My = () => {
       e.preventDefault();
       await useTokenAxios(token.refreshToken)
         .post(
-          '/friend/accept',
+          process.env.REACT_APP_DB_HOST + '/friend/accept',
           {
             toUserId: friendId,
           },
@@ -247,7 +247,7 @@ const My = () => {
       e.preventDefault();
       await useTokenAxios(token.refreshToken)
         .post(
-          '/friend/refuse',
+          process.env.REACT_APP_DB_HOST + '/friend/refuse',
           {
             toUserId: friendId,
           },
