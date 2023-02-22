@@ -21,6 +21,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', lambda r: redirect('post:index')),
     path('post/', include('post.urls')),
+    path('matching/', include('matching.urls')),
     
     
 ]
