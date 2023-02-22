@@ -6,6 +6,7 @@ export class MyInfoDto extends PickType(Users, [
   'nickname',
   'provider',
   'stoveNo',
+  'characterName',
 ]) {
   userId: number;
 }

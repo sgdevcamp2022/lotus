@@ -142,7 +142,7 @@ export class PartysService {
         throw new HttpException(err.message, err.status);
       });
   }
-  async createChannelPartyMembers(url, name, email) {
+  async createChannelPartyMember(url, name, characterName) {
     const party = await this.partiesRepository
       .createQueryBuilder('party')
       .innerJoin('party.Channel', 'Channel', 'Channel.url = :url', { url })
@@ -153,7 +153,7 @@ export class PartysService {
     }
     const user = await this.usersRepository
       .createQueryBuilder('user')
-      .where('user.email = :email', { email })
+      .where('user.character_name = :characterName', { characterName })
       .innerJoin('user.Channels', 'channel', 'channel.url = :url', {
         url,
       })

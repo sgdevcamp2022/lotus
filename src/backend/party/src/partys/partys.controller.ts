@@ -52,16 +52,16 @@ export class PartysController {
   @ApiOperation({
     description: '파티에 유저를 추가합니다',
   })
-  @Post(':name/members')
+  @Post(':name/members/:character')
   async createChannelPartyMember(
     @Param('url') url: string,
     @Param('name') name: string,
-    @User() userInfo: MyInfoDto,
+    @Param('character') characterName: string,
   ) {
-    return this.partysService.createChannelPartyMembers(
+    return this.partysService.createChannelPartyMember(
       url,
       name,
-      userInfo.email,
+      characterName,
     );
   }
 
