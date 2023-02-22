@@ -4,7 +4,9 @@ const fetcher = async ([url, token]: string[]) => {
   const res = await axios
     .post(
       url,
-      {},
+      {
+        toUserId: '8',
+      },
       {
         withCredentials: false,
         headers: token
