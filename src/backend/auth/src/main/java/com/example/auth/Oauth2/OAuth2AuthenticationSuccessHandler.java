@@ -70,7 +70,8 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
         LoginResponse jwt = login(authentication, email, provider);
 
         //   String uri = UriComponentsBuilder.fromUriString("http://localhost:8080/social")
-        String uri = UriComponentsBuilder.fromUriString("http://localhost:3090/login")
+        //String uri = UriComponentsBuilder.fromUriString("http://localhost:3090/login")
+        String uri = UriComponentsBuilder.fromUriString("http://15.164.192.183:8080")
                 .queryParam("provider", provider)
                 .queryParam("oauthId", oauthId)
                 .queryParam("grantType", jwt.getGrantType())
