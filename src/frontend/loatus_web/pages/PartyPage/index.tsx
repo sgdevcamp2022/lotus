@@ -31,6 +31,7 @@ import ChatList from '@components/ChatList';
 import ChatBox from '@components/ChatBox';
 import { TabPane } from 'react-bootstrap';
 import Box from '@mui/material/Box';
+import CharacterAvatar from '@components/CharacterAvatar';
 
 const PartyPage = () => {
   const accessToken = localStorage.getItem('accessToken');
@@ -132,7 +133,7 @@ const PartyPage = () => {
             }
           >
             <ListItemAvatar>
-              <Avatar alt={party.Owner.nickname} src={party.Owner.profileImage || gravatar.url(party.Owner.email)} />
+              <CharacterAvatar user={party.Owner} />
             </ListItemAvatar>
             <ListItemText
               primary={<React.Fragment>{party.name}</React.Fragment>}

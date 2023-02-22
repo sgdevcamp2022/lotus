@@ -20,105 +20,31 @@ const My = () => {
   const [token, setToken] = useCookies(['refreshToken']);
   const accessToken = localStorage.getItem('accessToken');
   const { data: userData, error, mutate } = useSWRRetry(process.env.REACT_APP_DB_HOST + '/auth/my', token.refreshToken);
-  const [params, setParams] = useSearchParams();
-  var toUserId = '1';
+  const {
+    data: characterInfo,
+    error: mainCharError,
+    mutate: mainCharMutate,
+  } = useSWRRetry<lostarkInfo>(process.env.REACT_APP_DB_HOST + '/user/load/maincharacter', token.refreshToken, true);
+  const {
+    data: friendList,
+    error: friendError,
+    mutate: friendMutate,
+  } = useSWRRetry<Friend[]>(process.env.REACT_APP_DB_HOST + '/friend/list', token.refreshToken, true);
+  const {
+    data: friendRequestList,
+    error: friendRequestError,
+    mutate: friendRequestMutate,
+  } = useSWRRetry<Friend[]>(process.env.REACT_APP_DB_HOST + '/friend/request/list', token.refreshToken, true);
   const [nickname, onChangeNickname, setNickname] = useInput('');
-  const [characterInfo, setCharacterInfo] = useState<lostarkInfo | null>();
-  const [friendList, setFriendList] = useState<Friend[] | null | undefined>();
-  const [friendRequestList, setFriendRequestList] = useState<Friend[] | null | undefined>();
   const [friendId, setFriendId] = useState<number>(0);
-  //  const profileImage="\""+userData.profileImage+"\"";
-
-  console.log(friendList);
-  console.log(friendList && friendList[0]);
-  // console.log(friendList.length);
-
-  useEffect(() => {
-    axios
-      .post(
-        process.env.REACT_APP_DB_HOST + '/user/load/maincharacter',
-        {},
-        {
-          headers: {
-            Authorization: 'Bearer ' + accessToken,
-          },
-        },
-      )
-      .then((res) => {
-        setCharacterInfo(res.data.data);
-      })
-      .catch((err) => {
-        toast.error(err.message, {
-          position: 'top-right',
-        });
-      }),
-      [];
-  }, []);
-
-  useEffect(() => {
-    axios
-      .post(
-        process.env.REACT_APP_DB_HOST + '/friend/list',
-        {
-          toUserId,
-        },
-        {
-          headers: {
-            Authorization: 'Bearer ' + accessToken,
-          },
-        },
-      )
-      .then((res) => {
-        setFriendList(res.data.data);
-      })
-      .catch((err) => {
-        toast.error(err.message, {
-          position: 'top-right',
-        });
-      }),
-      [];
-  }, []);
-
-  useEffect(() => {
-    axios
-      .post(
-        process.env.REACT_APP_DB_HOST + '/friend/request/list',
-        {
-          toUserId,
-        },
-        {
-          headers: {
-            Authorization: 'Bearer ' + accessToken,
-          },
-        },
-      )
-      .then((res) => {
-        setFriendRequestList(res.data.data);
-      })
-      .catch((err) => {
-        toast.error(err.message, {
-          position: 'top-right',
-        });
-      }),
-      [];
-  }, []);
 
   const onSubmitUpdateNickname = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       await useTokenAxios(token.refreshToken)
-        .post(
-          process.env.REACT_APP_DB_HOST + '/user/update/nickname',
-          {
-            nickname,
-          },
-          {
-            withCredentials: false,
-            headers: {
-              Authorization: 'Bearer ' + accessToken,
-            },
-          },
-        )
+        .post(process.env.REACT_APP_DB_HOST + '/user/update/nickname', {
+          nickname,
+        })
         .then((response) => {
           if (response.data.code === 200) {
             toast.success('닉네임 변경이 성공했습니다.', {
@@ -142,16 +68,7 @@ const My = () => {
   const onSubmitDeleteUser = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     await useTokenAxios(token.refreshToken)
-      .post(
-        process.env.REACT_APP_DB_HOST + '/user/delete',
-        {},
-        {
-          withCredentials: false,
-          headers: {
-            Authorization: 'Bearer ' + accessToken,
-          },
-        },
-      )
+      .post(process.env.REACT_APP_DB_HOST + '/user/delete', {})
       .then((response) => {
         if (response.data.code === 200) {
           toast.success('회원탈퇴가 성공했습니다.', {
@@ -174,18 +91,9 @@ const My = () => {
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       await useTokenAxios(token.refreshToken)
-        .post(
-          process.env.REACT_APP_DB_HOST + '/friend/delete',
-          {
-            toUserId: friendId,
-          },
-          {
-            withCredentials: false,
-            headers: {
-              Authorization: 'Bearer ' + accessToken,
-            },
-          },
-        )
+        .post(process.env.REACT_APP_DB_HOST + '/friend/delete', {
+          toUserId: friendId,
+        })
         .then((response) => {
           if (response.data.code === 200) {
             toast.success('친구삭제가 성공했습니다.', {

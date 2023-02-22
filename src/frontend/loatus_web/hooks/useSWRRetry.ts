@@ -3,11 +3,12 @@ import { IUser } from '@typings/db';
 import fetcher from '@utils/fetcher';
 import axios from 'axios';
 import { StateMutator } from 'swr-global-state';
+import postFetcher from '@utils/postFetcher';
 
-const useSWRRetry = <T = any>(url: string | null, refreshToken: string) =>
+const useSWRRetry = <T = any>(url: string | null, refreshToken: string, isPost: boolean = false) =>
   useSWR<T | null>(
     url && localStorage.getItem('accessToken') ? [url, localStorage.getItem('accessToken')] : null,
-    fetcher,
+    isPost ? postFetcher : fetcher,
     {
       onErrorRetry: (err, key, config, revalidate, { retryCount }) => {
         if (retryCount < 3) {

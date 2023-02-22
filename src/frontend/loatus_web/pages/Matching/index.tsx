@@ -6,41 +6,17 @@ import Button from '@mui/material/Button';
 import useTokenAxios from '@hooks/useTokenAxios';
 import { useCookies } from 'react-cookie';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router';
 
 const Matching = () => {
   const [token] = useCookies(['refreshToken']);
+  const navigate = useNavigate();
 
   const onClickEnroll = useCallback((id: number) => {
     useTokenAxios(token.refreshToken)
       .post(process.env.REACT_APP_DB_HOST + `/matching/enroll/${id}/`)
       .then((res) => {
         toast.info(res.data.message);
-        if (res.data.data !== undefined) {
-          useTokenAxios(token.refreshToken)
-            .post(process.env.REACT_APP_DB_HOST + `/api/channels/raid/parties`, {
-              name: res.data.data.data.raid_name + res.data.data.data.userid_list[0],
-            })
-            .then((res2) => {
-              res.data.data.data.userid_list.map((userid: string) => {
-                useTokenAxios(token.refreshToken)
-                  .post(
-                    process.env.REACT_APP_DB_HOST +
-                      `/api/channels/raid/parties/${
-                        res.data.data.data.raid_name + res.data.data.data.userid_list[0]
-                      }/${userid}`,
-                  )
-                  .then((res3) => {
-                    toast.success(res3.data.message);
-                  })
-                  .catch((err3) => {
-                    toast.error(err3.message);
-                  });
-              });
-            })
-            .catch((err2) => {
-              toast.error(err2.message);
-            });
-        }
       })
       .catch((err) => {
         toast.error(err.message);
@@ -51,8 +27,36 @@ const Matching = () => {
     useTokenAxios(token.refreshToken)
       .post(process.env.REACT_APP_DB_HOST + `/matching/result/`)
       .then((res) => {
-        console.log(res.data);
         toast.success(res.data.message);
+        if (res.data.data !== undefined) {
+          useTokenAxios(token.refreshToken)
+            .post(process.env.REACT_APP_DB_HOST + `/api/channels/raid/parties`, {
+              name: res.data.data.data.raid_name + res.data.data.data.userid_list[0],
+            })
+            .then((res2) => {
+              toast.success(res2.data.message);
+              navigate(`/channels/raid/parties/`);
+              // await res.data.data.data.userid_list.map((userid: string) => {
+              //   useTokenAxios(token.refreshToken).post(process.env.REACT_APP_DB_HOST + `/api/channels/raid/members`);
+              //   useTokenAxios(token.refreshToken)
+              //     .post(
+              //       process.env.REACT_APP_DB_HOST +
+              //         `/api/channels/raid/parties/${
+              //           res.data.data.data.raid_name + res.data.data.data.userid_list[0]
+              //         }/members/${userid}`,
+              //     )
+              //     .then((res3) => {
+              //       toast.success(res3.data.message);
+              //     })
+              //     .catch((err3) => {
+              //       toast.error(err3.message);
+              //     });
+              // });
+            })
+            .catch((err2) => {
+              toast.error(err2.message);
+            });
+        }
       })
       .catch((err) => {
         toast.error(err.message);

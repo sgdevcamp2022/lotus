@@ -97,10 +97,10 @@ const Login = () => {
       <Page>
         <PageHead>이메일로 로그인해 보세요.</PageHead>
         <SignIn>
-          <a href={'http://3.39.239.141:31436/oauth2/authorization/naver'}>
+          <a href={process.env.REACT_APP_DB_HOST + '/oauth2/authorization/naver'}>
             <Button>네이버를 사용하여 로그인</Button>
           </a>
-          <a href={'http://3.39.239.141:31436/oauth2/authorization/kakao'}>
+          <a href={process.env.REACT_APP_DB_HOST + '/oauth2/authorization/kakao'}>
             <Button>카카오를 사용하여 로그인</Button>
           </a>
           <a href={'http://15.164.192.183:8080/oauth2/authorization/google'}>

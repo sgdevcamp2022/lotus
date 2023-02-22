@@ -18,13 +18,7 @@ export type Party = {
   updatedAt: Date;
   channelId: number;
   ownerId: number;
-  Owner: {
-    id: number;
-    characterName: string | null;
-    email: string;
-    nickname: string;
-    profileImage: string | null;
-  };
+  Owner: IUser;
 };
 
 export interface IChat {
