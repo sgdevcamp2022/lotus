@@ -16,6 +16,7 @@ import com.example.auth.Service.UserService;
 import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.Optional;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -40,9 +41,8 @@ public class UserController {
         this.userService = userService;
         this.tokenProvider = tokenProvider;
         this.friendService = friendService;
-        this.lostarkAuthentication=lostarkAuthentication;
+        this.lostarkAuthentication = lostarkAuthentication;
     }
-
 
 
     @PostMapping("/signup")
@@ -51,8 +51,8 @@ public class UserController {
     ) {
 
         DefaultResponse signupResponse = userService.signup(signupRequest);
-        SignupResponse data =(SignupResponse)signupResponse.getData();
-        if(signupResponse.getCode()==400){
+        SignupResponse data = (SignupResponse) signupResponse.getData();
+        if (signupResponse.getCode() == 400) {
             return new ResponseEntity<>(signupResponse, HttpStatus.BAD_REQUEST);
         }
         String email = data.getEmail();
@@ -60,13 +60,8 @@ public class UserController {
         friendService.createFriendList(userByEmail.get().getUserId());
         ResponseEntity.ok().body(signupResponse);
 
-
-
-
         return new ResponseEntity<>(signupResponse, HttpStatus.OK);
     }
-
-
 
 //    @PostMapping("/update/maincharacter")
 //    public ResponseEntity<DefaultResponse> updateMainCharacter(@RequestHeader String authorization) {
@@ -89,27 +84,29 @@ public class UserController {
     @Operation(description = "response data null로 반환됨")
     public ResponseEntity<DefaultResponse> updateMainCharacter(@Valid @RequestBody
     MainCharacterRequest mainCharacterRequest,
-            @RequestHeader String authorization){
-        String accessToken = authorization.substring(7);
+            @RequestHeader HttpHeaders headers) {
+        String accessToken = headers.getFirst("authorization").substring(7);
+        //String accessToken = authorization.substring(7);
         String profileImageInLostark = lostarkAuthentication.getProfileImageInLostark(
                 mainCharacterRequest.getCharacterName());
 
         System.out.println("profileImageInLostark = " + profileImageInLostark);
-        if(profileImageInLostark!=null && !profileImageInLostark.isEmpty() && profileImageInLostark.equals("사용자 존재x")){
-            DefaultResponse defaultResponse=new DefaultResponse(StatusCode.BAD_REQUEST,ResponseMessage.LOSTARK_MAINCHARACTER_SUCCESS,null);
-            return new ResponseEntity<>(defaultResponse,HttpStatus.BAD_REQUEST);
+        if (profileImageInLostark != null && !profileImageInLostark.isEmpty()
+                && profileImageInLostark.equals("사용자 존재x")) {
+            DefaultResponse defaultResponse = new DefaultResponse(StatusCode.BAD_REQUEST,
+                    ResponseMessage.LOSTARK_MAINCHARACTER_SUCCESS, null);
+            return new ResponseEntity<>(defaultResponse, HttpStatus.BAD_REQUEST);
         }
-
 
         DefaultResponse defaultResponse = userService.updateMainCharacter(
                 mainCharacterRequest.getCharacterName(),
                 profileImageInLostark,
                 accessToken);
         ResponseEntity.ok().body(defaultResponse);
-        if(defaultResponse.getCode()==StatusCode.USER_NONEXISTENCE){
+        if (defaultResponse.getCode() == StatusCode.USER_NONEXISTENCE) {
             return new ResponseEntity<>(defaultResponse, HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(defaultResponse,HttpStatus.OK);
+        return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
 
     }
 
@@ -122,8 +119,9 @@ public class UserController {
             + "    \"ItemAvgLevel\": \"209.17\",\n"
             + "    \"ItemMaxLevel\": \"209.17\"\n"
             + "  }")
-    public ResponseEntity<DefaultResponse> loadMainCharacter(@RequestHeader String authorization) {
-        String accessToken = authorization.substring(7);
+    public ResponseEntity<DefaultResponse> loadMainCharacter(@RequestHeader HttpHeaders headers) {
+        String accessToken = headers.getFirst("authorization").substring(7);
+        //String accessToken = authorization.substring(7);
         Long userIdFromAccessToken = tokenProvider.getUserIdFromAccessToken(accessToken);
         Optional<User> userByUserId = userService.getUserByUserId(userIdFromAccessToken);
         JsonNode characterInfo = lostarkAuthentication.getCharacterInfo(
@@ -147,7 +145,8 @@ public class UserController {
             + "    \"ItemAvgLevel\": \"209.17\",\n"
             + "    \"ItemMaxLevel\": \"209.17\"\n"
             + "  }")
-    public ResponseEntity<DefaultResponse> loadFriendMainCharacter(@Valid @RequestBody MainCharacterRequest mainCharacterRequest) {
+    public ResponseEntity<DefaultResponse> loadFriendMainCharacter(
+            @Valid @RequestBody MainCharacterRequest mainCharacterRequest) {
 
         JsonNode characterInfo = lostarkAuthentication.getCharacterInfo(
                 mainCharacterRequest.getCharacterName());
@@ -164,49 +163,47 @@ public class UserController {
 
     @PostMapping("/update/nickname")
     @Operation(description = "response data null로 반환됨")
-    public ResponseEntity<DefaultResponse> updateMainCharacter(@Valid @RequestBody NicknameRequest nicknameRequest,
-            @RequestHeader String authorization){
-        String accessToken = authorization.substring(7);
+    public ResponseEntity<DefaultResponse> updateMainCharacter(
+            @Valid @RequestBody NicknameRequest nicknameRequest,
+            @RequestHeader HttpHeaders headers) {
+        String accessToken = headers.getFirst("authorization").substring(7);
         DefaultResponse defaultResponse = userService.updateNickname(nicknameRequest.getNickname(),
                 accessToken);
         ResponseEntity.ok().body(defaultResponse);
-        if(defaultResponse.getCode()==StatusCode.USER_NONEXISTENCE){
+        if (defaultResponse.getCode() == StatusCode.USER_NONEXISTENCE) {
             return new ResponseEntity<>(defaultResponse, HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(defaultResponse,HttpStatus.OK);
+        return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
 
     }
 
     @PostMapping("/update/password")
     @Operation(description = "response data null로 반환됨")
-    public ResponseEntity<DefaultResponse> updatePassword(@Valid @RequestBody PasswordRequest passwordRequest,
-            @RequestHeader String authorization){
-        String accessToken = authorization.substring(7);
+    public ResponseEntity<DefaultResponse> updatePassword(
+            @Valid @RequestBody PasswordRequest passwordRequest,
+            @RequestHeader HttpHeaders headers) {
+        String accessToken = headers.getFirst("authorization").substring(7);
         DefaultResponse defaultResponse = userService.updatePassword(passwordRequest.getPassword(),
                 accessToken);
         ResponseEntity.ok().body(defaultResponse);
-        if(defaultResponse.getCode()==StatusCode.USER_NONEXISTENCE){
+        if (defaultResponse.getCode() == StatusCode.USER_NONEXISTENCE) {
             return new ResponseEntity<>(defaultResponse, HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(defaultResponse,HttpStatus.OK);
+        return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
 
     }
 
     @PostMapping("/delete")
     @Operation(description = "response data null로 반환됨")
-    public ResponseEntity<DefaultResponse> deleteUser(@RequestHeader String authorization){
-        String accessToken = authorization.substring(7);
+    public ResponseEntity<DefaultResponse> deleteUser(@RequestHeader HttpHeaders headers) {
+        String accessToken = headers.getFirst("authorization").substring(7);
         userService.deleteUser(accessToken);
-        DefaultResponse defaultResponse=new DefaultResponse(StatusCode.OK,ResponseMessage.DELETE_USER_SUCCESS,null);
+        DefaultResponse defaultResponse = new DefaultResponse(StatusCode.OK,
+                ResponseMessage.DELETE_USER_SUCCESS, null);
         ResponseEntity.ok().body(defaultResponse);
-        return new ResponseEntity<>(defaultResponse,HttpStatus.OK);
+        return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
 
     }
-
-
-
-
-
 
 
     @GetMapping("/user")
@@ -221,8 +218,6 @@ public class UserController {
     public ResponseEntity<SignupRequest> getUserInfo(@PathVariable String username) {
         return ResponseEntity.ok(userService.getUserWithAuthorities(username));
     }
-
-
 
 
 }

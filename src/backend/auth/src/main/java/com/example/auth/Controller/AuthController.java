@@ -82,9 +82,10 @@ public class AuthController {
 
     @GetMapping("/logout")
     @Operation(description = "response data null로 반환됨")
-    public DefaultResponse<Object> logout(@RequestHeader("Authorization") String authorization) {
+    public DefaultResponse<Object> logout(@RequestHeader HttpHeaders headers) {
 
-        String accessToken = authorization.substring(7);
+        //String accessToken = authorization.substring(7);
+        String accessToken = headers.getFirst("authorization").substring(7);
         Long userIdFromAccessToken = tokenProvider.getUserIdFromAccessToken(accessToken);
         authService.logout(accessToken, "refreshToken", userIdFromAccessToken);
 
@@ -112,9 +113,11 @@ public class AuthController {
 
 
     @GetMapping("/my")
-    public ResponseEntity<DefaultResponse<MyResponse>> getUserFromJwt(@RequestHeader String authorization) {
+    public ResponseEntity<DefaultResponse<MyResponse>> getUserFromJwt(
+            @RequestHeader HttpHeaders headers) {
 
-        String accessToken = authorization.substring(7);
+        //String accessToken = authorization.substring(7);
+        String accessToken = headers.getFirst("authorization").substring(7);
         Long userId = tokenProvider.getUserIdFromAccessToken(accessToken);
         Object principal = SecurityContextHolder.getContext().getAuthentication();
         System.out.println("principal = " + principal);
@@ -128,7 +131,7 @@ public class AuthController {
 //                userByUsername.get().getEmail(),
 //                userByUsername.get().getNickname(), userByUsername.get().getAuth(),
 //                userByUsername.get().getProvider(), userByUsername.get().getStove_no());
-        MyResponse myResponse= MyResponse.builder()
+        MyResponse myResponse = MyResponse.builder()
                 .userId(userByUsername.get().getUserId())
                 .profileImage(userByUsername.get().getProfile_image())
                 .stoveNo(userByUsername.get().getStove_no())
@@ -208,8 +211,9 @@ public class AuthController {
             + "    \"ItemMaxLevel\": \"209.17\"\n"
             + "  }")
     public ResponseEntity<DefaultResponse> lostark(@Valid @RequestBody StoveRequest stoveRequest,
-            @RequestHeader String authorization) {
-        String accessToken = authorization.substring(7);
+            @RequestHeader HttpHeaders headers) {
+        //String accessToken = authorization.substring(7);
+        String accessToken = headers.getFirst("authorization").substring(7);
         Long userId = tokenProvider.getUserIdFromAccessToken(accessToken);
         HttpHeaders httpHeaders = new HttpHeaders();
         DefaultResponse introductionInStove = lostarkAuthentication.getIntroductionInStove(
@@ -224,8 +228,6 @@ public class AuthController {
                         HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
-
-
 
         String encryptedMemberNo = lostarkAuthentication.getEncryptedMemberNo(
                 introductionInStove.getData().toString());
@@ -245,8 +247,8 @@ public class AuthController {
 
 
     @GetMapping("/randomcode")
-    public ResponseEntity<DefaultResponse> getRandomCode(@RequestHeader String authorization) {
-        String accessToken = authorization.substring(7);
+    public ResponseEntity<DefaultResponse> getRandomCode(@RequestHeader HttpHeaders headers) {
+        String accessToken = headers.getFirst("authorization").substring(7);
         Long userIdFromAccessToken = tokenProvider.getUserIdFromAccessToken(accessToken);
         Optional<User> userByUserId = userService.getUserByUserId(userIdFromAccessToken);
 
