@@ -90,7 +90,7 @@ public class SecurityConfig {
                 .and()
 
                 .authorizeRequests()
-                .requestMatchers(request -> CorsUtils.isPreFlightRequest(request)).permitAll()
+               // .requestMatchers(request -> CorsUtils.isPreFlightRequest(request)).permitAll()
                 .antMatchers(PERMIT_URL_ARRAY).permitAll()
                 .antMatchers("/test").hasRole("USER")
                 .anyRequest().authenticated()
