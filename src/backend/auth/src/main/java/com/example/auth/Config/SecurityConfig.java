@@ -14,6 +14,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsUtils;
 
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -88,6 +89,7 @@ public class SecurityConfig {
                 .and()
 
                 .authorizeRequests()
+                .requestMatchers(request -> CorsUtils.isPreFlightRequest(request)).permitAll()
                 .antMatchers(PERMIT_URL_ARRAY).permitAll()
                 .antMatchers("/test").hasRole("USER")
                 .anyRequest().authenticated()
