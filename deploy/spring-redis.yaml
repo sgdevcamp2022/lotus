@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: spring-redis
+  labels:
+    app: test
+spec:
+  containers:
+  - name: spring-redis
+    image: sangwoo0795/auth:1.1
+    ports:
+    - containerPort: 80

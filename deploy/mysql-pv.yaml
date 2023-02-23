@@ -1,0 +1,60 @@
+apiVersion: v1
+
+#어떤 종류의 오브젝트를 생성하고자 하는지 명시한다.
+kind: PersistentVolume
+
+#이름 문자열, UID, 그리고 선택적인 네임스페이스를 포함하여
+#오브젝트를 유일하게 구분지어 줄 데이터이다.
+#서비스 이름(name)은 mysql-pv-volume.
+#name은 동일한 namespace 상에서는 유일한 값을 이름으로 가져야 합니다.
+#label은 특정 k8s object만을 나열한다거나 검색할 때 유용하게 쓰일 수 있는 key-value 쌍입니다.
+metadata:
+  name: mysql-pv-volume
+  labels:
+    type: local
+
+#오브젝트에 대해 어떤 상태를 의도하는지 명시한다.
+spec:
+  #퍼시스턴트볼륨클레임의 스포리지클래스 이름을 manual로 정의하며,
+  #퍼시스턴트볼륨클레임의 요청을 이 퍼시스턴트볼륨에 바인딩하는데 사용한다.
+  storageClassName: manual
+  capacity:
+    #볼륨의 크기를 20기가바이트로 지정
+    storage: 20Gi
+
+  #ReadWriteOnce 접근 모드는 단일 노드가 읽기-쓰기 모드로 볼륨을 마운트할 있다는 뜻
+  accessModes:
+    - ReadWriteOnce
+
+  #사용자는 hostPath 퍼시스턴트볼륨을 생성한다. hostPath 퍼시스턴트볼륨은
+  #네트워크로 연결된 스토리지를 모방하기 위해, 노드의 파일이나 디렉터리를 사용한다.
+  hostPath:
+    path: "/mnt/data"
+---
+#여기서는 퍼시스턴트볼륨클레임을 생성한다. 이를 사용하여 물리적인 스토리지를 요청한다.
+#여기서는 사용자는 적어도 하나 이상의 노드에 대해 읽기-쓰기 접근을 지원하며
+#최소 20기가를 요청하는 퍼시스턴트볼륨클레임을 생성한다.
+apiVersion: v1
+
+#어떤 종류의 오브젝트를 생성하고자 하는지 명시한다.
+kind: PersistentVolumeClaim
+
+#이름 문자열, UID, 그리고 선택적인 네임스페이스를 포함하여
+#오브젝트를 유일하게 구분지어 줄 데이터이다.
+#서비스 이름(name)은 mysql-pv-claim이다.
+metadata:
+  name: mysql-pv-claim
+
+spec:
+  #위에서 PV를 설정할 때 storageClassName: manual랑 바인딩함.
+  #퍼시스턴트볼륨클레임의 요청을 이 퍼시스턴트볼륨에 바인딩하는데 사용한다. 즉
+  #이걸로 PV를 바인딩함.
+  storageClassName: manual
+
+  #여기서는 사용자는 적어도 하나 이상의 노드에 대해 읽기-쓰기 접근을 지원함
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      #최소 20기가 요청
+      storage: 20Gi

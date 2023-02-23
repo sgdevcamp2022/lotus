@@ -1,0 +1,106 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+
+spec:
+  #포트 3306을 사용한다.
+  ports:
+    - port: 3306
+
+  #(.spec.selector)디플로이먼트가 관리할 파드를 찾는 방법을 정의한다.
+  #이 사례에서는 파드 템플릿(아래 명시된 template)에 정의된 레이블(app:mysql)을
+  #선택한다.
+  selector:
+    app: mysql
+
+  #서비스 프록시가 사용하는 IP 주소,
+  clusterIP: None
+---
+#apiVersion: API 버전을 명시한다
+#이 오브젝트를 생성하기 위해 사용하고 있는 쿠버네티스 API 버전이 어떤 것인지
+#명시한다. apps/v1에서는 .spec.selector 와 .metadata.labels 이
+#설정되지 않으면 .spec.template.metadata.labels 은 기본 설정되지 않는다.
+#그래서 이것들은 명시적으로 설정되어야 한다. 또한 apps/v1 에서는
+#디플로이먼트를 생성한 후에는 .spec.selector 이 변경되지 않는 점을 참고한다.
+apiVersion: apps/v1
+
+#어떤 종류의 오브젝트를 생성하고자 하는지 명시한다.
+kind: Deployment
+
+#이름 문자열, UID, 그리고 선택적인 네임스페이스를 포함하여
+#오브젝트를 유일하게 구분지어 줄 데이터이다.
+#디플로이먼트 이름(name)은 mysql이다.
+#차후에 이 디플로이먼트를 delete할 때 이 이름으로 지운다.
+metadata:
+  name: mysql
+
+#오브젝트에 대해 어떤 상태를 의도하는지 명시한다.
+spec:
+  #(.spec.selector)디플로이먼트가 관리할 파드를 찾는 방법을 정의한다.
+  #이 사례에서는 파드 템플릿(아래 명시된 template)에 정의된 레이블(app:mysql)을 선택한다.
+  selector:
+    matchLabels:
+      app: mysql
+
+  #파드 교체 전략을 지정한다. Recreate의 경우 기존 파드를 모두
+  #삭제한 다음 새로운 파드를 생성하는 방법이다. (이 방식은 무중단이 아니다)
+  #기본값은 RollingUpdate이다. RollingUpdate은 Pod를 하나씩 죽이고
+  #새로 띄우면서 순차적으로 교체하는 방법이다.
+  strategy:
+    type: Recreate
+
+  template:
+    #파드는 .metadata.labels 필드를 사용해서
+    #app: mysql레이블을 붙인다
+    metadata:
+      labels:
+        app: mysql
+
+    #.template.spec 필드는 파드가 도커 허브의
+    #mysql:5.6 이미지를 실행하는
+    #mysql 컨테이너 1개를 실행하는 것을 나타낸다
+    #컨테이너 1개를 생성하고 .spec.template.spec.containers[0].name 필드를
+    #사용해서 mysql 이라는 이름을 붙인다.
+    #즉 컨테이너의 이름이 mysql이 된다. describe deployment 명령어로 확인 가능
+    #파드는 여러 개의 컨테이너를 가질 수 있는데 여기서는 하나만 선언한 것
+    spec:
+      containers:
+        #docker image는 docker registry에서 pull을 받아 오게 되는데,
+        #docker registry가 명시되어 있지 않다면 docker 공식 public registry인
+        #docker hub(https://hub.docker.com)에서 해당 image를 가져오게 됩니다.
+        # 만약 private docker registry를 사용한다면 docker image 이름 앞에 해당
+        #url을 명시해 줘야 하며 k8s에서는 remote docker registry와 통신은 http가
+        #아닌 https로만 하게 되어 있어서 private docker registry에 반드시 TLS 인증서를 설치해둬야 합니다.
+        - image: mysql:5.6
+
+          #container name은 mysql이고 동일한 pod 내에서 유일한 이름을 가져야 합니다.
+          name: mysql
+
+          #환경변수를 정의한다.
+          env:
+            # 여기서는 mysql의 루트 비밀번호를 변경하는데 그 비밀번호를 password로 지정한다.
+            - name: MYSQL_ROOT_PASSWORD
+              value: password
+
+          #컨테이너 포트 지정
+          ports:
+            - containerPort: 3306
+              name: mysql
+
+          #볼륨을 사용하려면, .spec.volumes에서 파드에 제공할 볼륨을 지정하고
+          #.spec.containers[*].volumeMounts의 컨테이너에 해당 볼륨을 마운트할 위치를
+          #선언한다.
+          volumeMounts:
+            #볼륨 이름
+            - name: mysql-persistent-storage
+
+              #컨테이너에 해당 볼륨을 마운트할 위치
+              mountPath: /var/lib/mysql
+
+      #PVC로 생성된 볼륨을 마운트하기 위해서 mysql-pv-claim이라는 이름을 사용한다.
+      volumes:
+        #볼륨 이름
+        - name: mysql-persistent-storage
+          persistentVolumeClaim:
+            claimName: mysql-pv-claim
