@@ -89,7 +89,7 @@
 #         'NAME': 'BOARD',
 #         'USER': 'admin',
 #         'PASSWORD': 'admin123',
-#         'HOST': "database-1.cdqrhabqhxkm.ap-northeast-2.rds.amazonaws.com",
+#         'HOST': "few,
 #         'PORT': '3306',
 #     }
 # }
@@ -140,7 +140,7 @@
 # # or 
 
 # # CORS_ORIGIN_WHITELIST = [
-# #     "http://database-1.cdqrhabqhxkm.ap-northeast-2.rds.amazonaws.com"
+# #     "few"
 # #     ]
     
     
@@ -295,14 +295,12 @@ CACHES = {
         # "BACKEND": "django_redis.cache.RedisCache",
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": [
-            "redis://redis-test-001.aqrul0.0001.apn2.cache.amazonaws.com:6379",
-            "redis://redis-test-002.aqrul0.0001.apn2.cache.amazonaws.com:6379",
-            "redis://redis-test-003.aqrul0.0001.apn2.cache.amazonaws.com:6379",
+     
             ],
             
         'OPTIONS': {
             'DB': 0,
-            'MASTER_CACHE': "redis-test.aqrul0.ng.0001.apn2.cache.amazonaws.com:6379"
+            'MASTER_CACHE': 
         },
         # "OPTIONS": {
         #     "CLIENT_CLASS": "django_redis.client.DefaultClient",
