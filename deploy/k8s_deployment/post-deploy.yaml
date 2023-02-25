@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: post-deploy
+  labels:
+    app: post-deploy
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: post-deploy
+  template:
+    metadata:
+      labels:
+        app: post-deploy
+    spec:
+      containers:
+      - name: django-post-test
+        image: hyeonseong0917/django-rest:latest
+        env:
+        - name: PASSWORD
+          value: "admin123"
+        ports:
+        - containerPort: 8000
+          name: http-web-svc-d
+        volumeMounts:
+        - name: pv
+          mountPath: /var
+      volumes:
+      - name: pv
+        persistentVolumeClaim:
+          claimName: efs-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: post-deploy-svc
+spec:
+  selector:
+    app: post-deploy
+  ports:
+  - port: 80
+    targetPort: http-web-svc-d
+    protocol: TCP
+  type: NodePort

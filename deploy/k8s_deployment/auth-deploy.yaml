@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-deploy
+  labels:
+    app: auth-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-deploy
+  template:
+    metadata:
+      labels:
+        app: auth-deploy
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: node
+                operator: In
+                values:
+                - auth
+      containers:
+      - name: auth-deploy
+        image: sangwoo0795/auth:1.4
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "password"
+        ports:
+        - containerPort: 8080
+          name: http-web-svc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-deploy-svc
+spec:
+  selector:
+    app: auth-deploy
+  ports:
+  - port: 80
+    targetPort: http-web-svc
+    protocol: TCP
+  type: NodePort

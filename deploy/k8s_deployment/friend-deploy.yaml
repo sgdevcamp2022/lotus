@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: friend-deploy
+  labels:
+    app: friend-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: friend-deploy
+  template:
+    metadata:
+      labels:
+        app: friend-deploy
+    spec:
+      containers:
+      - name: friend-deploy
+        image: sangwoo0795/friend:1.4
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "password"
+        ports:
+        - containerPort: 8081
+          name: http-web-svc-f
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: friend-deploy-svc
+spec:
+  selector:
+    app: friend-deploy
+  ports:
+  - port: 80
+    targetPort: http-web-svc-f
+    protocol: TCP
+  type: NodePort

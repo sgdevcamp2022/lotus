@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: matching-deploy
+  labels:
+    app: matching-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: matching-deploy
+  template:
+    metadata:
+      labels:
+        app: matching-deploy
+    spec:
+      containers:
+      - name: django-matching
+        image: hyeonseong0917/matching:latest
+        env:
+        - name: PASSWORD
+          value: "admin123"
+        ports:
+        - containerPort: 8000
+          name: http-web-svc-d
+        volumeMounts:
+        - name: pv
+          mountPath: /var
+      volumes:
+      - name: pv
+        persistentVolumeClaim:
+          claimName: efs-pvc  
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: matching-deploy-svc
+spec:
+  selector:
+    app: matching-deploy
+  ports:
+  - port: 80
+    targetPort: http-web-svc-d
+    protocol: TCP
+  type: NodePort

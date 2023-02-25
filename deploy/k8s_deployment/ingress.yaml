@@ -1,0 +1,69 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: lotus-eks-ingress
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+spec:
+  rules:
+    - http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: auth-deploy-svc
+                port:
+                  number: 80
+          - pathType: Prefix
+            path: /auth
+            backend:
+              service:
+                name: auth-deploy-svc
+                port:
+                  number: 80
+          - pathType: Prefix
+            path: /user
+            backend:
+              service:
+                name: auth-deploy-svc
+                port:
+                  number: 80
+          - pathType: Prefix
+            path: /friend
+            backend:
+              service:
+                name: friend-deploy-svc
+                port:
+                  number: 80
+          - pathType: Prefix
+            path: /api
+            backend:
+              service:
+                name: chat-deploy-svc
+                port:
+                  number: 80
+          - pathType: Prefix
+            path: /dms
+            backend:
+              service:
+                name: chat-deploy-svc
+                port:
+                  number: 80                  
+          - pathType: Prefix
+            path: /post
+            backend:
+              service:
+                name: post-deploy-svc
+                port:
+                  number: 80
+          - pathType: Prefix
+            path: /matching
+            backend:
+              service:
+                name: post-deploy-svc
+                port:
+                  number: 80                  
+        

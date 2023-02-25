@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chat-deploy
+  labels:
+    app: chat-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chat-deploy
+  template:
+    metadata:
+      labels:
+        app: chat-deploy
+    spec:
+      containers:
+      - name: chat-deploy
+        image: hyeonseong0917/chat:latest
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "password"
+        ports:
+        - containerPort: 8090
+          name: http-web-svc-f
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chat-deploy-svc
+spec:
+  selector:
+    app: chat-deploy
+  ports:
+  - port: 80
+    targetPort: http-web-svc-f
+    protocol: TCP
+  type: NodePort
