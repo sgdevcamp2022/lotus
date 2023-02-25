@@ -61,26 +61,17 @@ def test_user_create(request):
         print(us)
         print(pw)
         user = User.objects.create_user(username=us, password=pw)
-        # print(User.objects.filter(username="rkskek123"))
-        # if User.objects.filter(username=us) is None:
-        #     print("flag")
-        #     user = User.objects.create_user(username=us, password=pw)
-                    
-        # return JsonResponse({'message': 'SUCCESS', 'username': user.username})    
-        # print(us)
-        # print(pw)
+
         
         u=User.objects.get(username=us) #username return
         # print(u.id)
         SECRET = 'SECRET'
         print(u)
         print(u.id)
-        # return JsonResponse({'access_token': "hello"})    
+        
         access_token = jwt.encode({'id':u.id, 'username': u.username}, SECRET, algorithm='HS256')
         k=access_token.encode('utf-8').decode('utf-8')
         
-
-        # payload=jwt.decode(access_token, SECRET, algorithms='HS256')
         return JsonResponse({'access_token': k}, status = 200)    
 
 def test_user_login(request):
@@ -96,7 +87,7 @@ def regist(request):
             # not test
             access_token=request.headers.get('Authorization', None)
             ac=access_token
-            user_info=requests.get("http://3.39.239.141:31436/auth/my", headers={'Authorization': ac})
+            user_info=requests.get("http://<to_change>:31436/auth/my", headers={'Authorization': ac})
             json_user_info=json.loads(user_info.content.decode('utf-8'))
             
             user_email=json_user_info["data"]["email"]
@@ -153,7 +144,7 @@ def edit(request, pk):
     
     access_token=request.headers.get('Authorization', None)
     ac=access_token
-    user_info=requests.get("http://3.39.239.141:31436/auth/my", headers={'Authorization': ac})
+    user_info=requests.get("http://<to_change>/auth/my", headers={'Authorization': ac})
     json_user_info=json.loads(user_info.content.decode('utf-8'))
     # print(json_user_info["data"]['email'])
     # print(json_user_info["data"]["nickname"])
@@ -191,7 +182,7 @@ def delete(request, pk):
     
     access_token=request.headers.get('Authorization', None)
     ac=access_token
-    user_info=requests.get("http://3.39.239.141:31436/auth/my", headers={'Authorization': ac})
+    user_info=requests.get("http://<to_change>:31436/auth/my", headers={'Authorization': ac})
     
     json_user_info=json.loads(user_info.content.decode('utf-8'))
     user_nickname=json_user_info["data"]["nickname"]
@@ -220,7 +211,7 @@ def like_post(request, pk):
         
         access_token=request.headers.get('Authorization', None)
         ac=access_token
-        user_info=requests.get("http://3.39.239.141:31436/auth/my", headers={'Authorization': ac})
+        user_info=requests.get("http://<to_change>/auth/my", headers={'Authorization': ac})
     
         json_user_info=json.loads(user_info.content.decode('utf-8'))
         user_nickname=json_user_info["data"]["nickname"]

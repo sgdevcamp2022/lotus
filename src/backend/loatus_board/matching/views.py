@@ -17,7 +17,7 @@ import redis
 import pymysql
 
 # Create your views here.
-rd = redis.Redis(host='redis-test.aqrul0.ng.0001.apn2.cache.amazonaws.com', port=6379, db=0)
+rd = redis.Redis(host='redis-test.<to_change>.ng.0001.apn2.cache.amazonaws.com', port=6379, db=0)
 
 
 def matching_page(request):
@@ -29,7 +29,7 @@ def enroll(request, pk):
         access_token=request.headers.get('Authorization', None)
         ac=access_token
                 
-        user_info=requests.get("http://3.39.239.141:31436/auth/my", headers={'Authorization': ac})
+        user_info=requests.get("http://<to_change>:31436/auth/my", headers={'Authorization': ac})
         
         json_user_info=json.loads(user_info.content.decode('utf-8'))
         # user_nickname=json_user_info["data"]["nickname"]
@@ -41,7 +41,7 @@ def enroll(request, pk):
         # char_name=json_user_info["data"]["characterName"]
         if char_name is not "":
             enc_char_name = parse.quote(char_name)
-        char_info=requests.get("https://developer-lostark.game.onstove.com/characters/"+str(enc_char_name)+"/siblings", headers={'Accept':'application/json','Authorization': 'bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IktYMk40TkRDSTJ5NTA5NWpjTWk5TllqY2lyZyIsImtpZCI6IktYMk40TkRDSTJ5NTA5NWpjTWk5TllqY2lyZyJ9.eyJpc3MiOiJodHRwczovL2x1ZHkuZ2FtZS5vbnN0b3ZlLmNvbSIsImF1ZCI6Imh0dHBzOi8vbHVkeS5nYW1lLm9uc3RvdmUuY29tL3Jlc291cmNlcyIsImNsaWVudF9pZCI6IjEwMDAwMDAwMDAxNzQ1NTUifQ.VIvSsyZAY2QsK3OcINpGEYXSgsw9I-ICU-R-Frvj1T2FCZzPLVXz6AKdMYCN_T5derHI08CF47Cny5xPV1kSCrZROPVlLlinCE_xDagcmBFELpjOqK7wY4oB77zxrj8QYpw6Cg3KglO7TldSmzsfy4mk_TbTSO0yk7dQbKQBrve00JW9cW5POvLZqPRzDI7ZHwAEVv4HcWZi5yZjpiesVatRlsCPMsb2ry3qDG085RSlblN6Vjeg5bsg_-JOY7i9_05-_u847gKhIJ6q0gAJQKSC-JxpYXeqmNLz0GX9ig0mGDYuwXyT-on8VxxYak07WiQJu6VGJY2NTPybictPhA'})
+        char_info=requests.get("https://developer-lostark.game.onstove.com/characters/"+str(enc_char_name)+"/siblings", headers={'Accept':'application/json','Authorization': 'bearer <to_change>'})
         char_info_list=char_info.content.decode()
         cur_item_lev=0
         # print(char_name)
@@ -53,7 +53,7 @@ def enroll(request, pk):
                 cur_item_lev=float(json_char_info[i]["ItemAvgLevel"].replace(',',''))
                 # cur_item_lev=float(char_cur_item_lev.replace('.',''))
         # openapi    
-        con = pymysql.connect(host='database-1.cdqrhabqhxkm.ap-northeast-2.rds.amazonaws.com', user='admin', password='admin123',
+        con = pymysql.connect(host='database-1.<to_change>.ap-northeast-2.rds.amazonaws.com', user='admin', password='admin123',
                       db='BOARD', charset='utf8'
                      )
         cur = con.cursor()
@@ -92,7 +92,7 @@ def enroll(request, pk):
         
 
 def matching_result(request):           
-    con = pymysql.connect(host='database-1.cdqrhabqhxkm.ap-northeast-2.rds.amazonaws.com', user='admin', password='admin123',
+    con = pymysql.connect(host='database-1.<to_change>.ap-northeast-2.rds.amazonaws.com', user='admin', password='admin123',
                       db='BOARD', charset='utf8'
                      )
     cur = con.cursor()                     
@@ -100,7 +100,7 @@ def matching_result(request):
     access_token=request.headers.get('Authorization', None)
     ac=access_token
                 
-    user_info=requests.get("http://3.39.239.141:31436/auth/my", headers={'Authorization': ac})
+    user_info=requests.get("http://<to_change>/auth/my", headers={'Authorization': ac})
         
     json_user_info=json.loads(user_info.content.decode('utf-8'))
     # user_nickname=json_user_info["data"]["nickname"]

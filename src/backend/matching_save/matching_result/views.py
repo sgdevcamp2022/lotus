@@ -22,10 +22,10 @@ def loop():
     
     
     while(1):
-        con = pymysql.connect(host='database-1.cdqrhabqhxkm.ap-northeast-2.rds.amazonaws.com', user='admin', password='admin123',
+        con = pymysql.connect(host='database-1.<to_change>.ap-northeast-2.rds.amazonaws.com', user='admin', password='admin123',
                       db='BOARD', charset='utf8'
                      )
-        rd = redis.Redis(host='redis-test.aqrul0.ng.0001.apn2.cache.amazonaws.com', port=6379, db=0)
+        rd = redis.Redis(host='redis-test.<to_change>.ng.0001.apn2.cache.amazonaws.com', port=6379, db=0)
     
         cur = con.cursor()
         sql="SELECT * FROM obj_create_party WHERE party_state=1"
@@ -53,7 +53,7 @@ def loop():
                 get_raid_id="SELECT * FROM obj_create_party WHERE id="+str(party_id)
                 k=cur.execute(get_raid_id)
                 k_rows=cur.fetchall()
-                # print(k_rows)
+                print(k_rows)
                 raid_id=k_rows[0][3]
                 
                 get_raid_name="SELECT * FROM obj_create_raid WHERE id="+str(raid_id)
@@ -101,6 +101,6 @@ def loop():
             #         f.write(res_json_data)
         con.commit()                    
         time.sleep(5)
-                    # print(cur_user_name)
+                    
                         
         
