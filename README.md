@@ -21,6 +21,7 @@
 - 친구 요청 및 수락
 
 시연 동영상 링크: https://www.youtube.com/watch?v=yzQzJ4oKyXY
+<br></br>
 프로젝트 총괄 자료집:
 https://github.com/sgdevcamp2022/lotus/blob/main/src/README.md
 <br></br>
