@@ -20,10 +20,10 @@
 <br></br>
 1. 커뮤니티 아이디와 스토브 계정 연동
 <br></br>
-![img](./images/0227-2.PNG)
-![img](./images/0227-3.PNG)
-![img](./images/0227-4.PNG)
-![img](./images/0227-5.PNG)
+![img](./images/0227-2.png)
+![img](./images/0227-3.png)
+![img](./images/0227-4.png)
+![img](./images/0227-5.png)
 <br></br>
 <br></br>
 2. 게시판 글 작성 및 수정, 조회
