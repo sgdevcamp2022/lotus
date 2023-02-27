@@ -24,7 +24,7 @@
 - ### 개요
     - ### 로스트아크 게임 계정 연동을 통한 유저들의 레이드 매칭 및 친목 도모를 위한 커뮤니티 사이트
 
-## 업무분석 보고서
+## 2. 업무분석 보고서
 - 개발 팀 이름: Lotus
 - 개발 분야: 클라우드 환경에서 Kubernetes를 이용한 Django, Spring, NestJS 웹 애플리케이션 배포
 - 팀 구성
@@ -37,7 +37,7 @@
 - 프로젝트 개발 일정
 ![img](./images/0227-1.png)
 
-## 사이트 기능 구조
+## 3. 사이트 기능 구조
 - 게시글
     - 게시글 관련
         - 게시글 등록 및 수정
@@ -56,4 +56,20 @@
         - 매칭 조회
             - 원하는 레이드의 인원들이 모두 매칭 되었는지를 확인함.
 
-## 디렉토리 구조도
+## 4. 디렉토리 구조도
+- ### Depth1: src/backend
+    - ### Depth2: loatus_board
+        - ### Depth3: post
+            - models.py: 게시글 객체, 댓글 객체에 대한 데이터베이스 구조 설계
+            - urls.py: 게시글 API에 대한 URL
+            - views.py: 게시글 API에 대한 함수 정의
+        - ### Depth3: matching
+            - models.py: 레이드 객체, 파티 객체, 매칭 객체에 대한 데이터베이스 구조 설계
+            - urls.py: 매칭 API에 대한 URL
+            - views.py: 매칭 등록 API에 대한 함수 정의
+    - ### Depth2: party_matching
+        - ### Depth3: obj_create 
+            - views.py: 매칭을 등록한 유저들을 레이드 id별로 대기열 큐에 넣는 기능 및 대기열 큐가 특정 크기를 넘어가면 파티 객체와 매칭 객체를 생성하는 함수 정의
+    - ### Depth2: matching_save
+        - ### Depth3: matching_result
+            - views.py: 매칭 조건이 완료된 파티 객체에 대해 파티 id값을 바탕으로 매칭 객체에서 해당 파티 id값을 가지는 user_id값들을 조회하고, user_id값을 가지는 캐릭터를 json파일로 공유 스토리지에 저장하는 함수 정의
