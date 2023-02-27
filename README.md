@@ -28,26 +28,26 @@
 <br></br>
 2. 게시판 글 작성 및 수정, 조회
 
-![img](./images/0227-6.PNG)
-![img](./images/0227-7.PNG)
-![img](./images/0227-8.PNG)
-![img](./images/0227-9.PNG)
-![img](./images/0227-10.PNG)
-![img](./images/0227-11.PNG)
+![img](./images/0227-6.png)
+![img](./images/0227-7.png)
+![img](./images/0227-8.png)
+![img](./images/0227-9.png)
+![img](./images/0227-10.png)
+![img](./images/0227-11.png)
 
 3. 파티 생성 및 채팅 전송
-![img](./images/0227-12.PNG)
-![img](./images/0227-13.PNG)
-![img](./images/0227-14.PNG)
+![img](./images/0227-12.png)
+![img](./images/0227-13.png)
+![img](./images/0227-14.png)
 
 4. 아이템 레벨 기반 자동 레이드 매칭
-![img](./images/0227-15.PNG)
-![img](./images/0227-16.PNG)
+![img](./images/0227-15.png)
+![img](./images/0227-16.png)
 
 5. 매칭된 유저들 간 그룹 채팅
-![img](./images/0227-17.PNG)
+![img](./images/0227-17.png)
 
 6. 친구 신청 및 수락
-![img](./images/0227-18.PNG)
-![img](./images/0227-19.PNG)
-![img](./images/0227-20.PNG)
+![img](./images/0227-18.png)
+![img](./images/0227-19.png)
+![img](./images/0227-20.png)
